@@ -1,0 +1,31 @@
+name: juego_de_beber
+description: Una app de juegos para beber divertida
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Dependencias principales
+  shared_preferences: ^2.2.2
+  provider: ^6.1.1
+  confetti: ^0.7.0
+  
+  # Dependencias opcionales (muy útiles para tu juego)
+  animations: ^2.0.7
+  flutter_animate: ^4.1.1
+  vibration: ^1.7.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
