@@ -33,6 +33,7 @@ class _QuienMasProbableScreenState extends State<QuienMasProbableScreen> {
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(15),
+        margin: const EdgeInsets.only(top: 30, bottom: 20),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(18),
@@ -147,7 +148,7 @@ class _QuienMasProbableScreenState extends State<QuienMasProbableScreen> {
 
                     const SizedBox(height: 25),
 
-                    // Botón FIJADO
+                    // Botón principal
                     Container(
                       margin: const EdgeInsets.only(top: 20),
                       width: double.infinity,
@@ -190,56 +191,50 @@ class _QuienMasProbableScreenState extends State<QuienMasProbableScreen> {
                       ),
                     ),
 
-                    // Espacio flexible que empuja el contenido hacia arriba
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          // Sección de contenido (se muestra cuando hay frase)
-                          if (logic.showContent) ...[
-                            _buildContentSection(),
-                            const SizedBox(height: 20),
-                          ],
+                    // Sección de contenido (aparece debajo del botón)
+                    if (logic.showContent) _buildContentSection(),
 
-                          // Botón de volver - siempre en la parte inferior
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const AddPlayersScreen(),
-                                  ),
-                                  (route) => false,
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white.withOpacity(0.1),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  side: BorderSide(color: Colors.white.withOpacity(0.2)),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 12,
-                                ),
-                              ),
-                              child: const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.arrow_back, size: 18),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Volver',
-                                    style: TextStyle(fontWeight: FontWeight.w500),
-                                  ),
-                                ],
-                              ),
+                    // Espacio flexible para empujar el botón de volver hacia abajo
+                    Expanded(
+                      child: Container(),
+                    ),
+
+                    // Botón de volver - en la parte inferior
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AddPlayersScreen(),
                             ),
+                            (route) => false,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white.withOpacity(0.1),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(color: Colors.white.withOpacity(0.2)),
                           ),
-                        ],
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.arrow_back, size: 18),
+                            SizedBox(width: 8),
+                            Text(
+                              'Volver',
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],

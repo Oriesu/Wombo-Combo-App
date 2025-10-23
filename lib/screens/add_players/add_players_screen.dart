@@ -6,6 +6,12 @@ import '../wombo_combo/wombo_combo_screen.dart';
 import '../quien_mas_probable/quien_mas_probable_screen.dart';
 import '../../providers/player_provider.dart';
 import '../../widgets/player_tag.dart';
+import '../verdad_reto/verdad_reto_screen.dart';
+import '../versus/versus_screen.dart';
+import '../caballos/caballos_screen.dart';
+import '../ruleta/ruleta_screen.dart';
+import '../123/123_screen.dart';
+import 'add_players_logic.dart';
 
 class AddPlayersScreen extends StatefulWidget {
   const AddPlayersScreen({Key? key}) : super(key: key);
@@ -27,22 +33,23 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
     final players = playersProvider.players;
     
     switch(gameType) {
-      case 'yo-nunca':
-      case 'wombo-combo':
-      case 'terribles-decisiones':
-      case 'quien-mas-probable':
-      case 'caballos':
-        return players.length >= 2;
-      case 'versus':
-        return players.length >= 4;
-      case 'verdad-reto':
-      case '123':
-      case 'ruleta':
-        return players.length >= 2;
-      default:
-        return false;
-    }
+    case 'yo-nunca':
+    case 'quien-mas-probable':
+    case 'caballos':
+    case 'terribles-decisiones':
+      return players.length >= 0;
+    case 'wombo-combo':
+    case 'verdad-reto':
+    case '123':
+    case 'ruleta':
+      return players.length >= 2; 
+    case 'versus':
+      return players.length >= 4;
+    default:
+      return false;
   }
+}
+  
 
   void showNotEnoughPlayersMessage(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -89,53 +96,91 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
   }
 
   void startGame(String gameType, PlayersProvider playersProvider) {
-    if (!canStartGame(gameType, playersProvider)) {
-      showNotEnoughPlayersMessage(context);
-      return;
-    }
-
-    final players = playersProvider.players;
-
-    switch(gameType) {
-      case 'yo-nunca':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => YoNuncaScreen(players: players),
-          ),
-        );
-        break;
-      case 'wombo-combo':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => WomboComboScreen(players: players),
-          ),
-        );
-        break;
-      case 'terribles-decisiones':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => TerriblesDecisionesScreen(players: players),
-          ),
-        );
-        break;
-      case 'quien-mas-probable':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => QuienMasProbableScreen(players: players),
-          ),
-        );
-        break;
-      default:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Modo de juego no disponible aún')),
-        );
-    }
+  if (!canStartGame(gameType, playersProvider)) {
+    showNotEnoughPlayersMessage(context);
+    return;
   }
 
+  final players = playersProvider.players;
+
+  switch(gameType) {
+    case 'yo-nunca':
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => YoNuncaScreen(players: players),
+        ),
+      );
+      break;
+    case 'wombo-combo':
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => WomboComboScreen(players: players),
+        ),
+      );
+      break;
+    case 'terribles-decisiones':
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TerriblesDecisionesScreen(players: players),
+        ),
+      );
+      break;
+    case 'quien-mas-probable':
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => QuienMasProbableScreen(players: players),
+        ),
+      );
+      break;
+    case 'verdad-reto': 
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VerdadRetoScreen(players: players),
+        ),
+      );
+      break;
+    case 'versus':
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VersusScreen(players: players),
+        ),
+      );
+      break;
+    case 'caballos':
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CaballosScreen(players: players),
+        ),
+      );
+      break;
+    case 'ruleta':
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RuletaScreen(players: players),
+        ),
+      );
+    case '123':
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OneTwoThreeScreen(players: players),
+        ),
+      );
+      break;
+    default:
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Modo de juego no disponible aún')),
+      );
+  }
+}
   Widget _buildGameModeCard({
     required String icon,
     required String name,

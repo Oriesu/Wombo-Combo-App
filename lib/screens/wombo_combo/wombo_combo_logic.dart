@@ -7,10 +7,33 @@ import 'dart:async';
 import 'dart:math';     
 
 class WomboComboLogic extends ChangeNotifier {
-  List<String> players;
+  List<String> _players = [];
   
+  List<String> get players => _players;
+  
+  set players(List<String> newPlayers) {
+    _players = List.from(newPlayers);
+    // Asegurar que playerPositions tenga la misma longitud que players
+    if (playerPositions.length < _players.length) {
+      // Crear nueva lista en lugar de añadir a lista fija
+      final newPositions = List<int>.from(playerPositions);
+      for (int i = playerPositions.length; i < _players.length; i++) {
+        newPositions.add(1);
+      }
+      playerPositions = newPositions;
+    } else if (playerPositions.length > _players.length) {
+      playerPositions = playerPositions.sublist(0, _players.length);
+    }
+    
+    // Ajustar currentPlayerIndex si es necesario
+    if (currentPlayerIndex >= _players.length && _players.isNotEmpty) {
+      currentPlayerIndex = 0;
+    }
+    notifyListeners();
+  }
+
   int currentPlayerIndex = 0;
-  List<int> playerPositions = [];
+  List<int> playerPositions = []; // Lista mutable
   int diceValue = 1;
   bool isRolling = false;
   bool showPlayersMenu = false;
@@ -21,6 +44,7 @@ class WomboComboLogic extends ChangeNotifier {
   Timer? timer123Interval;
   int timeLeft123 = 20;
   bool showTimeoutMessageFlag = false;
+  bool showVictoryScreen = false; // NUEVO: Pantalla de victoria
 
   // Conjuntos para controlar contenido usado
   Set<int> usedRules = {};
@@ -31,9 +55,10 @@ class WomboComboLogic extends ChangeNotifier {
   Set<int> used123 = {};
   Set<int> usedVerdad = {};
 
-  WomboComboLogic({required this.players}) {
+  WomboComboLogic({required List<String> players}) {
+    this.players = players;
     // Inicializar con lista mutable
-    playerPositions = List<int>.filled(players.length, 1);
+    playerPositions = List<int>.filled(_players.length, 1);
   }
 
   @override
@@ -44,25 +69,7 @@ class WomboComboLogic extends ChangeNotifier {
 
   // Actualizar jugadores cuando cambian desde el provider
   void updatePlayers(List<String> newPlayers) {
-    players = List.from(newPlayers);
-    
-    // Ajustar playerPositions si es necesario
-    if (playerPositions.length < players.length) {
-      // Agregar posiciones para nuevos jugadores
-      for (int i = playerPositions.length; i < players.length; i++) {
-        playerPositions.add(1);
-      }
-    } else if (playerPositions.length > players.length) {
-      // Remover posiciones de jugadores eliminados
-      playerPositions = playerPositions.sublist(0, players.length);
-    }
-    
-    // Ajustar currentPlayerIndex si es necesario
-    if (currentPlayerIndex >= players.length) {
-      currentPlayerIndex = 0;
-    }
-    
-    notifyListeners();
+    players = newPlayers;
   }
 
   void disableDiceButtonTemporarily() {
@@ -71,11 +78,15 @@ class WomboComboLogic extends ChangeNotifier {
     
     Future.delayed(const Duration(seconds: 2), () {
       isDiceButtonDisabled = false;
+      // CAMBIO PRINCIPAL: Cambiar al siguiente jugador cuando se habilita el botón
+      nextPlayer();
       notifyListeners();
     });
   }
 
   String getRandomContent(List<String> contentArray, Set<int> usedSet) {
+    if (contentArray.isEmpty) return "¡Sigue jugando!";
+    
     List<int> availableIndices = [];
     
     for (int i = 0; i < contentArray.length; i++) {
@@ -99,15 +110,15 @@ class WomboComboLogic extends ChangeNotifier {
     if (!text.contains('----')) return text;
     
     List<String> availablePlayers = [];
-    for (int i = 0; i < players.length; i++) {
+    for (int i = 0; i < _players.length; i++) {
       if (!excludeCurrent || i != currentPlayerIndex) {
-        availablePlayers.add(players[i]);
+        availablePlayers.add(_players[i]);
       }
     }
     
     final placeholderCount = (text.split('----').length - 1);
     if (availablePlayers.length < placeholderCount) {
-      availablePlayers = List.from(players);
+      availablePlayers = List.from(_players);
     }
     
     availablePlayers.shuffle();
@@ -118,13 +129,16 @@ class WomboComboLogic extends ChangeNotifier {
       if (!result.contains('----')) break;
     }
     
+    // Si aún quedan placeholders, reemplazar con "Todos"
+    result = result.replaceAll('----', 'Todos');
+    
     return result;
   }
 
   void rollDice() {
-    if (isRolling || is123Active || isDiceButtonDisabled) return;
+    if (isRolling || is123Active || isDiceButtonDisabled || _players.isEmpty || showVictoryScreen) return;
     
-    showContent = false;
+    // CORREGIDO: No ocultar contenido aquí, solo el timeout message
     showTimeoutMessageFlag = false;
     notifyListeners();
     
@@ -152,6 +166,8 @@ class WomboComboLogic extends ChangeNotifier {
   }
 
   void movePlayer(int steps) {
+    if (_players.isEmpty) return;
+    
     final currentPosition = playerPositions[currentPlayerIndex];
     int newPosition = currentPosition + steps;
     
@@ -162,16 +178,23 @@ class WomboComboLogic extends ChangeNotifier {
     playerPositions[currentPlayerIndex] = newPosition;
     notifyListeners();
     
+    // DETECTAR VICTORIA - NUEVO CÓDIGO
     if (newPosition == 80) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        showVictoryScreen = true;
+        notifyListeners();
+      });
       return;
     }
     
-    Future.delayed(const Duration(milliseconds: 510), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       activateCell(newPosition);
     });
   }
 
   void activateCell(int position) {
+    if (_players.isEmpty) return;
+    
     // Usar boardConfig importado desde game_board.dart
     final cell = boardConfig.firstWhere(
       (c) => c['number'] == position,
@@ -228,21 +251,33 @@ class WomboComboLogic extends ChangeNotifier {
   }
 
   void showRegularContent(String content) {
-    final processedContent = processText(content);
-    currentContent = processedContent;
-    showContent = true;
+    // Ocultar contenido anterior antes de mostrar el nuevo
+    showContent = false;
     notifyListeners();
+    
+    Future.delayed(const Duration(milliseconds: 50), () {
+      final processedContent = processText(content);
+      currentContent = processedContent;
+      showContent = true;
+      notifyListeners();
+    });
   }
 
   void show123Timer(String challengeText) {
-    is123Active = true;
-    timeLeft123 = 20;
-    currentContent = challengeText;
-    showContent = true;
-    showTimeoutMessageFlag = false;
+    // Ocultar contenido anterior antes de mostrar el 123
+    showContent = false;
     notifyListeners();
+    
+    Future.delayed(const Duration(milliseconds: 50), () {
+      is123Active = true;
+      timeLeft123 = 20;
+      currentContent = challengeText;
+      showContent = true;
+      showTimeoutMessageFlag = false;
+      notifyListeners();
 
-    start123Timer();
+      start123Timer();
+    });
   }
 
   void start123Timer() {
@@ -280,14 +315,45 @@ class WomboComboLogic extends ChangeNotifier {
   }
 
   void nextPlayer() {
-    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    if (_players.isEmpty) return;
+    
+    // CORREGIDO: No ocultar contenido al cambiar de jugador
     showTimeoutMessageFlag = false;
+    
+    currentPlayerIndex = (currentPlayerIndex + 1) % _players.length;
+    notifyListeners();
+    
+    // Habilitar el botón de tirar dado cuando cambia el jugador
+    isDiceButtonDisabled = false;
     notifyListeners();
   }
 
   void restartGame() {
-    playerPositions = List.filled(players.length, 1);
+    playerPositions = List.filled(_players.length, 1);
     currentPlayerIndex = 0;
+    showContent = false;
+    is123Active = false;
+    isDiceButtonDisabled = false;
+    showTimeoutMessageFlag = false;
+    showVictoryScreen = false; // Asegurar que se oculte la pantalla de victoria
+    
+    usedRules.clear();
+    usedChallenges123.clear();
+    usedYoNunca.clear();
+    usedFriki.clear();
+    usedQuienMas.clear();
+    used123.clear();
+    usedVerdad.clear();
+    
+    timer123Interval?.cancel();
+    notifyListeners();
+  }
+
+  // NUEVO: Método para reiniciar desde la pantalla de victoria
+  void restartGameFromVictory() {
+    playerPositions = List.filled(_players.length, 1);
+    currentPlayerIndex = 0;
+    showVictoryScreen = false;
     showContent = false;
     is123Active = false;
     isDiceButtonDisabled = false;
@@ -306,6 +372,10 @@ class WomboComboLogic extends ChangeNotifier {
   }
 
   Color getPlayerColor(int index) {
+    if (index < 0 || index >= _players.length) {
+      return Colors.grey; // Color por defecto si el índice es inválido
+    }
+    
     final colors = [
       const Color(0xFFFF6B6B),
       const Color(0xFF4ECDC4),
@@ -321,9 +391,9 @@ class WomboComboLogic extends ChangeNotifier {
     return colors[index % colors.length];
   }
 
-  bool get hasPlayerWon => playerPositions[currentPlayerIndex] == 80;
-  String get currentPlayerName => players[currentPlayerIndex];
-  int get currentPlayerPosition => playerPositions[currentPlayerIndex];
+  bool get hasPlayerWon => _players.isNotEmpty && playerPositions[currentPlayerIndex] == 80;
+  String get currentPlayerName => _players.isNotEmpty ? _players[currentPlayerIndex] : "Sin jugadores";
+  int get currentPlayerPosition => _players.isNotEmpty ? playerPositions[currentPlayerIndex] : 0;
   
   bool get showTimeoutMessage => showTimeoutMessageFlag;
 }
