@@ -9,6 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  app_tracking_transparency:
+    dependency: "direct main"
+    description:
+      name: app_tracking_transparency
+      sha256: "1f71f4d8402552fbf8b191d4edab301f233c1af794878b7bc56c708470ffd74c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.6+1"
   async:
     dependency: transitive
     description:
@@ -256,6 +264,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.5+1"
+  screen_retriever:
+    dependency: transitive
+    description:
+      name: screen_retriever
+      sha256: "6ee02c8a1158e6dae7ca430da79436e3b1c9563c8cf02f524af997c201ac2b90"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.9"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -365,6 +381,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.6"
+  unity_ads_plugin:
+    dependency: "direct main"
+    description:
+      name: unity_ads_plugin
+      sha256: f35ddd27a3323a462a2ccf20721da99a0b13a4335f11a0cdadbb03db1d17a57b
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.28"
   vector_math:
     dependency: transitive
     description:
@@ -421,6 +445,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  window_manager:
+    dependency: "direct main"
+    description:
+      name: window_manager
+      sha256: "8699323b30da4cdbe2aa2e7c9de567a6abd8a97d9a5c850a3c86dcd0b34bbfbf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.9"
   xdg_directories:
     dependency: transitive
     description:
