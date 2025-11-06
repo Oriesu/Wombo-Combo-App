@@ -26,6 +26,11 @@ public final class GeneratedPluginRegistrant {
       Log.e(TAG, "Error registering plugin shared_preferences_android, io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin", e);
     }
     try {
+      flutterEngine.getPlugins().add(new com.rebeloid.unity_ads.UnityAdsPlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin unity_ads_plugin, com.rebeloid.unity_ads.UnityAdsPlugin", e);
+    }
+    try {
       flutterEngine.getPlugins().add(new com.benjaminabel.vibration.VibrationPlugin());
     } catch (Exception e) {
       Log.e(TAG, "Error registering plugin vibration, com.benjaminabel.vibration.VibrationPlugin", e);
