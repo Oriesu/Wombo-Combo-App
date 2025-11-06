@@ -1,3 +1,5 @@
+// Archivo: lib/screens/caballos/caballos_screen.dart
+
 import 'package:flutter/material.dart';
 import '../add_players/add_players_screen.dart';
 import 'caballos_logic.dart';
@@ -419,7 +421,8 @@ class _CaballosScreenState extends State<CaballosScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: ElevatedButton(
-                        onPressed: () => Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const AddPlayersScreen()), (route) => false),
+                        // ***** MODIFICACIÓN CRÍTICA: Se usa pop para activar el intersticial *****
+                        onPressed: () => Navigator.pop(context),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white.withOpacity(0.1),
                           foregroundColor: Colors.white,

@@ -1,5 +1,11 @@
+// Archivo: lib/screens/ruleta/ruleta_screen.dart
+
 import 'package:flutter/material.dart';
 import 'ruleta_logic.dart';
+
+// ***** MODIFICACIÓN AQUÍ: Se importa add_players_screen para el pop (aunque no es estrictamente necesario, es buena práctica)
+import '../add_players/add_players_screen.dart';
+
 
 class RuletaScreen extends StatefulWidget {
   final List<String> players;
@@ -32,10 +38,10 @@ class _RuletaScreenState extends State<RuletaScreen> {
           ),
         ),
         child: SafeArea(
-          child: Center(  // ← Agregado Center
-            child: ConstrainedBox(  // ← Agregado ConstrainedBox
+          child: Center(
+            child: ConstrainedBox(
               constraints: const BoxConstraints(
-                maxWidth: 500,  // ← Mismo ancho máximo que los otros screens
+                maxWidth: 500,
               ),
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
@@ -46,12 +52,15 @@ class _RuletaScreenState extends State<RuletaScreen> {
                     const SizedBox(height: 12),
                     
                     // Mesa de apuestas
-                    Expanded(
-                      child: _buildMesaApuestas(),
-                    ),
+                    _buildMesaApuestas(),
                     
+                    const SizedBox(height: 12),
+
                     // Jugadores
                     _buildJugadoresSection(),
+                    
+                    const Spacer(), 
+                    
                     const SizedBox(height: 12),
                     
                     // Controles
@@ -125,9 +134,7 @@ class _RuletaScreenState extends State<RuletaScreen> {
           children: [
             _buildApuestaMensaje(),
             const SizedBox(height: 8),
-            Expanded(child: _buildContenedorPrincipal()),
-            const SizedBox(height: 8),
-            _buildFilaCero(),
+            _buildContenedorPrincipal(),
           ],
         ),
       ),
@@ -164,12 +171,18 @@ class _RuletaScreenState extends State<RuletaScreen> {
 
   Widget _buildContenedorPrincipal() {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Números de la ruleta
+        // Números de la ruleta Y FILA CERO
         Expanded(
           flex: 65,
-          child: _buildNumerosRuleta(),
+          child: Column( 
+            children: [
+              _buildNumerosRuleta(),
+              const SizedBox(height: 1), 
+              _buildFilaCero(), 
+            ],
+          ),
         ),
         const SizedBox(width: 6),
         // Contenedor derecho
@@ -190,6 +203,7 @@ class _RuletaScreenState extends State<RuletaScreen> {
 
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         childAspectRatio: 3,
@@ -247,15 +261,16 @@ class _RuletaScreenState extends State<RuletaScreen> {
   Widget _buildContenedorDerecho() {
     return Column(
       children: [
-        Expanded(
-          flex: 7,
-          child: _buildApuestasExternas(),
-        ),
+        // Apuestas externas
+        _buildApuestasExternas(),
         const SizedBox(height: 6),
-        Expanded(
-          flex: 3,
-          child: _buildFichasContainer(),
-        ),
+        
+        // Grid de fichas (2x2)
+        _buildFichasGrid(),
+        const SizedBox(height: 6),
+        
+        // Ficha ampliada
+        _buildFichaAmpliada(),
       ],
     );
   }
@@ -278,6 +293,7 @@ class _RuletaScreenState extends State<RuletaScreen> {
 
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         childAspectRatio: 0.8,
@@ -330,16 +346,6 @@ class _RuletaScreenState extends State<RuletaScreen> {
     );
   }
 
-  Widget _buildFichasContainer() {
-    return Row(
-      children: [
-        Expanded(child: _buildFichasGrid()),
-        const SizedBox(width: 6),
-        _buildFichaAmpliada(),
-      ],
-    );
-  }
-
   Widget _buildFichasGrid() {
     final fichas = [
       {'tipo': '1', 'imagen': 'lib/screens/ruleta/fichas/ficha1.png'},
@@ -350,6 +356,7 @@ class _RuletaScreenState extends State<RuletaScreen> {
 
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 1.0,
@@ -387,17 +394,20 @@ class _RuletaScreenState extends State<RuletaScreen> {
   }
 
   Widget _buildFichaAmpliada() {
-    return Container(
-      width: 100,
-      height: 100,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: const Color(0xFFFF00CC), width: 2),
-      ),
-      child: ClipOval(
-        child: Image.asset(
-          _getFichaImagePath(logic.fichaSeleccionada),
-          fit: BoxFit.cover,
+    return AspectRatio(
+      aspectRatio: 1.0,
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(25),
+          border: Border.all(color: const Color(0xFFFF00CC), width: 2),
+        ),
+        child: ClipOval(
+          child: Image.asset(
+            _getFichaImagePath(logic.fichaSeleccionada),
+            fit: BoxFit.cover,
+          ),
         ),
       ),
     );
@@ -417,7 +427,7 @@ class _RuletaScreenState extends State<RuletaScreen> {
     return GestureDetector(
       onTap: () => _handleApuesta('0'),
       child: Container(
-        height: 30,
+        height: 30, 
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             begin: Alignment.topCenter,
@@ -425,7 +435,6 @@ class _RuletaScreenState extends State<RuletaScreen> {
             colors: [Color(0xFF2E7D32), Color(0xFF1B5E20)],
           ),
           border: Border.all(color: Colors.white.withOpacity(0.3)),
-          borderRadius: BorderRadius.circular(4),
         ),
         child: const Center(
           child: Text(
@@ -507,6 +516,7 @@ class _RuletaScreenState extends State<RuletaScreen> {
       children: [
         Expanded(
           child: ElevatedButton(
+            // ***** MODIFICACIÓN CRÍTICA: Se usa pop para activar el intersticial *****
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white.withOpacity(0.1),
@@ -531,10 +541,10 @@ class _RuletaScreenState extends State<RuletaScreen> {
                   }
                 : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: logic.puedePasarSiguiente() && !logic.ruletaGirando
-                  ? const Color(0xFF0066FF)
-                  : const Color(0xFF666666),
+              backgroundColor: const Color(0xFF0066FF),
               foregroundColor: Colors.white,
+              disabledBackgroundColor: const Color(0xFF0066FF).withOpacity(0.3),
+              disabledForegroundColor: Colors.white.withOpacity(0.5),
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
@@ -551,10 +561,10 @@ class _RuletaScreenState extends State<RuletaScreen> {
                 ? _girarRuleta
                 : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: logic.todosHanApostado() && !logic.ruletaGirando
-                  ? const Color(0xFFFF00CC)
-                  : const Color(0xFF666666),
+              backgroundColor: const Color(0xFFFF00CC),
               foregroundColor: Colors.white,
+              disabledBackgroundColor: const Color(0xFFFF00CC).withOpacity(0.3),
+              disabledForegroundColor: Colors.white.withOpacity(0.5),
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),

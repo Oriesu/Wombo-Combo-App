@@ -1,6 +1,13 @@
+// Archivo: lib/screens/quien_mas_probable/quien_mas_probable_screen.dart
+
 import 'package:flutter/material.dart';
 import '../add_players/add_players_screen.dart';
 import 'quien_mas_probable_logic.dart';
+
+// ***** MODIFICACIÓN AQUÍ *****
+import 'dart:io' show Platform;
+import 'package:unity_ads_plugin/unity_ads_plugin.dart';
+
 
 class QuienMasProbableScreen extends StatefulWidget {
   final List<String> players;
@@ -13,6 +20,10 @@ class QuienMasProbableScreen extends StatefulWidget {
 
 class _QuienMasProbableScreenState extends State<QuienMasProbableScreen> {
   late QuienMasProbableLogic logic;
+
+  // ***** MODIFICACIÓN AQUÍ *****
+  String get bannerPlacementId => Platform.isAndroid ? 'Banner_Android' : 'Banner_iOS';
+  // -----------------------------
 
   @override
   void initState() {
@@ -104,144 +115,159 @@ class _QuienMasProbableScreenState extends State<QuienMasProbableScreen> {
           ),
         ),
         child: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 500,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    // Header
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: Colors.white.withOpacity(0.1)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 6,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: const Text(
-                        '¿Quién es más probable?',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          shadows: [
-                            Shadow(
-                              blurRadius: 8,
-                              color: Colors.black,
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-
-                    const SizedBox(height: 25),
-
-                    // Botón principal
-                    Container(
-                      margin: const EdgeInsets.only(top: 20),
-                      width: double.infinity,
-                      constraints: const BoxConstraints(
-                        maxWidth: 280,
-                      ),
-                      child: ElevatedButton(
-                        onPressed: _generateFrase,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFFC107),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 20,
-                            horizontal: 15,
-                          ),
-                          shape: RoundedRectangleBorder(
+          // ***** MODIFICACIÓN AQUÍ: Se añade Stack para el banner *****
+          child: Stack(
+            children: [
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: 500,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        // Header
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.05),
                             borderRadius: BorderRadius.circular(18),
-                          ),
-                          elevation: 6,
-                          shadowColor: Colors.black.withOpacity(0.4),
-                        ),
-                        child: const Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '🤔',
-                              style: TextStyle(fontSize: 40),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              '¿QUIÉN ES MÁS PROBABLE?',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
+                            border: Border.all(color: Colors.white.withOpacity(0.1)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 6,
+                                offset: const Offset(0, 6),
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    // Sección de contenido (aparece debajo del botón)
-                    if (logic.showContent) _buildContentSection(),
-
-                    // Espacio flexible para empujar el botón de volver hacia abajo
-                    Expanded(
-                      child: Container(),
-                    ),
-
-                    // Botón de volver - en la parte inferior
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const AddPlayersScreen(),
-                            ),
-                            (route) => false,
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.1),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                            ],
                           ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
+                          child: const Text(
+                            '¿Quién es más probable?',
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              shadows: [
+                                Shadow(
+                                  blurRadius: 8,
+                                  color: Colors.black,
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.arrow_back, size: 18),
-                            SizedBox(width: 8),
-                            Text(
-                              'Volver',
-                              style: TextStyle(fontWeight: FontWeight.w500),
+
+                        const SizedBox(height: 25),
+
+                        // Botón principal
+                        Container(
+                          margin: const EdgeInsets.only(top: 20),
+                          width: double.infinity,
+                          constraints: const BoxConstraints(
+                            maxWidth: 280,
+                          ),
+                          child: ElevatedButton(
+                            onPressed: _generateFrase,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFFFC107),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 20,
+                                horizontal: 15,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                              elevation: 6,
+                              shadowColor: Colors.black.withOpacity(0.4),
                             ),
-                          ],
+                            child: const Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '🤔',
+                                  style: TextStyle(fontSize: 40),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  '¿QUIÉN ES MÁS PROBABLE?',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
+
+                        // Sección de contenido (aparece debajo del botón)
+                        if (logic.showContent) _buildContentSection(),
+
+                        // Espacio flexible para empujar el botón de volver hacia abajo
+                        Expanded(
+                          child: Container(),
+                        ),
+
+                        // Botón de volver - en la parte inferior
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // ***** MODIFICACIÓN CRÍTICA: Se usa pop para activar el intersticial *****
+                              Navigator.pop(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white.withOpacity(0.1),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 12,
+                              ),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.arrow_back, size: 18),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Volver',
+                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        
+                        // ***** MODIFICACIÓN AQUÍ: Espacio reservado para el banner *****
+                        const SizedBox(height: 50),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
+
+              // ***** MODIFICACIÓN AQUÍ: Banner de Unity Ads *****
+              if (Platform.isAndroid || Platform.isIOS)
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: UnityBannerAd(
+                    placementId: bannerPlacementId,
+                    onLoad: (placementId) => print('Banner QMP cargado: $placementId'),
+                    onFailed: (placementId, error, message) => print('Error Banner QMP: $message'),
+                  ),
+                ),
+            ],
           ),
+          // -------------------------------------------------------------
         ),
       ),
     );

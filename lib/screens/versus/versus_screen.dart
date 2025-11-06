@@ -1,6 +1,13 @@
+// Archivo: lib/screens/versus/versus_screen.dart (CORREGIDO)
+
 import 'package:flutter/material.dart';
 import '../add_players/add_players_screen.dart';
 import 'versus_logic.dart';
+
+// ***** MODIFICACIÓN AQUÍ *****
+import 'dart:io' show Platform;
+import 'package:unity_ads_plugin/unity_ads_plugin.dart';
+
 
 class VersusScreen extends StatefulWidget {
   final List<String> players;
@@ -14,6 +21,10 @@ class VersusScreen extends StatefulWidget {
 class _VersusScreenState extends State<VersusScreen> {
   late VersusLogic logic;
   bool _showTeamsModal = false;
+
+  // ***** MODIFICACIÓN AQUÍ *****
+  String get bannerPlacementId => Platform.isAndroid ? 'Banner_Android' : 'Banner_iOS';
+  // -----------------------------
 
   @override
   void initState() {
@@ -40,13 +51,8 @@ class _VersusScreenState extends State<VersusScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AddPlayersScreen(),
-                  ),
-                  (route) => false,
-                );
+                // Se usa pop() aquí para que la pantalla principal maneje la navegación
+                Navigator.pop(context); 
               },
               child: const Text('Volver'),
             ),
@@ -397,9 +403,11 @@ class _VersusScreenState extends State<VersusScreen> {
             colors: [Color(0xFF1a0033), Color(0xFF330033)],
           ),
         ),
+        // ***** MODIFICACIÓN AQUÍ: Stack envuelve todo el cuerpo (body) *****
         child: Stack(
           children: [
-            SafeArea(
+            // Contenido Principal (dentro de SafeArea)
+            SafeArea( // <-- Aquí está el SafeArea
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
@@ -409,7 +417,7 @@ class _VersusScreenState extends State<VersusScreen> {
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
-                        // Header (solo el título, sin contadores)
+                        // Header
                         Container(
                           padding: const EdgeInsets.all(25),
                           width: double.infinity,
@@ -469,13 +477,8 @@ class _VersusScreenState extends State<VersusScreen> {
                                 alignment: Alignment.centerLeft,
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const AddPlayersScreen(),
-                                      ),
-                                      (route) => false,
-                                    );
+                                    // ***** MODIFICACIÓN CRÍTICA: Se usa pop para activar el intersticial *****
+                                    Navigator.pop(context);
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white.withOpacity(0.1),
@@ -502,6 +505,8 @@ class _VersusScreenState extends State<VersusScreen> {
                                   ),
                                 ),
                               ),
+                              // ***** MODIFICACIÓN AQUÍ: Espacio reservado para el banner *****
+                              const SizedBox(height: 50),
                             ],
                           ),
                         ),
@@ -511,9 +516,23 @@ class _VersusScreenState extends State<VersusScreen> {
                 ),
               ),
             ),
+            
+            // Modal de equipos - USANDO SPREAD
+            if (_showTeamsModal) ...[
+              _buildTeamsModal(),
+            ],
 
-            // Modal de equipos
-            if (_showTeamsModal) _buildTeamsModal(),
+            // Banner de Unity Ads - USANDO SPREAD
+            if (Platform.isAndroid || Platform.isIOS) ...[
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: UnityBannerAd(
+                  placementId: bannerPlacementId,
+                  onLoad: (placementId) => print('Banner Versus cargado: $placementId'),
+                  onFailed: (placementId, error, message) => print('Error Banner Versus: $message'),
+                ),
+              ),
+            ],
           ],
         ),
       ),

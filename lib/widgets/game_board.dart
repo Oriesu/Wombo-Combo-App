@@ -117,9 +117,9 @@ class GameBoard extends StatelessWidget {
       case 'start':
         return const Color(0xFF00CCFF);
       case 'end':
-        return const Color(0xFFFFCC00);
+        return const Color(0xFF483D8B);
       case 'rule':
-        return const Color(0xFFFFCC00);
+        return const Color(0xFFFF4500);
       case 'challenge':
         return const Color(0xFFFF00CC);
       case 'yo-nunca':
@@ -129,34 +129,7 @@ class GameBoard extends StatelessWidget {
       case 'quien-mas':
         return const Color(0xFFFFC107);
       case '123':
-        return const Color(0xFF00CCFF);
-      case 'verdad':
-        return const Color(0xFF00CCFF);
-      case 'drink':
-        return const Color(0xFFFF6B6B);
-      default:
-        return const Color(0xFF666666);
-    }
-  }
-
-  Color _getCellBorderColor(String type) {
-    switch (type) {
-      case 'start':
-        return const Color(0xFF00CCFF);
-      case 'end':
-        return const Color(0xFFFFCC00);
-      case 'rule':
-        return const Color(0xFFFFCC00);
-      case 'challenge':
-        return const Color(0xFFFF00CC);
-      case 'yo-nunca':
-        return const Color(0xFF00FF88);
-      case 'friki':
-        return const Color(0xFF9966FF);
-      case 'quien-mas':
-        return const Color(0xFFFFC107);
-      case '123':
-        return const Color(0xFF00CCFF);
+        return const Color(0xFF556B2F);
       case 'verdad':
         return const Color(0xFF00CCFF);
       case 'drink':
@@ -168,27 +141,27 @@ class GameBoard extends StatelessWidget {
 
   Widget _buildBoardCell(Map<String, dynamic> cell, double cellSize) {
     final cellPlayers = <Widget>[];
-    final markerSize = max(cellSize * 0.12, 6.0);
+    final markerSize = max(cellSize * 0.18, 4.0);
     
     // Agregar marcadores de jugadores en esta casilla
     for (int i = 0; i < players.length; i++) {
       if (playerPositions[i] == cell['number']) {
         cellPlayers.add(
           Positioned(
-            bottom: 2,
-            right: 2 + (i * markerSize * 0.8),
+            bottom: 4,
+            right: 4 + (i * markerSize * 0.6),
             child: Container(
               width: markerSize,
               height: markerSize,
               decoration: BoxDecoration(
                 color: getPlayerColor(i),
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 1),
+                border: Border.all(color: Colors.white, width: 2),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 1,
-                    offset: const Offset(0, 1),
+                    color: Colors.black.withOpacity(0.7),
+                    blurRadius: 5,
+                    offset: const Offset(0, 0),
                   ),
                 ],
               ),
@@ -199,17 +172,24 @@ class GameBoard extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.all(0.5),
+      margin: const EdgeInsets.all(0.3),
       decoration: BoxDecoration(
-        color: _getCellColor(cell['type']),
-        borderRadius: BorderRadius.circular(4),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            _getCellColor(cell['type']),
+            _getCellColor(cell['type']).withOpacity(0.8),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: _getCellBorderColor(cell['type']),
-          width: 1.5,
+          color: _getCellColor(cell['type']),
+          width: 2.0,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withOpacity(0.3),
             blurRadius: 2,
             offset: const Offset(0, 1),
           ),
@@ -281,14 +261,14 @@ class GameBoard extends StatelessWidget {
       
       rows.add(
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: rowCells,
         ),
       );
       
-      // Agregar espacio entre filas (excepto después de la última)
+      // Agregar espacio entre filas
       if (row < 7) {
-        rows.add(const SizedBox(height: 1));
+        rows.add(const SizedBox(height: 8));
       }
     }
     
@@ -300,21 +280,19 @@ class GameBoard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
           // Calcular el tamaño de celda basado en el ancho disponible
-          final cellSize = (constraints.maxWidth - 9) / 10; // 9px de espacio entre celdas
-          final totalHeight = (cellSize * 8) + 7; // 8 filas + 7px de espacio entre filas
+          final cellSize = (constraints.maxWidth - 9) / 10;
+          final totalHeight = (cellSize * 8) + 56; // 8 filas + espacio entre filas
           
           return SizedBox(
             height: totalHeight,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: _buildBoardRows(cellSize),
             ),
           );

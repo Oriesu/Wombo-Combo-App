@@ -1,6 +1,13 @@
+// Archivo: lib/screens/verdad_reto/verdad_reto_screen.dart
+
 import 'package:flutter/material.dart';
 import '../add_players/add_players_screen.dart';
 import 'verdad_reto_logic.dart';
+
+// ***** MODIFICACIÓN AQUÍ *****
+import 'dart:io' show Platform;
+import 'package:unity_ads_plugin/unity_ads_plugin.dart';
+
 
 class VerdadRetoScreen extends StatefulWidget {
   final List<String> players;
@@ -13,6 +20,10 @@ class VerdadRetoScreen extends StatefulWidget {
 
 class _VerdadRetoScreenState extends State<VerdadRetoScreen> {
   late VerdadRetoLogic logic;
+
+  // ***** MODIFICACIÓN AQUÍ *****
+  String get bannerPlacementId => Platform.isAndroid ? 'Banner_Android' : 'Banner_iOS';
+  // -----------------------------
 
   @override
   void initState() {
@@ -189,7 +200,7 @@ class _VerdadRetoScreenState extends State<VerdadRetoScreen> {
         border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min, // ← CLAVE: Solo ocupa el espacio necesario
+        mainAxisSize: MainAxisSize.min, // CLAVE: Solo ocupa el espacio necesario
         children: [
           const Text(
             'Jugadores:',
@@ -258,150 +269,164 @@ class _VerdadRetoScreenState extends State<VerdadRetoScreen> {
           ),
         ),
         child: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 500,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    // Header
-                    Container(
-                      padding: const EdgeInsets.all(25),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white.withOpacity(0.1)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 8),
+          // ***** MODIFICACIÓN AQUÍ: Se añade Stack para el banner *****
+          child: Stack(
+            children: [
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: 500,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        // Header
+                        Container(
+                          padding: const EdgeInsets.all(25),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.05),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.white.withOpacity(0.1)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'Verdad o Reto',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                              shadows: [
-                                Shadow(
-                                  blurRadius: 8,
-                                  color: Colors.black,
+                          child: Column(
+                            children: [
+                              const Text(
+                                'Verdad o Reto',
+                                style: TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      blurRadius: 8,
+                                      color: Colors.black,
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            textAlign: TextAlign.center,
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 15),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFF00CC).withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      const TextSpan(
+                                        text: 'Turno de: ',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: logic.getCurrentPlayer(widget.players),
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xFFFF00CC),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 15),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFF00CC).withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: RichText(
-                              text: TextSpan(
-                                children: [
-                                  const TextSpan(
-                                    text: 'Turno de: ',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white,
+                        ),
+
+                        const SizedBox(height: 25),
+
+                        // Sección de elección
+                        _buildChoiceSection(),
+
+                        const SizedBox(height: 25),
+
+                        // Sección de contenido (se muestra cuando hay verdad/reto)
+                        if (logic.showContent) ...[
+                          _buildContentSection(),
+                          const SizedBox(height: 25),
+                        ],
+
+                        // Espacio flexible que empuja todo hacia arriba
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              // Sección de jugadores - ahora con altura automática
+                              _buildPlayersSection(),
+                              const SizedBox(height: 20),
+
+                              // Botón de volver
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    // ***** MODIFICACIÓN CRÍTICA: Se usa pop para activar el intersticial *****
+                                    Navigator.pop(context);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white.withOpacity(0.1),
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 12,
                                     ),
                                   ),
-                                  TextSpan(
-                                    text: logic.getCurrentPlayer(widget.players),
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: Color(0xFFFF00CC),
-                                    ),
+                                  child: const Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.arrow_back, size: 18),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        'Volver',
+                                        style: TextStyle(fontWeight: FontWeight.w500),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 25),
-
-                    // Sección de elección
-                    _buildChoiceSection(),
-
-                    const SizedBox(height: 25),
-
-                    // Sección de contenido (se muestra cuando hay verdad/reto)
-                    if (logic.showContent) ...[
-                      _buildContentSection(),
-                      const SizedBox(height: 25),
-                    ],
-
-                    // Espacio flexible que empuja todo hacia arriba
-                    // y deja la sección de jugadores en la parte inferior
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          // Sección de jugadores - ahora con altura automática
-                          _buildPlayersSection(),
-                          const SizedBox(height: 20),
-
-                          // Botón de volver
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const AddPlayersScreen(),
-                                  ),
-                                  (route) => false,
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white.withOpacity(0.1),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  side: BorderSide(color: Colors.white.withOpacity(0.2)),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 12,
                                 ),
                               ),
-                              child: const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.arrow_back, size: 18),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Volver',
-                                    style: TextStyle(fontWeight: FontWeight.w500),
-                                  ),
-                                ],
-                              ),
-                            ),
+                              
+                              // ***** MODIFICACIÓN AQUÍ: Espacio reservado para el banner *****
+                              const SizedBox(height: 50),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
+
+              // ***** MODIFICACIÓN AQUÍ: Banner de Unity Ads *****
+              if (Platform.isAndroid || Platform.isIOS)
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: UnityBannerAd(
+                    placementId: bannerPlacementId,
+                    onLoad: (placementId) => print('Banner V/R cargado: $placementId'),
+                    onFailed: (placementId, error, message) => print('Error Banner V/R: $message'),
+                  ),
+                ),
+            ],
           ),
+          // -------------------------------------------------------------
         ),
       ),
     );

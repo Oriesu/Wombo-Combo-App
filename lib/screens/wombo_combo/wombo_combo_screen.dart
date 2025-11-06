@@ -1,3 +1,5 @@
+// Archivo: lib/screens/wombo_combo/wombo_combo_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/player_provider.dart';
@@ -5,6 +7,10 @@ import '../../data/game_data.dart';
 import 'wombo_combo_logic.dart';
 import 'players_menu_overlay.dart';
 import '../../widgets/game_board.dart';
+
+// ***** MODIFICACIÓN AQUÍ: Se importa add_players_screen para el pop (aunque no es estrictamente necesario, es buena práctica)
+import '../add_players/add_players_screen.dart';
+
 
 class WomboComboScreen extends StatefulWidget {
   final List<String> players;
@@ -33,7 +39,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
     return ChangeNotifierProvider.value(
       value: gameLogic,
       child: Scaffold(
-        backgroundColor: const Color(0xFF1a0033), // Color base por si acaso
+        backgroundColor: const Color(0xFF1a0033),
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -51,7 +57,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
               
               return Stack(
                 children: [
-                  // Contenido principal - Layout web vertical que ocupa toda la altura
+                  // Contenido principal
                   _buildFullHeightWebLayout(context, gameLogic),
                   
                   // Overlay del menú de jugadores
@@ -76,15 +82,15 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                       getPlayerColor: gameLogic.getPlayerColor,
                     ),
 
-                  // Overlay del timer 123 - ACTUALIZADO PARA COINCIDIR CON EL MENÚ DE JUGADORES
+                  // Overlay del timer 123
                   if (gameLogic.is123Active)
                     _build123TimerOverlay(gameLogic),
 
-                  // Mensaje de timeout - ESTILO ACTUALIZADO
+                  // Mensaje de timeout
                   if (gameLogic.showTimeoutMessage)
                     _buildTimeoutMessage(gameLogic),
 
-                  // NUEVO: Overlay de victoria
+                  // Overlay de victoria
                   if (gameLogic.showVictoryScreen)
                     _buildVictoryOverlay(gameLogic),
                 ],
@@ -101,17 +107,17 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
       child: Center(
         child: Container(
           constraints: const BoxConstraints(
-            maxWidth: 500, // Máximo ancho como en la web
+            maxWidth: 500,
           ),
           padding: const EdgeInsets.all(15),
           child: Column(
             children: [
-              // Header estilo web CENTRADO
+              // Header
               _buildWebHeader(gameLogic),
               
               const SizedBox(height: 20),
               
-              // Información del juego - Estilo web con dos secciones
+              // Información del juego
               _buildGameInfoWeb(gameLogic),
               
               const SizedBox(height: 20),
@@ -129,7 +135,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Tablero en la parte superior (alineado a la izquierda)
+                      // Tablero
                       Expanded(
                         child: Align(
                           alignment: Alignment.topCenter,
@@ -141,10 +147,9 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                         ),
                       ),
                       
-                      // Espacio entre tablero y contenido
                       const SizedBox(height: 15),
                       
-                      // Contenido debajo del tablero (solo cuando hay contenido)
+                      // Contenido
                       if (gameLogic.showContent && !gameLogic.is123Active)
                         _buildContentSection(gameLogic),
                     ],
@@ -154,7 +159,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
               
               const SizedBox(height: 20),
               
-              // Sección del dado CENTRADA
+              // Sección del dado
               _buildDiceSectionWeb(gameLogic),
             ],
           ),
@@ -184,7 +189,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
           const Text(
             'Wombo Combo',
             style: TextStyle(
-              fontSize: 2.4 * 16, // 2.4rem
+              fontSize: 2.4 * 16,
               fontWeight: FontWeight.w800,
               color: Colors.white,
               letterSpacing: -0.5,
@@ -233,12 +238,12 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
       width: double.infinity,
       child: Row(
         children: [
-          // Turno del jugador - Contenedor más compacto
+          // Turno del jugador
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: const Color(0x26FFD700), // rgba(255, 215, 0, 0.15)
+                color: const Color(0x26FFD700),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -283,7 +288,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                             shadows: [
                               Shadow(
                                 blurRadius: 10,
-                                color: Color(0x26FFCC00), // rgba(255, 204, 0, 0.5)
+                                color: Color(0x26FFCC00),
                               ),
                             ],
                           ),
@@ -299,11 +304,11 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
           
           const SizedBox(width: 12),
           
-          // Posición del jugador - Contenedor más compacto
+          // Posición del jugador
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0x2600CCFF), // rgba(0, 204, 255, 0.15)
+              color: const Color(0x2600CCFF),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -362,7 +367,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
             child: Text(
               gameLogic.currentContent,
               style: const TextStyle(
-                fontSize: 1.2 * 16, // 1.2rem
+                fontSize: 1.2 * 16,
                 color: Colors.white,
                 fontWeight: FontWeight.w500,
                 height: 1.5,
@@ -389,6 +394,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
         children: [
           // Botón volver
           ElevatedButton(
+            // ***** MODIFICACIÓN CRÍTICA: Se usa pop para activar el intersticial *****
             onPressed: () => Navigator.of(context).pop(),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white.withOpacity(0.1),
@@ -432,7 +438,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                   gameLogic.isRolling ? '?' : gameLogic.diceValue.toString(),
                   key: ValueKey(gameLogic.isRolling),
                   style: TextStyle(
-                    fontSize: 2.5 * 16, // 2.5rem
+                    fontSize: 2.5 * 16,
                     fontWeight: FontWeight.bold,
                     color: gameLogic.isRolling ? Colors.white54 : Colors.white,
                   ),
@@ -441,8 +447,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
             ),
           ),
           
-          // Botón tirar dado - COLOR ACTUALIZADO
-          // NOTA: El botón se habilita automáticamente cuando cambia el jugador
+          // Botón tirar dado
           ElevatedButton(
             onPressed: gameLogic.isRolling || gameLogic.is123Active || gameLogic.isDiceButtonDisabled || gameLogic.showVictoryScreen
                 ? null
@@ -450,19 +455,19 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: gameLogic.isRolling || gameLogic.is123Active || gameLogic.isDiceButtonDisabled || gameLogic.showVictoryScreen
                   ? Colors.grey
-                  : const Color(0xFF29B6F6), // Color azul consistente con la web
+                  : const Color(0xFF29B6F6),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
               elevation: 6,
-              shadowColor: const Color(0x4D29B6F6), // rgba(41, 182, 246, 0.3)
+              shadowColor: const Color(0x4D29B6F6),
             ),
             child: const Text(
               'Tirar Dado',
               style: TextStyle(
-                fontSize: 1.2 * 16, // 1.2rem
+                fontSize: 1.2 * 16,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -477,7 +482,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
       color: Colors.black.withOpacity(0.8),
       child: Center(
         child: Container(
-          width: 400, // Mismo ancho que el menú de jugadores
+          width: 400,
           constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
           margin: const EdgeInsets.all(20),
           padding: const EdgeInsets.all(30),
@@ -496,17 +501,17 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Timer principal - ESTILO ACTUALIZADO
+              // Timer
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 child: Text(
                   gameLogic.timeLeft123.toString(),
                   style: TextStyle(
-                    fontSize: 6 * 16, // 6rem
+                    fontSize: 6 * 16,
                     fontWeight: FontWeight.w800,
                     color: gameLogic.timeLeft123 <= 5 
                         ? const Color(0xFFFF6B6B)
-                        : const Color(0xFF29B6F6), // Color azul consistente
+                        : const Color(0xFF29B6F6),
                     shadows: [
                       Shadow(
                         blurRadius: 20,
@@ -521,11 +526,11 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
               
               const SizedBox(height: 20),
               
-              // Label del timer - ESTILO ACTUALIZADO
+              // Label
               const Text(
                 'segundos restantes',
                 style: TextStyle(
-                  fontSize: 1.5 * 16, // 1.5rem
+                  fontSize: 1.5 * 16,
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
                 ),
@@ -534,7 +539,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
               
               const SizedBox(height: 25),
               
-              // Texto del desafío - ESTILO ACTUALIZADO CON MÚLTIPLES LÍNEAS
+              // Texto del desafío
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -546,20 +551,20 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                 child: Text(
                   gameLogic.currentContent,
                   style: const TextStyle(
-                    fontSize: 1.3 * 16, // 1.3rem
-                    color: Color(0xFFFFC107), // Color amarillo consistente
+                    fontSize: 1.3 * 16,
+                    color: Color(0xFFFFC107),
                     fontWeight: FontWeight.w500,
                     height: 1.4,
                   ),
                   textAlign: TextAlign.center,
-                  softWrap: true, // Permitir múltiples líneas
-                  overflow: TextOverflow.visible, // Mostrar todo el texto
+                  softWrap: true,
+                  overflow: TextOverflow.visible,
                 ),
               ),
               
               const SizedBox(height: 25),
               
-              // Botón saltar timer - ESTILO ACTUALIZADO
+              // Botón saltar
               ElevatedButton(
                 onPressed: gameLogic.skipTimer,
                 style: ElevatedButton.styleFrom(
@@ -640,7 +645,6 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
     );
   }
 
-  // NUEVO: Widget para la pantalla de victoria
   Widget _buildVictoryOverlay(WomboComboLogic gameLogic) {
     return Material(
       color: Colors.black.withOpacity(0.9),
@@ -666,7 +670,6 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Emoji de celebración
               const Text(
                 "🎉",
                 style: TextStyle(fontSize: 80),
@@ -674,7 +677,6 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
               
               const SizedBox(height: 20),
               
-              // Texto "¡Felicidades!"
               const Text(
                 '¡Felicidades!',
                 style: TextStyle(
@@ -693,7 +695,6 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
               
               const SizedBox(height: 15),
               
-              // Nombre del ganador
               Text(
                 '${gameLogic.currentPlayerName} ha ganado la partida',
                 style: const TextStyle(
@@ -706,7 +707,6 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
               
               const SizedBox(height: 40),
               
-              // Botones de acción
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -738,6 +738,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                   
                   // Botón "Volver al Menú"
                   ElevatedButton(
+                    // ***** MODIFICACIÓN CRÍTICA: Se usa pop para activar el intersticial *****
                     onPressed: () => Navigator.of(context).pop(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFF6B6B),
@@ -762,7 +763,6 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
               
               const SizedBox(height: 20),
               
-              // Mensaje adicional
               const Text(
                 '¡Gracias por jugar Wombo Combo!',
                 style: TextStyle(
