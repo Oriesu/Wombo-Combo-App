@@ -15,5 +15,4 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-Faltan: 
-  /linux/flutter/libflutter_linux_gtk.so
+Faltan muchos archivos demasiado grandes, pero esto orientativo y sólo para mí
