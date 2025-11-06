@@ -1,1 +1,0 @@
-Falta libflutter_linux_gtk.so
