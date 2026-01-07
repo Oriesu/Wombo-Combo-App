@@ -1,0 +1,336 @@
+# ==========================================
+# WOMBO COMBO - iOS Build para Desarrollador Independiente
+# VERSIÓN CORREGIDA
+# ==========================================
+
+workflows:
+  ios-build-and-upload:
+    name: "Wombo Combo - Build & Upload"
+    description: "Build y subida manual a App Store Connect"
+    instance_type: mac_mini_m2
+    
+    environment:
+      flutter: "stable"
+      xcode: "latest"
+      cocoapods: "default"
+      
+      vars:
+        # VARIABLES QUE DEBES CONFIGURAR EN CODEMAGIC WEB:
+        APPLE_ID: "javiersanchezmartinez2006@gmail.com"
+        # APPLE_ID_PASSWORD: Generar en appleid.apple.com y poner en CodeMagic web
+        APP_IDENTIFIER: "com.javiersanchez.wombocombo"  # SIN ESPACIOS
+        XCODE_SCHEME: "Runner"
+    
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+        - ~/Library/Caches/CocoaPods
+        - ios/Pods
+        - $HOME/Library/Developer/Xcode/DerivedData
+    
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+      cancel_previous_builds: false
+    
+    scripts:
+      # ---------- STAGE 1: SETUP ----------
+      - name: "Stage 1: Setup"
+        script: |
+          echo "=========================================="
+          echo "🚀 INICIANDO BUILD - WOMBO COMBO"
+          echo "=========================================="
+          echo "Fecha: $(date)"
+          echo ""
+          
+          flutter config --no-analytics
+          
+          echo "📱 INFORMACIÓN DEL SISTEMA:"
+          echo "--------------------------"
+          flutter --version
+          echo ""
+          xcodebuild -version
+          echo ""
+          echo "Bundle ID: $APP_IDENTIFIER"
+          echo "Apple ID: $APPLE_ID"
+          echo ""
+      
+      # ---------- STAGE 2: CLEAN ----------
+      - name: "Stage 2: Clean"
+        script: |
+          echo "=========================================="
+          echo "🧹 LIMPIANDO PROYECTO"
+          echo "=========================================="
+          
+          echo "Eliminando Android si existe..."
+          rm -rf android 2>/dev/null || true
+          
+          echo "Limpiando Flutter..."
+          flutter clean
+          
+          echo "Limpiando iOS..."
+          rm -rf ios/Pods ios/Podfile.lock ios/Runner.xcworkspace 2>/dev/null || true
+          
+          echo "Limpiando caches..."
+          rm -rf ~/Library/Developer/Xcode/DerivedData/* 2>/dev/null || true
+          rm -rf ~/.pub-cache 2>/dev/null || true
+          
+          echo "✅ Proyecto limpiado completamente"
+          echo ""
+      
+      # ---------- STAGE 3: DEPENDENCIES ----------
+      - name: "Stage 3: Dependencies"
+        script: |
+          echo "=========================================="
+          echo "📦 INSTALANDO DEPENDENCIAS"
+          echo "=========================================="
+          
+          echo "Obteniendo paquetes de Flutter..."
+          flutter pub get
+          
+          echo "Generando iconos..."
+          flutter pub run flutter_launcher_icons:main
+          
+          echo "✅ Dependencias instaladas"
+          echo ""
+      
+      # ---------- STAGE 4: iOS SETUP ----------
+      - name: "Stage 4: iOS Setup"
+        script: |
+          echo "=========================================="
+          echo "🍏 CONFIGURANDO PROYECTO iOS"
+          echo "=========================================="
+          
+          echo "Verificando estructura iOS..."
+          if [ ! -d "ios" ]; then
+            echo "Creando proyecto iOS..."
+            flutter create --platforms=ios --org com.javiersanchez --project-name wombocombo .
+            echo "✅ Proyecto iOS creado"
+          else
+            echo "✅ Proyecto iOS ya existe"
+          fi
+          
+          # Actualizar Bundle ID en Info.plist
+          echo "Actualizando Bundle ID a: $APP_IDENTIFIER"
+          cd ios
+          /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $APP_IDENTIFIER" Runner/Info.plist
+          
+          echo "Instalando CocoaPods..."
+          if [ ! -f "Podfile" ]; then
+            pod init
+          fi
+          
+          pod repo update
+          pod install --verbose
+          
+          cd ..
+          echo "✅ iOS configurado correctamente"
+          echo ""
+      
+      # ---------- STAGE 5: BUILD ARCHIVE ----------
+      - name: "Stage 5: Build Archive"
+        script: |
+          echo "=========================================="
+          echo "🔨 CONSTRUYENDO ARCHIVO iOS"
+          echo "=========================================="
+          
+          echo "Entrando a directorio iOS..."
+          cd ios
+          
+          echo "Limpiando build anterior..."
+          xcodebuild clean \
+            -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release 2>&1 | tee clean.log
+          
+          echo "Creando archive (sin firma)..."
+          xcodebuild archive \
+            -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -archivePath build/Runner.xcarchive \
+            -destination generic/platform=iOS \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            PROVISIONING_PROFILE="" \
+            PROVISIONING_PROFILE_SPECIFIER="" 2>&1 | tee archive.log
+          
+          echo "Verificando archive creado..."
+          if [ -d "build/Runner.xcarchive" ]; then
+            echo "✅ Archive creado exitosamente en: build/Runner.xcarchive"
+          else
+            echo "❌ ERROR: No se pudo crear el archive"
+            exit 1
+          fi
+          
+          cd ..
+          echo ""
+      
+      # ---------- STAGE 6: CREATE IPA ----------
+      - name: "Stage 6: Create Unsigned IPA"
+        script: |
+          echo "=========================================="
+          echo "📦 CREANDO ARCHIVO IPA"
+          echo "=========================================="
+          
+          cd ios
+          
+          echo "Creando exportOptions.plist..."
+          cat > exportOptions.plist << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>destination</key>
+              <string>export</string>
+              <key>method</key>
+              <string>development</string>
+              <key>signingStyle</key>
+              <string>manual</string>
+              <key>stripSwiftSymbols</key>
+              <true/>
+              <key>uploadBitcode</key>
+              <false/>
+              <key>uploadSymbols</key>
+              <false/>
+              <key>compileBitcode</key>
+              <false/>
+              <key>thinning</key>
+              <string>&lt;none&gt;</string>
+          </dict>
+          </plist>
+          EOF
+          
+          echo "Exportando IPA..."
+          xcodebuild -exportArchive \
+            -archivePath build/Runner.xcarchive \
+            -exportPath build/ipa \
+            -exportOptionsPlist exportOptions.plist \
+            -allowProvisioningUpdates 2>&1 | tee export.log
+          
+          echo "Verificando IPA creado..."
+          if [ -f "build/ipa/Runner.ipa" ]; then
+            IPA_SIZE=$(du -h "build/ipa/Runner.ipa" | cut -f1)
+            echo "✅ IPA creado exitosamente"
+            echo "📱 Tamaño del IPA: $IPA_SIZE"
+          else
+            echo "⚠️  No se encontró IPA, verificando otros archivos..."
+            # Listar contenido del directorio
+            ls -la build/ipa/ 2>/dev/null || echo "Directorio ipa no existe"
+          fi
+          
+          cd ..
+          echo ""
+      
+      # ---------- STAGE 7: PREPARE FOR MANUAL UPLOAD ----------
+      - name: "Stage 7: Prepare for Manual Processing"
+        script: |
+          echo "=========================================="
+          echo "📤 PREPARANDO PARA SUBIDA MANUAL"
+          echo "=========================================="
+          
+          echo "Creando paquete final..."
+          mkdir -p app_store_package
+          
+          # Copiar IPA si existe
+          if [ -f "ios/build/ipa/Runner.ipa" ]; then
+            cp "ios/build/ipa/Runner.ipa" "app_store_package/WomboCombo.ipa"
+            echo "✅ IPA copiado como WomboCombo.ipa"
+          fi
+          
+          # Copiar .app si existe
+          APP_PATH=$(find ios/build -name "*.app" -type d 2>/dev/null | head -1)
+          if [ -n "$APP_PATH" ]; then
+            cp -r "$APP_PATH" "app_store_package/"
+            echo "✅ .app copiado"
+          fi
+          
+          # Copiar xcarchive si existe
+          if [ -d "ios/build/Runner.xcarchive" ]; then
+            cp -r "ios/build/Runner.xcarchive" "app_store_package/"
+            echo "✅ xcarchive copiado"
+          fi
+          
+          # Crear README con instrucciones
+          VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | tr -d '\r')
+          
+          cat > app_store_package/INSTRUCCIONES.txt << EOF
+          ===========================================
+          INSTRUCCIONES PARA SUBIR A APP STORE
+          ===========================================
+          
+          App: Wombo Combo
+          Versión: $VERSION
+          Bundle ID: $APP_IDENTIFIER
+          Fecha: $(date)
+          
+          PASOS:
+          
+          1. DESCARGAR TRANSPORTER:
+             - Ve a Mac App Store
+             - Busca "Transporter" (Apple)
+             - Descarga e instala
+          
+          2. PREPARAR APPLE ID:
+             - Ve a https://appleid.apple.com
+             - En "Seguridad" genera una "App-Specific Password"
+             - Úsala en Transporter
+          
+          3. SUBIR LA APP:
+             - Abre Transporter
+             - Arrastra WomboCombo.ipa a la ventana
+             - Ingresa tu Apple ID y App-Specific Password
+             - Click en "Enviar"
+          
+          4. EN APP STORE CONNECT:
+             - Ve a https://appstoreconnect.apple.com
+             - Crea una nueva app si no existe
+             - Completa la información requerida
+             - Espera la revisión de Apple (24-48h)
+          
+          ARCHIVOS INCLUIDOS:
+          - WomboCombo.ipa: Archivo para subir a App Store
+          - Runner.app: Aplicación sin comprimir
+          - Runner.xcarchive: Para debugging
+          
+          CONTACTO:
+          javiersanchezmartinez2006@gmail.com
+          ===========================================
+          EOF
+          
+          echo "Listando archivos generados..."
+          ls -la app_store_package/
+          
+          echo ""
+          echo "🎉🎉🎉 BUILD FINALIZADO EXITOSAMENTE! 🎉🎉🎉"
+          echo "=========================================="
+          echo "✅ PASO 1: Ve a CodeMagic → Builds → Descarga Artifacts"
+          echo "✅ PASO 2: Busca 'app_store_package' en los archivos descargados"
+          echo "✅ PASO 3: Sigue las instrucciones en INSTRUCCIONES.txt"
+          echo "=========================================="
+          echo "Build completado a las: $(date)"
+    
+    artifacts:
+      - app_store_package/**/*
+      - ios/build/ipa/*.ipa
+      - ios/build/*.xcarchive
+      - ios/build/*.app
+      - ios/*.log
+      - flutter_build.log
+      
+      # Incluir todo por si acaso
+      - build/**/*
+      - ios/build/**/*
+    
+    publishing:
+      email:
+        recipients:
+          - javiersanchezmartinez2006@gmail.com
+        notify:
+          success: true
+          failure: true
