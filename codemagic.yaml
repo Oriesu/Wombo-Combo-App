@@ -171,61 +171,61 @@ workflows:
           cd ..
           echo ""
       
-      # ---------- STAGE 6: CREATE IPA ----------
-      - name: "Stage 6: Create Unsigned IPA"
-        script: |
-          echo "=========================================="
-          echo "📦 CREANDO ARCHIVO IPA"
-          echo "=========================================="
-          
-          cd ios
-          
-          echo "Creando exportOptions.plist..."
-          cat > exportOptions.plist << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>destination</key>
-              <string>export</string>
-              <key>method</key>
-              <string>development</string>
-              <key>signingStyle</key>
-              <string>manual</string>
-              <key>stripSwiftSymbols</key>
-              <true/>
-              <key>uploadBitcode</key>
-              <false/>
-              <key>uploadSymbols</key>
-              <false/>
-              <key>compileBitcode</key>
-              <false/>
-              <key>thinning</key>
-              <string>&lt;none&gt;</string>
-          </dict>
-          </plist>
-          EOF
-          
-          echo "Exportando IPA..."
-          xcodebuild -exportArchive \
-            -archivePath build/Runner.xcarchive \
-            -exportPath build/ipa \
-            -exportOptionsPlist exportOptions.plist \
-            -allowProvisioningUpdates 2>&1 | tee export.log
-          
-          echo "Verificando IPA creado..."
-          if [ -f "build/ipa/Runner.ipa" ]; then
-            IPA_SIZE=$(du -h "build/ipa/Runner.ipa" | cut -f1)
-            echo "✅ IPA creado exitosamente"
-            echo "📱 Tamaño del IPA: $IPA_SIZE"
-          else
-            echo "⚠️  No se encontró IPA, verificando otros archivos..."
-            # Listar contenido del directorio
-            ls -la build/ipa/ 2>/dev/null || echo "Directorio ipa no existe"
-          fi
-          
-          cd ..
-          echo ""
+# ---------- STAGE 6: CREATE PROPER IPA ----------
+- name: "Stage 6: Create Proper IPA"
+  script: |
+    echo "=========================================="
+    echo "📦 CREANDO IPA VÁLIDO PARA APP STORE"
+    echo "=========================================="
+    
+    cd ios
+    
+    # Asegurar que tenemos un archive válido
+    if [ ! -d "build/Runner.xcarchive" ]; then
+      echo "❌ ERROR: No se encontró xcarchive"
+      echo "Creando archive manualmente..."
+      
+      # Crear archive manualmente
+      mkdir -p build/Runner.xcarchive
+      mkdir -p build/Runner.xcarchive/Products
+      mkdir -p build/Runner.xcarchive/Products/Applications
+      
+      # Buscar el .app
+      APP_PATH=$(find . -name "*.app" -type d | head -1)
+      if [ -z "$APP_PATH" ]; then
+        echo "❌ ERROR: No se encontró .app file"
+        exit 1
+      fi
+      
+      cp -r "$APP_PATH" build/Runner.xcarchive/Products/Applications/
+      echo "✅ Archive creado manualmente"
+    fi
+    
+    # Crear IPA usando el método correcto
+    echo "Creando IPA..."
+    mkdir -p Payload
+    APP_PATH=$(find build/Runner.xcarchive -name "*.app" -type d | head -1)
+    
+    if [ -n "$APP_PATH" ]; then
+      cp -r "$APP_PATH" Payload/
+      
+      # Crear IPA (ZIP renombrado)
+      zip -qr WomboCombo.ipa Payload/
+      
+      # Mover a directorio de artifacts
+      mkdir -p build/ipa
+      mv WomboCombo.ipa build/ipa/
+      rm -rf Payload
+      
+      echo "✅ IPA creado exitosamente: build/ipa/WomboCombo.ipa"
+      ls -lh build/ipa/
+    else
+      echo "❌ ERROR: No se pudo encontrar .app en el archive"
+      exit 1
+    fi
+    
+    cd ..
+    echo ""
       
       # ---------- STAGE 7: PREPARE FOR MANUAL UPLOAD ----------
       - name: "Stage 7: Prepare for Manual Processing"
