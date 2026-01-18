@@ -1,103 +1,103 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-// Configuración del tablero
+// Configuración del tablero basada en el CSV proporcionado
 const List<Map<String, dynamic>> boardConfig = [
   // Fila 1 (izquierda a derecha) - Casillas 1-10
   {'type': 'start', 'number': 1, 'content': '🏁'},
-  {'type': '123', 'number': 2, 'content': 'podium'},
-  {'type': 'verdad', 'number': 3, 'content': '❓'},
-  {'type': 'quien-mas', 'number': 4, 'content': '🤔'},
-  {'type': '123', 'number': 5, 'content': 'podium'},
-  {'type': 'rule', 'number': 6, 'content': '📜'},
+  {'type': 'beber', 'number': 2, 'content': '🍺'},
+  {'type': 'yo-nunca', 'number': 3, 'content': '🙅‍♂️'},
+  {'type': '123', 'number': 4, 'content': 'podium'},
+  {'type': 'challenge', 'number': 5, 'content': '⚡'},
+  {'type': 'verdad', 'number': 6, 'content': '❓'},
   {'type': 'rule', 'number': 7, 'content': '📜'},
-  {'type': 'challenge', 'number': 8, 'content': '⚡'},
+  {'type': 'preferencias', 'number': 8, 'content': '🤔'},
   {'type': 'yo-nunca', 'number': 9, 'content': '🙅‍♂️'},
-  {'type': 'challenge', 'number': 10, 'content': '⚡'},
+  {'type': 'quien-mas', 'number': 10, 'content': '👥'},
   
   // Fila 2 (derecha a izquierda) - Casillas 11-20
-  {'type': 'yo-nunca', 'number': 20, 'content': '🙅‍♂️'},
-  {'type': 'verdad', 'number': 19, 'content': '❓'},
-  {'type': 'quien-mas', 'number': 18, 'content': '🤔'},
-  {'type': '123', 'number': 17, 'content': 'podium'},
-  {'type': 'yo-nunca', 'number': 16, 'content': '🙅‍♂️'},
-  {'type': 'challenge', 'number': 15, 'content': '⚡'},
-  {'type': '123', 'number': 14, 'content': 'podium'},
-  {'type': 'verdad', 'number': 13, 'content': '❓'},
-  {'type': 'quien-mas', 'number': 12, 'content': '🤔'},
+  {'type': 'quien-mas', 'number': 20, 'content': '👥'},
+  {'type': '123', 'number': 19, 'content': 'podium'},
+  {'type': 'challenge', 'number': 18, 'content': '⚡'},
+  {'type': 'yo-nunca', 'number': 17, 'content': '🙅‍♂️'},
+  {'type': 'preferencias', 'number': 16, 'content': '🤔'},
+  {'type': '123', 'number': 15, 'content': 'podium'},
+  {'type': 'verdad', 'number': 14, 'content': '❓'},
+  {'type': 'yo-nunca', 'number': 13, 'content': '🙅‍♂️'},
+  {'type': 'challenge', 'number': 12, 'content': '⚡'},
   {'type': '123', 'number': 11, 'content': 'podium'},
-  
+
   // Fila 3 (izquierda a derecha) - Casillas 21-30
-  {'type': '123', 'number': 21, 'content': 'podium'},
-  {'type': 'challenge', 'number': 22, 'content': '⚡'},
-  {'type': 'yo-nunca', 'number': 23, 'content': '🙅‍♂️'},
-  {'type': 'verdad', 'number': 24, 'content': '❓'},
-  {'type': 'quien-mas', 'number': 25, 'content': '🤔'},
-  {'type': '123', 'number': 26, 'content': 'podium'},
-  {'type': 'yo-nunca', 'number': 27, 'content': '🙅‍♂️'},
-  {'type': 'challenge', 'number': 28, 'content': '⚡'},
+  {'type': 'yo-nunca', 'number': 21, 'content': '🙅‍♂️'},
+  {'type': 'verdad', 'number': 22, 'content': '❓'},
+  {'type': '123', 'number': 23, 'content': 'podium'},
+  {'type': 'preferencias', 'number': 24, 'content': '🤔'},
+  {'type': 'yo-nunca', 'number': 25, 'content': '🙅‍♂️'},
+  {'type': 'challenge', 'number': 26, 'content': '⚡'},
+  {'type': '123', 'number': 27, 'content': 'podium'},
+  {'type': 'quien-mas', 'number': 28, 'content': '👥'},
   {'type': 'yo-nunca', 'number': 29, 'content': '🙅‍♂️'},
   {'type': 'verdad', 'number': 30, 'content': '❓'},
   
   // Fila 4 (derecha a izquierda) - Casillas 31-40
-  {'type': 'quien-mas', 'number': 40, 'content': '🤔'},
-  {'type': '123', 'number': 39, 'content': 'podium'},
-  {'type': 'verdad', 'number': 38, 'content': '❓'},
-  {'type': 'challenge', 'number': 37, 'content': '⚡'},
-  {'type': 'verdad', 'number': 36, 'content': '❓'},
+  {'type': '123', 'number': 40, 'content': 'podium'},
+  {'type': 'verdad', 'number': 39, 'content': '❓'},
+  {'type': 'yo-nunca', 'number': 38, 'content': '🙅‍♂️'},
+  {'type': 'quien-mas', 'number': 37, 'content': '👥'},
+  {'type': '123', 'number': 36, 'content': 'podium'},
   {'type': 'challenge', 'number': 35, 'content': '⚡'},
-  {'type': 'friki', 'number': 34, 'content': '🤓'},
-  {'type': 'drink', 'number': 33, 'content': '🍻'},
-  {'type': 'quien-mas', 'number': 32, 'content': '🤔'},
-  {'type': 'challenge', 'number': 31, 'content': '⚡'},
+  {'type': 'yo-nunca', 'number': 34, 'content': '🙅‍♂️'},
+  {'type': 'drink', 'number': 33, 'content': '🥃'},
+  {'type': 'preferencias', 'number': 32, 'content': '🤔'},
+  {'type': '123', 'number': 31, 'content': 'podium'},
   
   // Fila 5 (izquierda a derecha) - Casillas 41-50
-  {'type': 'yo-nunca', 'number': 41, 'content': '🙅‍♂️'},
-  {'type': 'challenge', 'number': 42, 'content': '⚡'},
-  {'type': 'yo-nunca', 'number': 43, 'content': '🙅‍♂️'},
-  {'type': 'verdad', 'number': 44, 'content': '❓'},
-  {'type': '123', 'number': 45, 'content': 'podium'},
-  {'type': 'quien-mas', 'number': 46, 'content': '🤔'},
-  {'type': 'yo-nunca', 'number': 47, 'content': '🙅‍♂️'},
-  {'type': 'challenge', 'number': 48, 'content': '⚡'},
-  {'type': 'verdad', 'number': 49, 'content': '❓'},
-  {'type': 'rule', 'number': 50, 'content': '📜'},
+  {'type': 'preferencias', 'number': 41, 'content': '🤔'},
+  {'type': 'yo-nunca', 'number': 42, 'content': '🙅‍♂️'},
+  {'type': 'challenge', 'number': 43, 'content': '⚡'},
+  {'type': '123', 'number': 44, 'content': 'podium'},
+  {'type': 'beber', 'number': 45, 'content': '🍺'},
+  {'type': 'yo-nunca', 'number': 46, 'content': '🙅‍♂️'},
+  {'type': 'verdad', 'number': 47, 'content': '❓'},
+  {'type': '123', 'number': 48, 'content': 'podium'},
+  {'type': 'preferencias', 'number': 49, 'content': '🤔'},
+  {'type': 'yo-nunca', 'number': 50, 'content': '🙅‍♂️'},
   
   // Fila 6 (derecha a izquierda) - Casillas 51-60
-  {'type': 'verdad', 'number': 60, 'content': '❓'},
-  {'type': 'quien-mas', 'number': 59, 'content': '🤔'},
-  {'type': '123', 'number': 58, 'content': 'podium'},
-  {'type': 'yo-nunca', 'number': 57, 'content': '🙅‍♂️'},
-  {'type': 'challenge', 'number': 56, 'content': '⚡'},
-  {'type': 'yo-nunca', 'number': 55, 'content': '🙅‍♂️'},
-  {'type': 'verdad', 'number': 54, 'content': '❓'},
-  {'type': 'quien-mas', 'number': 53, 'content': '🤔'},
+  {'type': '123', 'number': 60, 'content': 'podium'},
+  {'type': 'challenge', 'number': 59, 'content': '⚡'},
+  {'type': 'yo-nunca', 'number': 58, 'content': '🙅‍♂️'},
+  {'type': 'preferencias', 'number': 57, 'content': '🤔'},
+  {'type': '123', 'number': 56, 'content': 'podium'},
+  {'type': 'verdad', 'number': 55, 'content': '❓'},
+  {'type': 'yo-nunca', 'number': 54, 'content': '🙅‍♂️'},
+  {'type': 'quien-mas', 'number': 53, 'content': '👥'},
   {'type': '123', 'number': 52, 'content': 'podium'},
-  {'type': 'quien-mas', 'number': 51, 'content': '🤔'},
+  {'type': 'challenge', 'number': 51, 'content': '⚡'},
   
   // Fila 7 (izquierda a derecha) - Casillas 61-70
-  {'type': 'challenge', 'number': 61, 'content': '⚡'},
-  {'type': 'yo-nunca', 'number': 62, 'content': '🙅‍♂️'},
-  {'type': 'verdad', 'number': 63, 'content': '❓'},
-  {'type': 'quien-mas', 'number': 64, 'content': '🤔'},
-  {'type': '123', 'number': 65, 'content': 'podium'},
-  {'type': 'rule', 'number': 66, 'content': '📜'},
-  {'type': 'challenge', 'number': 67, 'content': '⚡'},
-  {'type': 'yo-nunca', 'number': 68, 'content': '🙅‍♂️'},
-  {'type': 'drink', 'number': 69, 'content': '🍻'},
-  {'type': 'verdad', 'number': 70, 'content': '❓'},
+  {'type': 'yo-nunca', 'number': 61, 'content': '🙅‍♂️'},
+  {'type': 'verdad', 'number': 62, 'content': '❓'},
+  {'type': '123', 'number': 63, 'content': 'podium'},
+  {'type': 'preferencias', 'number': 64, 'content': '🤔'},
+  {'type': 'yo-nunca', 'number': 65, 'content': '🙅‍♂️'},
+  {'type': 'challenge', 'number': 66, 'content': '⚡'},
+  {'type': '123', 'number': 67, 'content': 'podium'},
+  {'type': 'quien-mas', 'number': 68, 'content': '👥'},
+  {'type': 'drink', 'number': 69, 'content': '🥃'},
+  {'type': 'yo-nunca', 'number': 70, 'content': '🙅‍♂️'},
   
   // Fila 8 (derecha a izquierda) - Casillas 71-80
-  {'type': 'end', 'number': 80, 'content': '🎉'},
-  {'type': 'quien-mas', 'number': 79, 'content': '🤔'},
-  {'type': '123', 'number': 78, 'content': 'podium'},
-  {'type': 'yo-nunca', 'number': 77, 'content': '🙅‍♂️'},
-  {'type': 'challenge', 'number': 76, 'content': '⚡'},
-  {'type': 'quien-mas', 'number': 75, 'content': '🤔'},
-  {'type': 'verdad', 'number': 74, 'content': '❓'},
+  {'type': 'end', 'number': 80, 'content': '🏆'},
+  {'type': 'beber', 'number': 79, 'content': '🍺'},
+  {'type': 'challenge', 'number': 78, 'content': '⚡'},
+  {'type': '123', 'number': 77, 'content': 'podium'},
+  {'type': 'verdad', 'number': 76, 'content': '❓'},
+  {'type': 'yo-nunca', 'number': 75, 'content': '🙅‍♂️'},
+  {'type': 'preferencias', 'number': 74, 'content': '🤔'},
   {'type': 'friki', 'number': 73, 'content': '🤓'},
-  {'type': 'challenge', 'number': 72, 'content': '⚡'},
-  {'type': 'quien-mas', 'number': 71, 'content': '🤔'}
+  {'type': '123', 'number': 72, 'content': 'podium'},
+  {'type': 'challenge', 'number': 71, 'content': '⚡'}
 ];
 
 class GameBoard extends StatelessWidget {
@@ -134,6 +134,10 @@ class GameBoard extends StatelessWidget {
         return const Color(0xFF00CCFF);
       case 'drink':
         return const Color(0xFFFF6B6B);
+      case 'beber':
+        return const Color(0xFFF57C00);
+      case 'preferencias':
+        return const Color(0xFF9C27B0);
       default:
         return const Color(0xFF666666);
     }

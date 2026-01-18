@@ -25,6 +25,9 @@ dependencies:
   # device_info_plus compatible con Dart 3.2.0
   device_info_plus: ^9.1.2  # Versión compatible con tu SDK
 
+  # OPCIONAL: Para mejor manejo de edge-to-edge y responsive design
+  flutter_screenutil: ^5.9.0
+
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_test:

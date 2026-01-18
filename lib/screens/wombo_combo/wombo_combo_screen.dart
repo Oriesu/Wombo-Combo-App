@@ -48,7 +48,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                   ),
                 ),
                 
-                // Contenido principal C
+                // Contenido principal
                 SafeArea(
                   child: Center(
                     child: ConstrainedBox(
@@ -89,16 +89,14 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                                       getPlayerColor: gameLogic.getPlayerColor,
                                     ),
                                     
-                                    const SizedBox(height: 15),
-                                    
-                                    _buildContentSection(gameLogic),
-                                  ],
+                                    const SizedBox(height: 10),
+
+                                  ],                                
                                 ),
                               ),
-                              
                               const SizedBox(height: 20),
                               
-                              // BOTONES INFERIORES - AHORA DENTRO DEL SCROLL
+                              // BOTONES INFERIORES
                               _buildBottomButtons(context, gameLogic),
                               
                               const SizedBox(height: 40), 
@@ -110,6 +108,10 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                   ),
                 ),
                 
+                // OVERLAY DEL DADO (NUEVO)
+                if (gameLogic.showDiceOverlay)
+                  _buildDiceOverlay(gameLogic),
+
                 // OVERLAY DEL MENÚ DE JUGADORES
                 if (gameLogic.showPlayersMenu)
                   _buildPlayersMenuOverlay(gameLogic, playersProvider),
@@ -162,7 +164,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
           const Text(
             'Wombo Combo',
             style: TextStyle(
-              fontSize: 2.4 * 16,
+              fontSize: 2.1 * 14,
               fontWeight: FontWeight.w800,
               color: Colors.white,
               letterSpacing: -0.5,
@@ -311,55 +313,6 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                   ),
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContentSection(WomboComboLogic gameLogic) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(top: 15),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: double.infinity,
-            constraints: const BoxConstraints(
-              minHeight: 100,
-            ),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: Colors.white.withOpacity(0.2)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.4),
-                  blurRadius: 8,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Opacity(
-              opacity: gameLogic.showContent && !gameLogic.is123Active ? 1.0 : 0.0,
-              child: Text(
-                gameLogic.currentContent,
-                style: const TextStyle(
-                  fontSize: 1.2 * 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  height: 1.5,
-                ),
-                textAlign: TextAlign.center,
-              ),
             ),
           ),
         ],
@@ -535,8 +488,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         content: const Text(
-          '¿Estás seguro de que quieres reiniciar el juego? '
-          'Se perderá el progreso actual.',
+          '¿Estás seguro de que quieres reiniciar el juego? ',
           style: TextStyle(color: Colors.white70),
         ),
         actions: [
@@ -560,9 +512,208 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
     );
   }
 
+  Widget _buildDiceOverlay(WomboComboLogic gameLogic) {
+    return Material(
+      color: Colors.black.withOpacity(0.9),
+      child: GestureDetector(
+        onTap: () {
+          debugPrint('[WOMBO COMBO] Overlay tocado, cerrándolo');
+          gameLogic.hideDiceOverlay();
+        },
+        child: Container(
+          color: Colors.transparent,
+          child: Center(
+            child: GestureDetector(
+              onTap: () {}, // Evitar que el toque en el contenido se propague
+              child: Container(
+                width: 400,
+                constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
+                margin: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2a0044),
+                  borderRadius: BorderRadius.circular(25),
+                  border: Border.all(color: const Color(0xFF29B6F6), width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF29B6F6).withOpacity(0.3),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.5),
+                      blurRadius: 30,
+                      offset: const Offset(0, 20),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Indicador de tocar para cerrar
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text(
+                        'Toca en cualquier lado para continuar',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                    
+                    // Jugador actual con su posición
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Color del jugador
+                          Container(
+                            width: 12,
+                            height: 12,
+                            margin: const EdgeInsets.only(right: 8),
+                            decoration: BoxDecoration(
+                              color: gameLogic.getPlayerColor(gameLogic.currentPlayerIndex),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          
+                          // Nombre del jugador
+                          Text(
+                            gameLogic.diceOverlayPlayerName,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          
+                          // Separador
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 10),
+                            child: const Text(
+                              '•',
+                              style: TextStyle(
+                                color: Colors.white54,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          
+                          // Posición del jugador
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF00CCFF).withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: const Color(0xFF00CCFF).withOpacity(0.4),
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(
+                              'Casilla ${gameLogic.diceOverlayPlayerPosition}',
+                              style: const TextStyle(
+                                color: Color(0xFF00CCFF),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 25),
+                    
+                    // Título del modo
+                    Text(
+                      gameLogic.diceOverlayTitle,
+                      style: const TextStyle(
+                        fontSize: 2.0 * 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFFFCC00),
+                        shadows: [
+                          Shadow(
+                            blurRadius: 10,
+                            color: Colors.black,
+                          ),
+                        ],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    
+                    const SizedBox(height: 20),
+                    
+                    // Contenido principal
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.white.withOpacity(0.2)),
+                      ),
+                      child: Text(
+                        gameLogic.diceOverlayContent,
+                        style: const TextStyle(
+                          fontSize: 1.5 * 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                          height: 1.4,
+                        ),
+                        textAlign: TextAlign.center,
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 20),
+                    
+                    // Explicación
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00CC55).withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFF00CC55).withOpacity(0.3)),
+                      ),
+                      child: Text(
+                        gameLogic.diceOverlayExplanation,
+                        style: const TextStyle(
+                          fontSize: 1.2 * 16,
+                          color: Color(0xFF00CC55),
+                          fontWeight: FontWeight.w600,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildPlayersMenuOverlay(WomboComboLogic gameLogic, PlayersProvider playersProvider) {
     return PlayersMenuOverlay(
-      key: ValueKey('players_menu_${playersProvider.players.length}'), // Clave única para evitar reconstrucción
+      key: ValueKey('players_menu_${playersProvider.players.length}'),
       players: playersProvider.players,
       newPlayerNameController: _newPlayerNameController,
       onAddPlayer: () {
@@ -724,13 +875,20 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                gameLogic.currentContent,
-                style: const TextStyle(
-                  fontSize: 18,
+              const Text(
+                '¡Se acabó el tiempo!',
+                style: TextStyle(
+                  fontSize: 20,
                   color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  height: 1.4,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Bebe por cada una que no dijiste',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
                 ),
                 textAlign: TextAlign.center,
               ),

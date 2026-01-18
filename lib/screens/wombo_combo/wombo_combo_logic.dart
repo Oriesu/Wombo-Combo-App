@@ -41,7 +41,7 @@ class WomboComboLogic extends ChangeNotifier {
   int diceValue = 1;
   bool isRolling = false;
   bool showPlayersMenu = false;
-  bool showContent = false;
+  bool showContent = false; // No se usa más
   bool is123Active = false;
   bool isDiceButtonDisabled = false;
   String currentContent = '';
@@ -49,6 +49,14 @@ class WomboComboLogic extends ChangeNotifier {
   int timeLeft123 = 20;
   bool showTimeoutMessageFlag = false;
   bool showVictoryScreen = false; 
+  
+  // Variables para el overlay del dado
+  bool showDiceOverlay = false;
+  String diceOverlayTitle = '';
+  String diceOverlayContent = '';
+  String diceOverlayExplanation = '';
+  int diceOverlayPlayerPosition = 0; // NUEVO: posición del jugador
+  String diceOverlayPlayerName = ''; // NUEVO: nombre del jugador
 
   Set<int> usedRules = {};
   Set<int> usedChallenges123 = {};
@@ -57,6 +65,8 @@ class WomboComboLogic extends ChangeNotifier {
   Set<int> usedQuienMas = {};
   Set<int> used123 = {};
   Set<int> usedVerdad = {};
+  Set<int> usedBeber = {};
+  Set<int> usedPreferencias = {};
 
   WomboComboLogic({required List<String> players}) {
     this.players = players;
@@ -97,7 +107,6 @@ class WomboComboLogic extends ChangeNotifier {
       }
       
       isDiceButtonDisabled = false;
-      nextPlayer();
       notifyListeners();
     });
   }
@@ -110,19 +119,27 @@ class WomboComboLogic extends ChangeNotifier {
       return "¡Sigue jugando!";
     }
     
+    // Buscar contenido que pueda ser procesado con los jugadores disponibles
     List<int> availableIndices = [];
     
     for (int i = 0; i < contentArray.length; i++) {
-      if (!usedSet.contains(i)) {
+      if (!usedSet.contains(i) && _canProcessText(contentArray[i])) {
         availableIndices.add(i);
       }
     }
     
     if (availableIndices.isEmpty) {
       if (debugLogicEnabled) {
-        debugPrint('[LOGIC] All content used, resetting set');
+        debugPrint('[LOGIC] All content used or not processable, resetting set');
       }
       usedSet.clear();
+      availableIndices = List.generate(contentArray.length, (index) => index)
+          .where((index) => _canProcessText(contentArray[index]))
+          .toList();
+    }
+    
+    // Si aún no hay contenido procesable, usar cualquier contenido
+    if (availableIndices.isEmpty) {
       availableIndices = List.generate(contentArray.length, (index) => index);
     }
     
@@ -136,17 +153,26 @@ class WomboComboLogic extends ChangeNotifier {
     return contentArray[randomIndex];
   }
 
+  /// Verifica si una frase puede ser procesada con los jugadores disponibles
+  bool _canProcessText(String text) {
+    if (!text.contains('----')) return true;
+    
+    // Contar cuántos "----" hay en el texto
+    final placeholderCount = (text.split('----').length - 1);
+    
+    // Obtener jugadores disponibles (excluyendo al jugador actual)
+    final availablePlayers = _getAvailablePlayers();
+    
+    // Verificar si hay suficientes jugadores disponibles
+    return availablePlayers.length >= placeholderCount;
+  }
+
   String processText(String text, {bool excludeCurrent = true}) {
     if (!text.contains('----')) {
       return text;
     }
     
-    List<String> availablePlayers = [];
-    for (int i = 0; i < _players.length; i++) {
-      if (!excludeCurrent || i != currentPlayerIndex) {
-        availablePlayers.add(_players[i]);
-      }
-    }
+    List<String> availablePlayers = excludeCurrent ? _getAvailablePlayers() : List.from(_players);
     
     final placeholderCount = (text.split('----').length - 1);
     
@@ -154,9 +180,10 @@ class WomboComboLogic extends ChangeNotifier {
       debugPrint('[LOGIC] Processing text with $placeholderCount placeholders, ${availablePlayers.length} available players');
     }
     
-    if (availablePlayers.length < placeholderCount) {
+    // Si no hay suficientes jugadores disponibles (y estamos excluyendo al actual)
+    if (excludeCurrent && availablePlayers.length < placeholderCount) {
       if (debugLogicEnabled) {
-        debugPrint('[LOGIC] Not enough players, using all players');
+        debugPrint('[LOGIC] Not enough players excluding current, using all players');
       }
       availablePlayers = List.from(_players);
     }
@@ -164,18 +191,37 @@ class WomboComboLogic extends ChangeNotifier {
     availablePlayers.shuffle();
     
     String result = text;
-    for (String player in availablePlayers) {
-      result = result.replaceFirst('----', player);
-      if (!result.contains('----')) break;
+    for (int i = 0; i < placeholderCount; i++) {
+      if (i < availablePlayers.length) {
+        // Usar un jugador diferente para cada placeholder si es posible
+        result = result.replaceFirst('----', availablePlayers[i]);
+      } else {
+        // Si no hay suficientes jugadores únicos, repetir o usar marcador genérico
+        result = result.replaceFirst('----', 'Otro jugador');
+      }
     }
-    
-    result = result.replaceAll('----', 'Todos');
     
     if (debugLogicEnabled) {
       debugPrint('[LOGIC] Processed text: "$result"');
     }
     
     return result;
+  }
+
+  /// Obtiene la lista de jugadores disponibles para sustitución (excluyendo al actual)
+  List<String> _getAvailablePlayers() {
+    if (_players.isEmpty) return [];
+    
+    List<String> availablePlayers = [];
+    
+    // Excluir siempre al jugador actual
+    for (int i = 0; i < _players.length; i++) {
+      if (i != currentPlayerIndex) {
+        availablePlayers.add(_players[i]);
+      }
+    }
+    
+    return availablePlayers;
   }
 
   void rollDice() {
@@ -292,6 +338,7 @@ class WomboComboLogic extends ChangeNotifier {
 
     String content;
     final cellType = cell['type'] ?? 'default';
+    final currentPlayer = _players[currentPlayerIndex];
     
     if (debugLogicEnabled) {
       debugPrint('[LOGIC] Cell type: $cellType');
@@ -300,23 +347,49 @@ class WomboComboLogic extends ChangeNotifier {
     switch (cellType) {
       case 'rule':
         content = getRandomContent(GameData.rules, usedRules);
-        showRegularContent(content);
+        showDiceOverlayContent(
+          title: 'Regla',
+          content: content,
+          explanation: 'A seguir hasta nuevo aviso',
+          playerName: currentPlayer
+        );
         break;
       case 'challenge':
         content = getRandomContent(GameData.retos, usedChallenges123);
-        showRegularContent(content);
+        showDiceOverlayContent(
+          title: 'Reto',
+          content: content,
+          explanation: '¡A cumplirlo!',
+          playerName: currentPlayer
+        );
         break;
       case 'yo-nunca':
         content = getRandomContent(GameData.yoNuncaFrases, usedYoNunca);
-        showRegularContent(content);
+        showDiceOverlayContent(
+          title: 'Yo Nunca',
+          content: content,
+          explanation: 'Quién lo ha hecho bebe',
+          playerName: currentPlayer
+        );
         break;
       case 'friki':
         content = getRandomContent(GameData.frikiQuestions, usedFriki);
-        showRegularContent(content);
+        showDiceOverlayContent(
+          title: 'Pregunta Friki',
+          content: content,
+          explanation: 'Todos responden',
+          playerName: currentPlayer
+        );
         break;
       case 'quien-mas':
         content = getRandomContent(GameData.quienMasProbableFrases, usedQuienMas);
-        showRegularContent(content);
+        final processedContent = processText(content);
+        showDiceOverlayContent(
+          title: '¿Quién es más probable?',
+          content: processedContent,
+          explanation: 'El elegido bebe',
+          playerName: currentPlayer
+        );
         break;
       case '123':
         content = getRandomContent(GameData.challenges123, used123);
@@ -324,37 +397,108 @@ class WomboComboLogic extends ChangeNotifier {
         break;
       case 'verdad':
         content = getRandomContent(GameData.verdades, usedVerdad);
-        showRegularContent(content);
+        showDiceOverlayContent(
+          title: 'Verdad',
+          content: content,
+          explanation: '¡Responde con sinceridad!',
+          playerName: currentPlayer
+        );
         break;
       case 'drink':
         content = "¡Todos se acaban su copa!";
-        showRegularContent(content);
+        showDiceOverlayContent(
+          title: '¡Bebida!',
+          content: content,
+          explanation: 'Salud 🍻',
+          playerName: currentPlayer
+        );
+        break;
+      case 'beber':
+        content = getRandomContent(GameData.beber, usedBeber);
+        final processedContent = processText(content);
+        showDiceOverlayContent(
+          title: '¡A beber!',
+          content: processedContent,
+          explanation: 'Que aproveche',
+          playerName: currentPlayer
+        );
+        break;
+      case 'preferencias':
+        content = getRandomContent(GameData.preferencias, usedPreferencias);
+        showDiceOverlayContent(
+          title: '¿Qué prefieres?',
+          content: content,
+          explanation: 'Todos responden, la minoría bebe',
+          playerName: currentPlayer
+        );
         break;
       case 'start':
         content = "Casilla de inicio. ¡Suerte!";
-        showRegularContent(content);
+        showDiceOverlayContent(
+          title: 'Inicio',
+          content: content,
+          explanation: 'Empieza el juego',
+          playerName: currentPlayer
+        );
         break;
       case 'end':
         content = "¡Has llegado a la meta! ¡Felicidades!";
-        showRegularContent(content);
+        showDiceOverlayContent(
+          title: '¡Meta!',
+          content: content,
+          explanation: 'Ganaste el juego',
+          playerName: currentPlayer
+        );
         break;
       default:
         content = "¡Sigue jugando!";
-        showRegularContent(content);
+        showDiceOverlayContent(
+          title: 'Casilla normal',
+          content: content,
+          explanation: 'Continúa tu turno',
+          playerName: currentPlayer
+        );
     }
   }
 
-  void showRegularContent(String content) {
+  void showDiceOverlayContent({
+    required String title,
+    required String content,
+    required String explanation,
+    required String playerName
+  }) {
+    // Obtener la posición actual del jugador
+    final position = playerPositions[currentPlayerIndex];
+    
     if (debugLogicEnabled) {
       final shortContent = content.length > 50 ? content.substring(0, 50) + '...' : content;
-      debugPrint('[LOGIC] Showing regular content: "$shortContent"');
+      debugPrint('[LOGIC] Showing dice overlay: "$title" - "$shortContent" - "$explanation" for $playerName at position $position');
     }
     
     Future.delayed(const Duration(milliseconds: 50), () {
-      final processedContent = processText(content);
-      currentContent = processedContent;
-      showContent = true; 
+      diceOverlayTitle = title;
+      diceOverlayContent = content;
+      diceOverlayExplanation = explanation;
+      
+      // Guardar la posición y nombre del jugador para mostrarlos en el overlay
+      diceOverlayPlayerPosition = position;
+      diceOverlayPlayerName = playerName;
+      
+      showDiceOverlay = true;
       notifyListeners();
+    });
+  }
+
+  void hideDiceOverlay() {
+    if (debugLogicEnabled) {
+      debugPrint('[LOGIC] Hiding dice overlay');
+    }
+    
+    showDiceOverlay = false;
+    
+    // Avanzar al siguiente jugador automáticamente después de cerrar el overlay
+    Future.delayed(const Duration(milliseconds: 50), () {
+      nextPlayer();
     });
   }
 
@@ -364,14 +508,13 @@ class WomboComboLogic extends ChangeNotifier {
       debugPrint('[LOGIC] Starting 123 timer with challenge: "$shortChallenge"');
     }
     
-    showContent = false;
+    showDiceOverlay = false;
     notifyListeners();
     
     Future.delayed(const Duration(milliseconds: 50), () {
       is123Active = true;
       timeLeft123 = 20;
       currentContent = challengeText;
-      showContent = true;
       showTimeoutMessageFlag = false;
       
       if (debugLogicEnabled) {
@@ -419,7 +562,6 @@ class WomboComboLogic extends ChangeNotifier {
     
     is123Active = false;
     showTimeoutMessageFlag = true;
-    currentContent = "¡Se acabó el tiempo, bebe por cada una que no dijiste!";
     notifyListeners();
   }
 
@@ -481,7 +623,7 @@ class WomboComboLogic extends ChangeNotifier {
     
     playerPositions = List.filled(_players.length, 1);
     currentPlayerIndex = 0;
-    showContent = false;
+    showDiceOverlay = false;
     is123Active = false;
     isDiceButtonDisabled = false;
     showTimeoutMessageFlag = false;
@@ -494,6 +636,8 @@ class WomboComboLogic extends ChangeNotifier {
     usedQuienMas.clear();
     used123.clear();
     usedVerdad.clear();
+    usedBeber.clear();
+    usedPreferencias.clear();
     
     timer123Interval?.cancel();
     
@@ -513,7 +657,7 @@ class WomboComboLogic extends ChangeNotifier {
     playerPositions = List.filled(_players.length, 1);
     currentPlayerIndex = 0;
     showVictoryScreen = false;
-    showContent = false;
+    showDiceOverlay = false;
     is123Active = false;
     isDiceButtonDisabled = false;
     showTimeoutMessageFlag = false;
@@ -525,6 +669,8 @@ class WomboComboLogic extends ChangeNotifier {
     usedQuienMas.clear();
     used123.clear();
     usedVerdad.clear();
+    usedBeber.clear();
+    usedPreferencias.clear();
     
     timer123Interval?.cancel();
     
@@ -574,10 +720,12 @@ class WomboComboLogic extends ChangeNotifier {
       debugPrint('[LOGIC] Dice: $diceValue, Rolling: $isRolling');
       debugPrint('[LOGIC] 123 Active: $is123Active, Time left: $timeLeft123');
       debugPrint('[LOGIC] Dice button disabled: $isDiceButtonDisabled');
+      debugPrint('[LOGIC] Show dice overlay: $showDiceOverlay');
       debugPrint('[LOGIC] Show victory: $showVictoryScreen');
       debugPrint('[LOGIC] ===============');
     }
   }
+  
   void togglePlayersMenu() {
     if (debugLogicEnabled) {
       debugPrint('[LOGIC] Toggling players menu from ${showPlayersMenu} to ${!showPlayersMenu}');
@@ -586,6 +734,7 @@ class WomboComboLogic extends ChangeNotifier {
     showPlayersMenu = !showPlayersMenu;
     notifyListeners();
   }
+  
   void debugTogglePlayersMenu() {
     if (debugLogicEnabled) {
       debugPrint('[LOGIC] debugTogglePlayersMenu called');

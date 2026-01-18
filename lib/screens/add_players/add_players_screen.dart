@@ -515,7 +515,7 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
                                             controller: playerNameController,
                                             style: const TextStyle(color: Colors.white),
                                             decoration: InputDecoration(
-                                              hintText: 'Nombre del jugador',
+                                              hintText: 'Añadir nombres',
                                               hintStyle: const TextStyle(color: Colors.white54),
                                               filled: true,
                                               fillColor: Colors.white.withOpacity(0.1),
@@ -549,19 +549,40 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 15),
-                
+
+                                    if (!players.isEmpty) ...[
+                                      const SizedBox(height: 20),    
+                                   ],
+
                                     // Lista de jugadores
                                     Container(
                                       constraints: const BoxConstraints(maxHeight: 150),
                                       child: SingleChildScrollView(
-                                        child: Wrap(
-                                          spacing: 8,
-                                          runSpacing: 8,
-                                          children: players.map((player) => PlayerTag(
-                                            onRemove: () => _removePlayer(player),
-                                            playerName: player,
-                                          )).toList(),
+                                        child: Column(
+                                          children: [
+                                            Wrap(
+                                              spacing: 8,
+                                              runSpacing: 8,
+                                              children: players.map((player) => PlayerTag(
+                                                onRemove: () => _removePlayer(player),
+                                                playerName: player,
+                                              )).toList(),
+                                            ), const SizedBox(height: 10),
+
+                                            // Texto informativo añadido aquí
+                                            if (players.isEmpty) ...[
+                                              const SizedBox(height: 15),
+                                              const Text(
+                                                "Agrega los nombres de los jugadores para desbloquear los modos de juego",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: Colors.white54,
+                                                  fontSize: 12,
+                                                  fontStyle: FontStyle.italic,
+                                                ),
+                                              ),
+                                            ],
+                                          ],
                                         ),
                                       ),
                                     ),

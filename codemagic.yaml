@@ -18,8 +18,10 @@ workflows:
         # VARIABLES QUE DEBES CONFIGURAR EN CODEMAGIC WEB:
         APPLE_ID: "javiersanchezmartinez2006@gmail.com"
         # APPLE_ID_PASSWORD: Generar en appleid.apple.com y poner en CodeMagic web
-        APP_IDENTIFIER: "com.javiersanchez.wombocombo"  # SIN ESPACIOS
+        APP_IDENTIFIER: "com.javiersanchez.womboCombo"  # SIN ESPACIOS
         XCODE_SCHEME: "Runner"
+        BUNDLE_ID: "com.javiersanchez.womboCombo"  # ← C mayúscula
+        APP_NAME: "Wombo Combo"
     
     cache:
       cache_paths:

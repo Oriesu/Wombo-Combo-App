@@ -12,6 +12,10 @@ void main() async {
   
   WidgetsFlutterBinding.ensureInitialized();
   
+  // CONFIGURACIÓN EDGE-TO-EDGE PARA ANDROID 15+
+  // Esto debe ir ANTES de cualquier otra configuración
+  await setupEdgeToEdge();
+  
   // Configurar orientación solo vertical
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -26,6 +30,32 @@ void main() async {
   _configureTouchLogging();
   
   runApp(MyApp());
+}
+
+Future<void> setupEdgeToEdge() async {
+  try {
+    // Configurar colores transparentes para las barras del sistema
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,        // Transparente
+      statusBarBrightness: Brightness.light,     // Iconos claros
+      statusBarIconBrightness: Brightness.dark,  // Iconos oscuros
+      systemNavigationBarColor: Colors.transparent,  // Transparente
+      systemNavigationBarDividerColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.dark,  // Iconos oscuros
+    ));
+    
+    // Habilitar edge-to-edge (solo en Android)
+    if (Platform.isAndroid) {
+      await SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.edgeToEdge,
+        overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
+      );
+      
+      debugPrint('[MAIN] Edge-to-edge enabled for Android');
+    }
+  } catch (e) {
+    debugPrint('[MAIN] Error configuring edge-to-edge: $e');
+  }
 }
 
 void _configureTouchLogging() {
@@ -68,36 +98,68 @@ class MyApp extends StatelessWidget {
         });
         return provider;
       },
-      child: MaterialApp(
-        title: 'Juego de Beber',
-        theme: ThemeData(
-          primarySwatch: Colors.purple,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          useMaterial3: false, 
-          // Configurar transiciones de página globalmente
-          pageTransitionsTheme: PageTransitionsTheme(
-            builders: {
-              // Para todas las plataformas usar transiciones fade
-              TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-              TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-              TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
-              TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
-              TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+      child: Builder(
+        builder: (context) {
+          return MaterialApp(
+            title: 'Juego de Beber',
+            theme: ThemeData(
+              primarySwatch: Colors.purple,
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+              useMaterial3: false, 
+              // Configurar transiciones de página globalmente
+              pageTransitionsTheme: PageTransitionsTheme(
+                builders: {
+                  // Para todas las plataformas usar transiciones fade
+                  TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+                  TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+                  TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
+                  TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+                  TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+                },
+              ),
+            ),
+            home: EdgeToEdgeWrapper(
+              child: AddPlayersScreen(),
+            ),
+            debugShowCheckedModeBanner: false,
+            builder: (context, child) {
+              // Widget para detectar gestos globales
+              return GestureDetector(
+                onTapDown: (details) {
+                  debugPrint('[APP] Global tap at ${details.globalPosition}');
+                },
+                behavior: HitTestBehavior.translucent,
+                child: child,
+              );
             },
-          ),
-        ),
-        home: AddPlayersScreen(),
-        debugShowCheckedModeBanner: false,
-        builder: (context, child) {
-          // Widget para detectar gestos globales
-          return GestureDetector(
-            onTapDown: (details) {
-              debugPrint('[APP] Global tap at ${details.globalPosition}');
-            },
-            behavior: HitTestBehavior.translucent,
-            child: child,
           );
         },
+      ),
+    );
+  }
+}
+
+// Wrapper para manejar edge-to-edge en todas las pantallas
+class EdgeToEdgeWrapper extends StatelessWidget {
+  final Widget child;
+  
+  const EdgeToEdgeWrapper({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return MediaQuery.removePadding(
+      context: context,
+      removeTop: false,  // Mantener padding superior para status bar
+      removeBottom: true,  // Quitar padding inferior para barra de navegación
+      child: SafeArea(
+        top: true,
+        bottom: false,  // IMPORTANTE: no aplicar SafeArea en la parte inferior
+        minimum: const EdgeInsets.only(top: 0),  // Sin margen mínimo
+        child: Scaffold(
+          extendBody: true,  // Para que el contenido se extienda
+          extendBodyBehindAppBar: false,  // Depende de si usas AppBar
+          body: child,
+        ),
       ),
     );
   }
