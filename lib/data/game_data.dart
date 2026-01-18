@@ -526,7 +526,7 @@ class GameData {
     "¿Quién es más probable que muera haciendo el estúpido?",
     "¿Quién es más probable que muera virgen?",
     "¿Quién es más probable que necesite otra copa?",
-    "¿Quién es más probable que necesite urgentemente un nuevo hígado",
+    "¿Quién es más probable que necesite urgentemente un nuevo hígado?",
     "¿Quién es más probable que no conteste a los mensajes?",
     "¿Quién es más probable que no deje hablar en una conversación?",
     "¿Quién es más probable que no dure nada en la cama?",
