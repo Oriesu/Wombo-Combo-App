@@ -111,7 +111,7 @@ class VerdadRetoLogic {
     List<String> availablePlayers = _getAvailablePlayers(players);
     
     // Verificar si hay suficientes jugadores disponibles
-    return availablePlayers.length >= placeholderCount;
+    return availablePlayers.length > placeholderCount;
   }
 
   String _processText(String text, List<String> players) {

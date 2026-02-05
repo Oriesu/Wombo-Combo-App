@@ -21,7 +21,7 @@ const List<Map<String, dynamic>> boardConfig = [
   {'type': 'challenge', 'number': 18, 'content': '⚡'},
   {'type': 'yo-nunca', 'number': 17, 'content': '🙅‍♂️'},
   {'type': 'preferencias', 'number': 16, 'content': '🤔'},
-  {'type': '123', 'number': 15, 'content': 'podium'},
+  {'type': 'quien-mas', 'number': 15, 'content': '👥'},
   {'type': 'verdad', 'number': 14, 'content': '❓'},
   {'type': 'yo-nunca', 'number': 13, 'content': '🙅‍♂️'},
   {'type': 'challenge', 'number': 12, 'content': '⚡'},
@@ -49,7 +49,7 @@ const List<Map<String, dynamic>> boardConfig = [
   {'type': 'yo-nunca', 'number': 34, 'content': '🙅‍♂️'},
   {'type': 'drink', 'number': 33, 'content': '🥃'},
   {'type': 'preferencias', 'number': 32, 'content': '🤔'},
-  {'type': '123', 'number': 31, 'content': 'podium'},
+  {'type': 'quien-mas', 'number': 31, 'content': '👥'},
   
   // Fila 5 (izquierda a derecha) - Casillas 41-50
   {'type': 'preferencias', 'number': 41, 'content': '🤔'},
@@ -64,11 +64,11 @@ const List<Map<String, dynamic>> boardConfig = [
   {'type': 'yo-nunca', 'number': 50, 'content': '🙅‍♂️'},
   
   // Fila 6 (derecha a izquierda) - Casillas 51-60
-  {'type': '123', 'number': 60, 'content': 'podium'},
+  {'type': 'verdad', 'number': 60, 'content': '❓'},
   {'type': 'challenge', 'number': 59, 'content': '⚡'},
   {'type': 'yo-nunca', 'number': 58, 'content': '🙅‍♂️'},
   {'type': 'preferencias', 'number': 57, 'content': '🤔'},
-  {'type': '123', 'number': 56, 'content': 'podium'},
+  {'type': 'quien-mas', 'number': 56, 'content': '👥'},
   {'type': 'verdad', 'number': 55, 'content': '❓'},
   {'type': 'yo-nunca', 'number': 54, 'content': '🙅‍♂️'},
   {'type': 'quien-mas', 'number': 53, 'content': '👥'},
@@ -96,7 +96,7 @@ const List<Map<String, dynamic>> boardConfig = [
   {'type': 'yo-nunca', 'number': 75, 'content': '🙅‍♂️'},
   {'type': 'preferencias', 'number': 74, 'content': '🤔'},
   {'type': 'friki', 'number': 73, 'content': '🤓'},
-  {'type': '123', 'number': 72, 'content': 'podium'},
+  {'type': 'verdad', 'number': 72, 'content': '❓'},
   {'type': 'challenge', 'number': 71, 'content': '⚡'}
 ];
 

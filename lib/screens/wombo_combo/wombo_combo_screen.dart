@@ -738,116 +738,279 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
 
   Widget _build123TimerOverlay(WomboComboLogic gameLogic) {
     return Material(
-      color: Colors.black.withOpacity(0.8),
-      child: Center(
+      color: Colors.black.withOpacity(0.9),
+      child: GestureDetector(
+        onTap: () {
+          // Podemos permitir que tocar fuera también cierre el timer si lo prefieres
+          // gameLogic.hideDiceOverlay();
+        },
         child: Container(
-          width: 400,
-          constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
-          margin: const EdgeInsets.all(20),
-          padding: const EdgeInsets.all(30),
-          decoration: BoxDecoration(
-            color: const Color(0xFF2a0044),
-            borderRadius: BorderRadius.circular(25),
-            border: Border.all(color: Colors.white.withOpacity(0.2)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.5),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Timer
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                child: Text(
-                  gameLogic.timeLeft123.toString(),
-                  style: TextStyle(
-                    fontSize: 6 * 16,
-                    fontWeight: FontWeight.w800,
-                    color: gameLogic.timeLeft123 <= 5 
-                        ? const Color(0xFFFF6B6B)
-                        : const Color(0xFF29B6F6),
-                    shadows: [
-                      Shadow(
+          color: Colors.transparent,
+          child: Center(
+            child: GestureDetector(
+              onTap: () {}, // Evitar que el toque en el contenido se propague
+              child: SingleChildScrollView(
+                child: Container(
+                  width: 400,
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  margin: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(30),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2a0044),
+                    borderRadius: BorderRadius.circular(25),
+                    border: Border.all(color: const Color(0xFF29B6F6), width: 2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF29B6F6).withOpacity(0.3),
                         blurRadius: 20,
-                        color: (gameLogic.timeLeft123 <= 5 
-                            ? const Color(0xFFFF6B6B)
-                            : const Color(0xFF29B6F6)).withOpacity(0.7),
+                        offset: const Offset(0, 10),
+                      ),
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        blurRadius: 30,
+                        offset: const Offset(0, 20),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Indicador
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 20),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Text(
+                          'Toca cualquier lado para continuar',
+                          style: TextStyle(
+                            color: Colors.white54,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      
+                      // Jugador actual con su posición
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Color del jugador
+                            Container(
+                              width: 12,
+                              height: 12,
+                              margin: const EdgeInsets.only(right: 8),
+                              decoration: BoxDecoration(
+                                color: gameLogic.getPlayerColor(gameLogic.currentPlayerIndex),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            
+                            // Nombre del jugador
+                            Text(
+                              gameLogic.currentPlayerName,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            
+                            // Separador
+                            Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 10),
+                              child: const Text(
+                                '•',
+                                style: TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            
+                            // Posición del jugador
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF00CCFF).withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: const Color(0xFF00CCFF).withOpacity(0.4),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                'Casilla ${gameLogic.currentPlayerPosition}',
+                                style: const TextStyle(
+                                  color: Color(0xFF00CCFF),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 25),
+                      
+                      // Título del modo
+                      const Text(
+                        '123',
+                        style: TextStyle(
+                          fontSize: 2.0 * 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFFFCC00),
+                          shadows: [
+                            Shadow(
+                              blurRadius: 10,
+                              color: Colors.black,
+                            ),
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      
+                      const SizedBox(height: 20),
+                      
+                      // TIMER - Mostrado de forma destacada
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        child: Column(
+                          children: [
+                            Text(
+                              gameLogic.timeLeft123.toString(),
+                              style: TextStyle(
+                                fontSize: 4.5 * 16,
+                                fontWeight: FontWeight.w800,
+                                color: gameLogic.timeLeft123 <= 5 
+                                    ? const Color(0xFFFF6B6B)
+                                    : const Color(0xFF29B6F6),
+                                shadows: [
+                                  Shadow(
+                                    blurRadius: 20,
+                                    color: (gameLogic.timeLeft123 <= 5 
+                                        ? const Color(0xFFFF6B6B)
+                                        : const Color(0xFF29B6F6)).withOpacity(0.7),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'segundos restantes',
+                              style: TextStyle(
+                                fontSize: 1.2 * 16,
+                                color: gameLogic.timeLeft123 <= 5 
+                                    ? const Color(0xFFFF6B6B)
+                                    : Colors.white70,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 20),
+                      
+                      // Contenido principal (desafío)
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.white.withOpacity(0.2)),
+                        ),
+                        child: Text(
+                          gameLogic.currentContent,
+                          style: const TextStyle(
+                            fontSize: 1.5 * 16,
+                            color: Color(0xFFFFC107),
+                            fontWeight: FontWeight.w500,
+                            height: 1.4,
+                          ),
+                          textAlign: TextAlign.center,
+                          softWrap: true,
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 20),
+                      
+                      // Explicación
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF00CC55).withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFF00CC55).withOpacity(0.3)),
+                        ),
+                        child: const Column(
+                          children: [
+                            Text(
+                              '¡Di 3 cosas rápidamente!',
+                              style: TextStyle(
+                                fontSize: 1.2 * 16,
+                                color: Color(0xFF00CC55),
+                                fontWeight: FontWeight.w600,
+                                fontStyle: FontStyle.italic,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Si no completas el desafío en el tiempo, bebes por cada una que no dijiste',
+                              style: TextStyle(
+                                fontSize: 0.9 * 16,
+                                color: Color(0xFF00CC55),
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 25),
+                      
+                      // Botón saltar
+                      ElevatedButton(
+                        onPressed: () {
+                          debugPrint('[WOMBO COMBO] Botón Saltar Timer presionado');
+                          gameLogic.skipTimer();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white.withOpacity(0.2),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(color: Colors.white.withOpacity(0.3)),
+                          ),
+                          minimumSize: const Size(48, 48),
+                        ),
+                        child: const Text(
+                          'Saltar Timer',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
-              
-              const SizedBox(height: 20),
-              
-              // Label
-              const Text(
-                'segundos restantes',
-                style: TextStyle(
-                  fontSize: 1.5 * 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 25),
-              
-              // Texto del desafío
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.white.withOpacity(0.2)),
-                ),
-                child: Text(
-                  gameLogic.currentContent,
-                  style: const TextStyle(
-                    fontSize: 1.3 * 16,
-                    color: Color(0xFFFFC107),
-                    fontWeight: FontWeight.w500,
-                    height: 1.4,
-                  ),
-                  textAlign: TextAlign.center,
-                  softWrap: true,
-                  overflow: TextOverflow.visible,
-                ),
-              ),
-              
-              const SizedBox(height: 25),
-              
-              // Botón saltar
-              ElevatedButton(
-                onPressed: () {
-                  debugPrint('[WOMBO COMBO] Botón Saltar Timer presionado');
-                  gameLogic.skipTimer();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.2),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.white.withOpacity(0.3)),
-                  ),
-                  minimumSize: const Size(48, 48),
-                ),
-                child: const Text(
-                  'Saltar Timer',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

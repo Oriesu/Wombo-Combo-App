@@ -119,38 +119,79 @@ class WomboComboLogic extends ChangeNotifier {
       return "¡Sigue jugando!";
     }
     
-    // Buscar contenido que pueda ser procesado con los jugadores disponibles
-    List<int> availableIndices = [];
+    // Contar placeholders requeridos para cada frase
+    Map<int, List<int>> phraseIndicesByPlaceholderCount = {};
     
     for (int i = 0; i < contentArray.length; i++) {
-      if (!usedSet.contains(i) && _canProcessText(contentArray[i])) {
-        availableIndices.add(i);
+      final phrase = contentArray[i];
+      final placeholderCount = phrase.split('----').length - 1;
+      
+      if (!phraseIndicesByPlaceholderCount.containsKey(placeholderCount)) {
+        phraseIndicesByPlaceholderCount[placeholderCount] = [];
       }
+      phraseIndicesByPlaceholderCount[placeholderCount]!.add(i);
     }
     
-    if (availableIndices.isEmpty) {
-      if (debugLogicEnabled) {
-        debugPrint('[LOGIC] All content used or not processable, resetting set');
-      }
-      usedSet.clear();
-      availableIndices = List.generate(contentArray.length, (index) => index)
-          .where((index) => _canProcessText(contentArray[index]))
-          .toList();
-    }
-    
-    // Si aún no hay contenido procesable, usar cualquier contenido
-    if (availableIndices.isEmpty) {
-      availableIndices = List.generate(contentArray.length, (index) => index);
-    }
-    
-    final randomIndex = availableIndices[Random().nextInt(availableIndices.length)];
-    usedSet.add(randomIndex);
+    // Obtener jugadores disponibles (excluyendo al jugador actual)
+    final availablePlayers = _getAvailablePlayers();
+    final maxPlaceholders = availablePlayers.length;
     
     if (debugLogicEnabled) {
-      debugPrint('[LOGIC] Selected content at index $randomIndex from ${contentArray.length} options');
+      debugPrint('[LOGIC] Available players for placeholders: ${availablePlayers.length}');
+      debugPrint('[LOGIC] Max placeholders allowed: $maxPlaceholders');
     }
     
-    return contentArray[randomIndex];
+    // Buscar frases con placeholders <= jugadores disponibles
+    List<int> candidateIndices = [];
+    
+    for (int placeholderCount = 0; placeholderCount < maxPlaceholders; placeholderCount++) {
+      if (phraseIndicesByPlaceholderCount.containsKey(placeholderCount)) {
+        final indices = phraseIndicesByPlaceholderCount[placeholderCount]!;
+        
+        // Filtrar por frases no usadas y procesables
+        for (int index in indices) {
+          if (!usedSet.contains(index) && _canProcessText(contentArray[index])) {
+            candidateIndices.add(index);
+          }
+        }
+      }
+    }
+    
+    // Si no hay candidatos válidos, buscar cualquier frase con placeholders <= max
+    if (candidateIndices.isEmpty) {
+      if (debugLogicEnabled) {
+        debugPrint('[LOGIC] No valid candidates found, searching for any phrase with placeholders <= $maxPlaceholders');
+      }
+      
+      for (int placeholderCount = 0; placeholderCount <= maxPlaceholders; placeholderCount++) {
+        if (phraseIndicesByPlaceholderCount.containsKey(placeholderCount)) {
+          candidateIndices.addAll(phraseIndicesByPlaceholderCount[placeholderCount]!);
+        }
+      }
+    }
+    
+    // Si aún no hay candidatos, usar cualquier frase (esto debería ser raro)
+    if (candidateIndices.isEmpty) {
+      if (debugLogicEnabled) {
+        debugPrint('[LOGIC] Still no candidates, using all phrases');
+      }
+      candidateIndices = List.generate(contentArray.length, (index) => index);
+    }
+    
+    // Seleccionar una frase al azar de los candidatos
+    final randomIndex = candidateIndices[Random().nextInt(candidateIndices.length)];
+    usedSet.add(randomIndex);
+    
+    final selectedPhrase = contentArray[randomIndex];
+    final actualPlaceholders = selectedPhrase.split('----').length - 1;
+    
+    if (debugLogicEnabled) {
+      debugPrint('[LOGIC] Selected phrase at index $randomIndex with $actualPlaceholders placeholders');
+      debugPrint('[LOGIC] Available players: ${availablePlayers.length}');
+      debugPrint('[LOGIC] Selected phrase: "$selectedPhrase"');
+    }
+    
+    return selectedPhrase;
   }
 
   /// Verifica si una frase puede ser procesada con los jugadores disponibles
@@ -196,7 +237,7 @@ class WomboComboLogic extends ChangeNotifier {
         // Usar un jugador diferente para cada placeholder si es posible
         result = result.replaceFirst('----', availablePlayers[i]);
       } else {
-        // Si no hay suficientes jugadores únicos, repetir o usar marcador genérico
+        // Si no hay suficientes jugadores únicos, usar marcador genérico
         result = result.replaceFirst('----', 'Otro jugador');
       }
     }

@@ -121,32 +121,37 @@ class _PlayersMenuOverlayState extends State<PlayersMenuOverlay> {
                       margin: const EdgeInsets.only(bottom: 10),
                       child: Row(
                         children: [
-                          Expanded(
+                         Expanded(
                             child: Container(
                               height: 50,
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: TextField(
-                                controller: _localTextController,
-                                focusNode: _textFieldFocusNode,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
+                              child: Center(
+                                child: TextField(
+                                  controller: _localTextController,
+                                  focusNode: _textFieldFocusNode,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    height: 1.0, // Asegura que el texto no tenga espacio extra
+                                  ),
+                                  decoration: const InputDecoration(
+                                    hintText: 'Nombre del jugador',
+                                    hintStyle: TextStyle(color: Colors.white54),
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                                    isDense: true, // Reduce el padding interno
+                                  ),
+                                  textAlignVertical: TextAlignVertical.center, // Centra verticalmente
+                                  maxLength: 15,
+                                  onChanged: (value) {
+                                    // Sincronizar con el controlador externo
+                                    widget.newPlayerNameController.text = value;
+                                  },
+                                  onSubmitted: (_) => _addPlayer(),
                                 ),
-                                decoration: const InputDecoration(
-                                  hintText: 'Nombre del jugador',
-                                  hintStyle: TextStyle(color: Colors.white54),
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                ),
-                                maxLength: 15,
-                                onChanged: (value) {
-                                  // Sincronizar con el controlador externo
-                                  widget.newPlayerNameController.text = value;
-                                },
-                                onSubmitted: (_) => _addPlayer(),
                               ),
                             ),
                           ),
