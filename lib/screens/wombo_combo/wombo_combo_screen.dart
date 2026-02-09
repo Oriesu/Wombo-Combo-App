@@ -96,7 +96,6 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                               ),
                               const SizedBox(height: 20),
                               
-                              // BOTONES INFERIORES
                               _buildBottomButtons(context, gameLogic),
                               
                               const SizedBox(height: 40), 
@@ -124,7 +123,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                 if (gameLogic.showTimeoutMessage)
                   _buildTimeoutMessage(context, gameLogic),
 
-                // Overlay de victoria
+                // Overlay de victoria 
                 if (gameLogic.showVictoryScreen)
                   _buildVictoryOverlay(context, gameLogic),
               ],
@@ -324,7 +323,8 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
     final isDiceDisabled = gameLogic.isRolling || 
                           gameLogic.is123Active || 
                           gameLogic.isDiceButtonDisabled || 
-                          gameLogic.showVictoryScreen;
+                          gameLogic.showVictoryScreen ||
+                          gameLogic.players.isEmpty;
     
     return Container(
       width: double.infinity,
@@ -336,51 +336,12 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
       ),
       child: Column(
         children: [
-          // Botón tirar dado principal 
-          ElevatedButton(
-            onPressed: isDiceDisabled ? null : () {
-              debugPrint('[WOMBO COMBO] Botón Tirar Dado presionado');
-              gameLogic.rollDice();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isDiceDisabled ? Colors.grey : const Color(0xFF29B6F6),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 18),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              elevation: isDiceDisabled ? 0 : 8,
-              shadowColor: isDiceDisabled ? null : const Color(0xFF29B6F6).withOpacity(0.5),
-              minimumSize: const Size(double.infinity, 60),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.casino,
-                  size: 24,
-                  color: isDiceDisabled ? Colors.white70 : Colors.white,
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'TIRAR DADO',
-                  style: TextStyle(
-                    fontSize: 1.3 * 16,
-                    fontWeight: FontWeight.w700,
-                    color: isDiceDisabled ? Colors.white70 : Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          const SizedBox(height: 20),
-          
-          // Fila con dado y botón volver
+          // FILA CON BOTÓN IZQUIERDA, DADO CENTRO, TEXTO DERECHA
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Botón volver
+              // BOTÓN VOLVER (IZQUIERDA)
               ElevatedButton(
                 onPressed: () {
                   debugPrint('[WOMBO COMBO] Botón Volver presionado');
@@ -395,7 +356,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                     side: BorderSide(color: Colors.white.withOpacity(0.2)),
                   ),
                   elevation: 0,
-                  minimumSize: const Size(120, 50),
+                  minimumSize: const Size(100, 50),
                 ),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
@@ -408,63 +369,38 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                 ),
               ),
               
-              // Dado visual
-              Container(
-                width: 70,
-                height: 70,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Colors.white.withOpacity(0.2)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 6,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: Text(
-                      gameLogic.isRolling ? '?' : gameLogic.diceValue.toString(),
-                      key: ValueKey(gameLogic.isRolling),
-                      style: TextStyle(
-                        fontSize: 2.2 * 16,
-                        fontWeight: FontWeight.bold,
-                        color: gameLogic.isRolling ? Colors.white54 : Colors.white,
-                      ),
-                    ),
+              // DADO IMAGEN CLICKEABLE 
+              GestureDetector(
+                onTap: isDiceDisabled ? null : () {
+                  debugPrint('[WOMBO COMBO] Dado pulsado para tirar');
+                  gameLogic.rollDice();
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  width: 80, 
+                  height: 80,
+                  padding: const EdgeInsets.all(8), 
+                  
+                  child: Center(
+                    child: _buildDiceImage(gameLogic), 
                   ),
                 ),
               ),
               
-              // Botón reiniciar
-              ElevatedButton(
-                onPressed: () {
-                  debugPrint('[WOMBO COMBO] Botón Reiniciar presionado');
-                  _showRestartConfirmation(context, gameLogic);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.1),
-                  foregroundColor: const Color(0xFFFF6B6B),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: const Color(0xFFFF6B6B).withOpacity(0.3)),
+              // TEXTO INDICADOR 
+              Container(
+                width: 100, 
+                child: Center(
+                  child: Text(
+                    isDiceDisabled ? 'Espera...' : 'Toca el dado\npara tirar',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isDiceDisabled ? Colors.white54 : Colors.white,
+                      fontWeight: FontWeight.w500,
+                      height: 1.2,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  elevation: 0,
-                  minimumSize: const Size(120, 50),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.restart_alt, size: 20),
-                    SizedBox(width: 8),
-                    Text('Reiniciar'),
-                  ],
                 ),
               ),
             ],
@@ -473,43 +409,69 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
       ),
     );
   }
+  Widget _buildDiceImage(WomboComboLogic gameLogic) {
+    if (gameLogic.isRolling) {
+      // Durante la animación de tiro
+      return AnimatedSwitcher(
+        duration: const Duration(milliseconds: 150),
+        child: _buildDiceImageWidget(gameLogic.diceValue, true),
+      );
+    } else {
+      // Estado normal
+      return _buildDiceImageWidget(gameLogic.diceValue, false);
+    }
+  }
 
-  void _showRestartConfirmation(BuildContext context, WomboComboLogic gameLogic) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF2a0044),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: Colors.white.withOpacity(0.2)),
-        ),
-        title: const Text(
-          'Reiniciar Juego',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        content: const Text(
-          '¿Estás seguro de que quieres reiniciar el juego? ',
-          style: TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar', style: TextStyle(color: Colors.white70)),
+  Widget _buildDiceImageWidget(int value, bool isRolling) {
+    final path = _getDiceImagePath(value);
+    debugPrint('[DICE] Loading image from path: $path');
+    
+    return Image.asset(
+      path,
+      width: 80,
+      height: 80,
+      errorBuilder: (context, error, stackTrace) {
+        debugPrint('[DICE] ERROR loading image: $error');
+        debugPrint('[DICE] Stack trace: $stackTrace');
+        return Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: Colors.red.withOpacity(0.3), // Rojo para indicar error
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.red, width: 2),
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              gameLogic.restartGame();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFF6B6B),
-              foregroundColor: Colors.white,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error, color: Colors.red, size: 30),
+                const SizedBox(height: 5),
+                Text(
+                  value.toString(),
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  'Error',
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Colors.white70,
+                  ),
+                ),
+              ],
             ),
-            child: const Text('Reiniciar'),
           ),
-        ],
-      ),
+        );
+      },
     );
+  }
+
+  String _getDiceImagePath(int value) {
+    return 'lib/screens/wombo_combo/dados/dado$value.png';
   }
 
   Widget _buildDiceOverlay(WomboComboLogic gameLogic) {
@@ -778,250 +740,254 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Indicador
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 20),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Text(
-                          'Toca cualquier lado para continuar',
-                          style: TextStyle(
-                            color: Colors.white54,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      
                       // Jugador actual con su posición
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Color del jugador
-                            Container(
-                              width: 12,
-                              height: 12,
-                              margin: const EdgeInsets.only(right: 8),
-                              decoration: BoxDecoration(
-                                color: gameLogic.getPlayerColor(gameLogic.currentPlayerIndex),
-                                shape: BoxShape.circle,
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Color del jugador
+                          Container(
+                            width: 12,
+                            height: 12,
+                            margin: const EdgeInsets.only(right: 8),
+                            decoration: BoxDecoration(
+                              color: gameLogic.getPlayerColor(gameLogic.currentPlayerIndex),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          
+                          // Nombre del jugador
+                          Text(
+                            gameLogic.currentPlayerName,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          
+                          // Separador
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 10),
+                            child: const Text(
+                              '•',
+                              style: TextStyle(
+                                color: Colors.white54,
+                                fontSize: 16,
                               ),
                             ),
-                            
-                            // Nombre del jugador
-                            Text(
-                              gameLogic.currentPlayerName,
+                          ),
+                          
+                          // Posición del jugador
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF00CCFF).withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: const Color(0xFF00CCFF).withOpacity(0.4),
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(
+                              'Casilla ${gameLogic.currentPlayerPosition}',
                               style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
+                                color: Color(0xFF00CCFF),
+                                fontSize: 14,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            
-                            // Separador
-                            Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 10),
-                              child: const Text(
-                                '•',
-                                style: TextStyle(
-                                  color: Colors.white54,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                            
-                            // Posición del jugador
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF00CCFF).withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: const Color(0xFF00CCFF).withOpacity(0.4),
-                                  width: 1,
-                                ),
-                              ),
-                              child: Text(
-                                'Casilla ${gameLogic.currentPlayerPosition}',
-                                style: const TextStyle(
-                                  color: Color(0xFF00CCFF),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 25),
+                    
+                    // Título del modo
+                    const Text(
+                      '3, 2, 1...¡Bebe!',
+                      style: TextStyle(
+                        fontSize: 2.0 * 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFFFCC00),
+                        shadows: [
+                          Shadow(
+                            blurRadius: 10,
+                            color: Colors.black,
+                          ),
+                        ],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    
+                    const SizedBox(height: 20),
+                    
+                    // Contenido del desafío (primero se muestra el desafío completo)
+                    Container(
+                      width: double.infinity,
+                      constraints: const BoxConstraints(
+                        maxHeight: 200, 
+                      ),
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.white.withOpacity(0.2)),
+                      ),
+                      child: SingleChildScrollView( 
+                        child: Text(
+                          gameLogic.currentContent,
+                          style: const TextStyle(
+                            fontSize: 1.5 * 16,
+                            color: Color(0xFFFFC107),
+                            fontWeight: FontWeight.w500,
+                            height: 1.4,
+                          ),
+                          textAlign: TextAlign.center,
+                          softWrap: true,
                         ),
                       ),
-                      
-                      const SizedBox(height: 25),
-                      
-                      // Título del modo
-                      const Text(
-                        '3, 2, 1...¡Bebe!',
-                        style: TextStyle(
-                          fontSize: 2.0 * 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFFFCC00),
-                          shadows: [
-                            Shadow(
-                              blurRadius: 10,
-                              color: Colors.black,
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.center,
+                    ),
+                    
+                    const SizedBox(height: 20),
+                    
+                    // Explicación - Estado inicial
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00CC55).withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFF00CC55).withOpacity(0.3)),
                       ),
-                      
-                      const SizedBox(height: 20),
-                                            AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        child: Column(
-                          children: [
-                            Text(
-                              gameLogic.timeLeft123.toString(),
-                              style: TextStyle(
-                                fontSize: 4.5 * 16,
-                                fontWeight: FontWeight.w800,
-                                color: gameLogic.timeLeft123 <= 5 
-                                    ? const Color(0xFFFF6B6B)
-                                    : const Color(0xFF29B6F6),
-                                shadows: [
-                                  Shadow(
-                                    blurRadius: 20,
-                                    color: (gameLogic.timeLeft123 <= 5 
-                                        ? const Color(0xFFFF6B6B)
-                                        : const Color(0xFF29B6F6)).withOpacity(0.7),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'segundos restantes',
-                              style: TextStyle(
-                                fontSize: 1.2 * 16,
-                                color: gameLogic.timeLeft123 <= 5 
-                                    ? const Color(0xFFFF6B6B)
-                                    : Colors.white70,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      
-                      const SizedBox(height: 20),
-                      
-                      // Contenido principal (desafío) 
-                      Container(
-                        width: double.infinity,
-                        constraints: const BoxConstraints(
-                          maxHeight: 200, 
-                        ),
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.white.withOpacity(0.2)),
-                        ),
-                        child: SingleChildScrollView( 
-                          child: Text(
-                            gameLogic.currentContent,
-                            style: const TextStyle(
-                              fontSize: 1.5 * 16,
-                              color: Color(0xFFFFC107),
-                              fontWeight: FontWeight.w500,
-                              height: 1.4,
+                      child: const Column(
+                        children: [
+                          Text(
+                            '¡Di 3 cosas rápidamente!',
+                            style: TextStyle(
+                              fontSize: 1.2 * 16,
+                              color: Color(0xFF00CC55),
+                              fontWeight: FontWeight.w600,
+                              fontStyle: FontStyle.italic,
                             ),
                             textAlign: TextAlign.center,
-                            softWrap: true,
                           ),
-                        ),
+                          SizedBox(height: 4),
+                        ],
                       ),
-                      
-                      const SizedBox(height: 20),
-                      
-                      // Explicación
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF00CC55).withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFF00CC55).withOpacity(0.3)),
-                        ),
-                        child: const Column(
-                          children: [
-                            Text(
-                              '¡Di 3 cosas rápidamente!',
-                              style: TextStyle(
-                                fontSize: 1.2 * 16,
-                                color: Color(0xFF00CC55),
-                                fontWeight: FontWeight.w600,
-                                fontStyle: FontStyle.italic,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Si no completas el desafío en el tiempo, bebes por cada una que no dijiste',
-                              style: TextStyle(
-                                fontSize: 0.9 * 16,
-                                color: Color(0xFF00CC55),
-                                fontWeight: FontWeight.w500,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                      
-                      const SizedBox(height: 25),
-                      
-                      // Botón saltar
+                    ),
+                    
+                    const SizedBox(height: 25),
+                    
+                    // Timer o botón de inicio (según el estado)
+                    if (gameLogic.timeLeft123 == 10) 
                       ElevatedButton(
                         onPressed: () {
-                          debugPrint('[WOMBO COMBO] Botón Saltar Timer presionado');
-                          gameLogic.skipTimer();
+                          debugPrint('[WOMBO COMBO] Botón Empezar Timer presionado');
+                          gameLogic.start123Timer(); // Inicia la cuenta regresiva
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.2),
+                          backgroundColor: const Color(0xFF00CCFF),
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(color: Colors.white.withOpacity(0.3)),
                           ),
-                          minimumSize: const Size(48, 48),
+                          minimumSize: const Size(200, 50),
                         ),
                         child: const Text(
-                          'Saltar Timer',
+                          'Empezar Timer',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
+                      )
+                    else // Estado de cuenta regresiva activa: mostrar el timer
+                      Column(
+                        children: [
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            child: Column(
+                              children: [
+                                Text(
+                                  gameLogic.timeLeft123.toString(),
+                                  style: TextStyle(
+                                    fontSize: 4.5 * 16,
+                                    fontWeight: FontWeight.w800,
+                                    color: gameLogic.timeLeft123 <= 3 
+                                        ? const Color(0xFFFF6B6B)
+                                        : const Color(0xFF29B6F6),
+                                    shadows: [
+                                      Shadow(
+                                        blurRadius: 20,
+                                        color: (gameLogic.timeLeft123 <= 3 
+                                            ? const Color(0xFFFF6B6B)
+                                            : const Color(0xFF29B6F6)).withOpacity(0.7),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'segundos restantes',
+                                  style: TextStyle(
+                                    fontSize: 1.2 * 16,
+                                    color: gameLogic.timeLeft123 <= 3 
+                                        ? const Color(0xFFFF6B6B)
+                                        : Colors.white70,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          
+                          const SizedBox(height: 25),
+                          
+                          // Botón para saltar/salir del timer
+                          ElevatedButton(
+                            onPressed: () {
+                              debugPrint('[WOMBO COMBO] Botón Saltar Timer presionado');
+                              gameLogic.skipTimer();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white.withOpacity(0.2),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Colors.white.withOpacity(0.3)),
+                              ),
+                              minimumSize: const Size(48, 48),
+                            ),
+                            child: const Text(
+                              'Saltar Timer',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ),
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildTimeoutMessage(BuildContext context, WomboComboLogic gameLogic) {
     return Material(
@@ -1153,7 +1119,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Botón "Jugar Otra Vez"
+                    // Botón "Jugar Otra Vez" 
                     ElevatedButton(
                       onPressed: () {
                         debugPrint('[WOMBO COMBO] Botón Jugar Otra Vez presionado');
@@ -1181,7 +1147,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                     
                     const SizedBox(width: 16),
                     
-                    // Botón "Volver al Menú"
+                    // Botón "Volver al Menú" 
                     ElevatedButton(
                       onPressed: () {
                         debugPrint('[WOMBO COMBO] Botón Volver al Menú presionado');

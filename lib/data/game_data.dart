@@ -1900,7 +1900,7 @@ class GameData {
     "Yo nunca me he sentido atraído/a por un personaje de dibujos animados",
     "Yo nunca me he sentido sexualmente atraído por el padre o la madre de alguien presente",
     "Yo nunca me he tirado a mi ex",
-    "Yo nunca me he tirado un eructo un pedo desde que empezó el juego",
+    "Yo nunca me he tirado un eructo o un pedo desde que empezó el juego",
     "Yo nunca me he tirado un pedo en la piscina",
     "Yo nunca me he tirado un pedo mientras comía",
     "Yo nunca me he tirado un pedo mientras hacía ejercicio",

@@ -68,13 +68,14 @@ class WomboComboLogic extends ChangeNotifier {
   Set<int> usedPreferencias = {};
 
   WomboComboLogic({required List<String> players}) {
-    this.players = players;
-    playerPositions = List<int>.filled(_players.length, 1);
-    
-    if (debugLogicEnabled) {
-      debugPrint('[LOGIC] Initialized with ${_players.length} players: $_players');
-    }
+  this.players = players;
+  playerPositions = List<int>.filled(_players.length, 1);
+  diceValue = 6; 
+  
+  if (debugLogicEnabled) {
+    debugPrint('[LOGIC] Initialized with ${_players.length} players: $_players');
   }
+}
 
   @override
   void dispose() {
@@ -266,11 +267,11 @@ class WomboComboLogic extends ChangeNotifier {
     if (isRolling || is123Active || isDiceButtonDisabled || _players.isEmpty || showVictoryScreen) {
       if (debugLogicEnabled) {
         debugPrint('[LOGIC] Dice roll BLOCKED - '
-                   'isRolling: $isRolling, '
-                   'is123Active: $is123Active, '
-                   'isDiceButtonDisabled: $isDiceButtonDisabled, '
-                   'players: ${_players.length}, '
-                   'showVictory: $showVictoryScreen');
+                  'isRolling: $isRolling, '
+                  'is123Active: $is123Active, '
+                  'isDiceButtonDisabled: $isDiceButtonDisabled, '
+                  'players: ${_players.length}, '
+                  'showVictory: $showVictoryScreen');
       }
       return;
     }
@@ -288,18 +289,29 @@ class WomboComboLogic extends ChangeNotifier {
     notifyListeners();
 
     int counter = 0;
+    int lastDiceValue = diceValue;
     
     if (debugLogicEnabled) {
       debugPrint('[LOGIC] Starting dice animation');
     }
     
-    final timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
-      diceValue = (Random().nextInt(6)) + 1;
+    final timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+      // Generar nuevo valor que no sea igual al anterior
+      int newValue;
+      do {
+        newValue = (Random().nextInt(6)) + 1;
+      } while (newValue == lastDiceValue && counter > 0);
+      
+      diceValue = newValue;
+      lastDiceValue = newValue;
       notifyListeners();
       counter++;
       
-      if (counter >= 10) {
+      // Cambiar la imagen 3 veces en 1 segundo (200ms * 5 = 1000ms)
+      if (counter >= 5) {
         timer.cancel();
+        
+        // Valor final aleatorio
         final finalValue = (Random().nextInt(6)) + 1;
         diceValue = finalValue;
         isRolling = false;
@@ -549,27 +561,28 @@ class WomboComboLogic extends ChangeNotifier {
     
     Future.delayed(const Duration(milliseconds: 50), () {
       is123Active = true;
-      timeLeft123 = 20;
+      timeLeft123 = 10;
       currentContent = challengeText;
       showTimeoutMessageFlag = false;
       
       if (debugLogicEnabled) {
-        debugPrint('[LOGIC] 123 Timer started: $timeLeft123 seconds');
+        debugPrint('[LOGIC] 123 Timer initialized: $timeLeft123 seconds');
+        debugPrint('[LOGIC] Timer NOT started yet - waiting for user to press button');
       }
       
       notifyListeners();
-
-      start123Timer();
     });
   }
 
   void start123Timer() {
     if (debugLogicEnabled) {
-      debugPrint('[LOGIC] Starting 123 countdown timer');
+      debugPrint('[LOGIC] Starting 123 countdown timer (user initiated)');
     }
     
+    // Cancelar cualquier timer existente
     timer123Interval?.cancel();
     
+    // Iniciar el timer de cuenta regresiva
     timer123Interval = Timer.periodic(const Duration(seconds: 1), (timer) {
       timeLeft123--;
       
@@ -589,6 +602,8 @@ class WomboComboLogic extends ChangeNotifier {
         showTimeoutMessageFunc();
       }
     });
+    
+    notifyListeners();
   }
 
   void showTimeoutMessageFunc() {
@@ -655,70 +670,72 @@ class WomboComboLogic extends ChangeNotifier {
     notifyListeners();
   }
 
-  void restartGame() {
-    if (debugLogicEnabled) {
-      debugPrint('[LOGIC] Restarting game');
-    }
-    
-    playerPositions = List.filled(_players.length, 1);
-    currentPlayerIndex = 0;
-    showDiceOverlay = false;
-    is123Active = false;
-    isDiceButtonDisabled = false;
-    showTimeoutMessageFlag = false;
-    showVictoryScreen = false; 
-    
-    usedRules.clear();
-    usedChallenges123.clear();
-    usedYoNunca.clear();
-    usedFriki.clear();
-    usedQuienMas.clear();
-    used123.clear();
-    usedVerdad.clear();
-    usedBeber.clear();
-    usedPreferencias.clear();
-    
-    timer123Interval?.cancel();
-    
-    if (debugLogicEnabled) {
-      debugPrint('[LOGIC] Game restarted, first player: ${_players.isNotEmpty ? _players[0] : "none"}');
-    }
-    
-    notifyListeners();
+ void restartGame() {
+  if (debugLogicEnabled) {
+    debugPrint('[LOGIC] Restarting game');
   }
+  
+  playerPositions = List.filled(_players.length, 1);
+  currentPlayerIndex = 0;
+  diceValue = 6; // Reiniciar a dado 6
+  showDiceOverlay = false;
+  is123Active = false;
+  isDiceButtonDisabled = false;
+  showTimeoutMessageFlag = false;
+  showVictoryScreen = false; 
+  
+  usedRules.clear();
+  usedChallenges123.clear();
+  usedYoNunca.clear();
+  usedFriki.clear();
+  usedQuienMas.clear();
+  used123.clear();
+  usedVerdad.clear();
+  usedBeber.clear();
+  usedPreferencias.clear();
+  
+  timer123Interval?.cancel();
+  
+  if (debugLogicEnabled) {
+    debugPrint('[LOGIC] Game restarted, first player: ${_players.isNotEmpty ? _players[0] : "none"}');
+  }
+  
+  notifyListeners();
+}
 
-  // Método para reiniciar desde la pantalla de victoria
-  void restartGameFromVictory() {
-    if (debugLogicEnabled) {
-      debugPrint('[LOGIC] Restarting game from victory screen');
-    }
-    
-    playerPositions = List.filled(_players.length, 1);
-    currentPlayerIndex = 0;
-    showVictoryScreen = false;
-    showDiceOverlay = false;
-    is123Active = false;
-    isDiceButtonDisabled = false;
-    showTimeoutMessageFlag = false;
-    
-    usedRules.clear();
-    usedChallenges123.clear();
-    usedYoNunca.clear();
-    usedFriki.clear();
-    usedQuienMas.clear();
-    used123.clear();
-    usedVerdad.clear();
-    usedBeber.clear();
-    usedPreferencias.clear();
-    
-    timer123Interval?.cancel();
-    
-    if (debugLogicEnabled) {
-      debugPrint('[LOGIC] Game restarted from victory');
-    }
-    
-    notifyListeners();
+void restartGameFromVictory() {
+  if (debugLogicEnabled) {
+    debugPrint('[LOGIC] Restarting game from victory screen');
   }
+  
+  playerPositions = List.filled(_players.length, 1);
+  currentPlayerIndex = 0;
+  diceValue = 6; // Reiniciar a dado 6
+  showVictoryScreen = false;
+  showDiceOverlay = false;
+  is123Active = false;
+  isDiceButtonDisabled = false;
+  showTimeoutMessageFlag = false;
+  
+  usedRules.clear();
+  usedChallenges123.clear();
+  usedYoNunca.clear();
+  usedFriki.clear();
+  usedQuienMas.clear();
+  used123.clear();
+  usedVerdad.clear();
+  usedBeber.clear();
+  usedPreferencias.clear();
+  
+  timer123Interval?.cancel();
+  
+  if (debugLogicEnabled) {
+    debugPrint('[LOGIC] Game restarted from victory');
+  }
+  
+  notifyListeners();
+}
+
 
   Color getPlayerColor(int index) {
     if (index < 0 || index >= _players.length) {
