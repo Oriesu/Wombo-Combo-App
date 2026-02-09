@@ -1,5 +1,3 @@
-// Archivo: lib/screens/123/123_screen.dart
-
 import 'package:flutter/material.dart';
 import '../add_players/add_players_screen.dart';
 import '123_logic.dart';
@@ -72,7 +70,7 @@ class _OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
       child: Column(
         children: [
           const Text(
-            '1, 2, 3',
+            '3, 2, 1...¡Bebe!',
             style: TextStyle(
               fontSize: 40,
               fontWeight: FontWeight.w800,
@@ -252,7 +250,7 @@ class _OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1a0033),
-      body: Stack( // CAMBIO 1: Usar Stack en lugar de Container
+      body: Stack(
         children: [
           // Fondo gradiente
           Container(
@@ -274,7 +272,7 @@ class _OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
-                  child: SingleChildScrollView( // CAMBIO 2: Mover SingleChildScrollView aquí
+                  child: SingleChildScrollView(
                     child: Column(
                       children: [
                         _buildHeader(),
@@ -282,7 +280,7 @@ class _OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
                         _buildChallengeSection(),
                         const SizedBox(height: 25),
                         _buildTimerSection(),
-                        const SizedBox(height: 100), // Espacio para los botones fijos
+                        const SizedBox(height: 100),
                       ],
                     ),
                   ),
@@ -291,7 +289,7 @@ class _OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
             ),
           ),
           
-          // Botones inferiores FIJOS (fuera del scroll)
+          // Botones inferiores FIJOS 
           Positioned(
             bottom: 20,
             left: 0,

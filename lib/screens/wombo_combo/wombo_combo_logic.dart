@@ -41,7 +41,6 @@ class WomboComboLogic extends ChangeNotifier {
   int diceValue = 1;
   bool isRolling = false;
   bool showPlayersMenu = false;
-  bool showContent = false; // No se usa más
   bool is123Active = false;
   bool isDiceButtonDisabled = false;
   String currentContent = '';
@@ -55,8 +54,8 @@ class WomboComboLogic extends ChangeNotifier {
   String diceOverlayTitle = '';
   String diceOverlayContent = '';
   String diceOverlayExplanation = '';
-  int diceOverlayPlayerPosition = 0; // NUEVO: posición del jugador
-  String diceOverlayPlayerName = ''; // NUEVO: nombre del jugador
+  int diceOverlayPlayerPosition = 0; 
+  String diceOverlayPlayerName = ''; 
 
   Set<int> usedRules = {};
   Set<int> usedChallenges123 = {};
@@ -183,15 +182,13 @@ class WomboComboLogic extends ChangeNotifier {
     usedSet.add(randomIndex);
     
     final selectedPhrase = contentArray[randomIndex];
-    final actualPlaceholders = selectedPhrase.split('----').length - 1;
     
     if (debugLogicEnabled) {
-      debugPrint('[LOGIC] Selected phrase at index $randomIndex with $actualPlaceholders placeholders');
-      debugPrint('[LOGIC] Available players: ${availablePlayers.length}');
+      debugPrint('[LOGIC] Selected phrase at index $randomIndex');
       debugPrint('[LOGIC] Selected phrase: "$selectedPhrase"');
     }
     
-    return selectedPhrase;
+    return processText(selectedPhrase);
   }
 
   /// Verifica si una frase puede ser procesada con los jugadores disponibles
@@ -424,17 +421,16 @@ class WomboComboLogic extends ChangeNotifier {
         break;
       case 'quien-mas':
         content = getRandomContent(GameData.quienMasProbableFrases, usedQuienMas);
-        final processedContent = processText(content);
         showDiceOverlayContent(
           title: '¿Quién es más probable?',
-          content: processedContent,
+          content: content,
           explanation: 'El elegido bebe',
           playerName: currentPlayer
         );
         break;
       case '123':
         content = getRandomContent(GameData.challenges123, used123);
-        show123Timer(processText(content));
+        show123Timer(content);
         break;
       case 'verdad':
         content = getRandomContent(GameData.verdades, usedVerdad);
@@ -456,10 +452,9 @@ class WomboComboLogic extends ChangeNotifier {
         break;
       case 'beber':
         content = getRandomContent(GameData.beber, usedBeber);
-        final processedContent = processText(content);
         showDiceOverlayContent(
           title: '¡A beber!',
-          content: processedContent,
+          content: content,
           explanation: 'Que aproveche',
           playerName: currentPlayer
         );
@@ -624,6 +619,9 @@ class WomboComboLogic extends ChangeNotifier {
     
     if (is123Active) {
       hide123Timer();
+      Future.delayed(const Duration(milliseconds: 50), () {
+        nextPlayer();
+      });
     }
   }
 

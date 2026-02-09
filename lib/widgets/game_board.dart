@@ -30,7 +30,7 @@ const List<Map<String, dynamic>> boardConfig = [
   // Fila 3 (izquierda a derecha) - Casillas 21-30
   {'type': 'yo-nunca', 'number': 21, 'content': '🙅‍♂️'},
   {'type': 'verdad', 'number': 22, 'content': '❓'},
-  {'type': '123', 'number': 23, 'content': 'podium'},
+  {'type': 'quien-mas', 'number': 23, 'content': '👥'},
   {'type': 'preferencias', 'number': 24, 'content': '🤔'},
   {'type': 'yo-nunca', 'number': 25, 'content': '🙅‍♂️'},
   {'type': 'challenge', 'number': 26, 'content': '⚡'},
@@ -41,14 +41,14 @@ const List<Map<String, dynamic>> boardConfig = [
   
   // Fila 4 (derecha a izquierda) - Casillas 31-40
   {'type': '123', 'number': 40, 'content': 'podium'},
-  {'type': 'verdad', 'number': 39, 'content': '❓'},
+  {'type': 'preferencias', 'number': 39, 'content': '🤔'},
   {'type': 'yo-nunca', 'number': 38, 'content': '🙅‍♂️'},
   {'type': 'quien-mas', 'number': 37, 'content': '👥'},
   {'type': '123', 'number': 36, 'content': 'podium'},
-  {'type': 'challenge', 'number': 35, 'content': '⚡'},
+  {'type': 'verdad', 'number': 35, 'content': '❓'},
   {'type': 'yo-nunca', 'number': 34, 'content': '🙅‍♂️'},
   {'type': 'drink', 'number': 33, 'content': '🥃'},
-  {'type': 'preferencias', 'number': 32, 'content': '🤔'},
+  {'type': 'challenge', 'number': 32, 'content': '⚡'},
   {'type': 'quien-mas', 'number': 31, 'content': '👥'},
   
   // Fila 5 (izquierda a derecha) - Casillas 41-50
@@ -79,11 +79,11 @@ const List<Map<String, dynamic>> boardConfig = [
   {'type': 'yo-nunca', 'number': 61, 'content': '🙅‍♂️'},
   {'type': 'verdad', 'number': 62, 'content': '❓'},
   {'type': '123', 'number': 63, 'content': 'podium'},
-  {'type': 'preferencias', 'number': 64, 'content': '🤔'},
+  {'type': 'quien-mas', 'number': 64, 'content': '👥'},
   {'type': 'yo-nunca', 'number': 65, 'content': '🙅‍♂️'},
   {'type': 'challenge', 'number': 66, 'content': '⚡'},
   {'type': '123', 'number': 67, 'content': 'podium'},
-  {'type': 'quien-mas', 'number': 68, 'content': '👥'},
+  {'type': 'preferencias', 'number': 68, 'content': '🤔'},
   {'type': 'drink', 'number': 69, 'content': '🥃'},
   {'type': 'yo-nunca', 'number': 70, 'content': '🙅‍♂️'},
   

@@ -1,4 +1,4 @@
-import 'dart:async'; // ¡IMPORTANTE! Agregar esto al inicio
+import 'dart:async'; 
 import 'dart:math';
 import '../../data/game_data.dart';
 
@@ -8,7 +8,7 @@ class OneTwoThreeLogic {
   int timeLeft = 10;
   String currentChallenge = '';
   bool _timerRunning = false;
-  Timer? _timer; // ¡AGREGAR ESTO! Para controlar el timer
+  Timer? _timer; 
   
   // Callbacks para notificar cambios a la UI
   Function(String)? onChallengeChanged;
@@ -20,7 +20,7 @@ class OneTwoThreeLogic {
     _getRandomChallenge();
   }
   
-  // Mezclar jugadores (algoritmo Fisher-Yates)
+  // Mezclar jugadores 
   void _shufflePlayers() {
     final random = Random();
     for (int i = players.length - 1; i > 0; i--) {
@@ -46,17 +46,17 @@ class OneTwoThreeLogic {
     return players[currentPlayerIndex];
   }
   
-  // Iniciar temporizador (CORREGIDO)
+  // Iniciar temporizador 
   void startTimer() {
-    // 1. Detener timer anterior si existe
+    // Detener timer anterior si existe
     _timer?.cancel();
     _timerRunning = false;
     
-    // 2. Resetear tiempo
+    // Resetear tiempo
     timeLeft = 10;
     onTimerChanged?.call(timeLeft);
     
-    // 3. Iniciar nuevo timer
+    // Iniciar nuevo timer
     _timerRunning = true;
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!_timerRunning) {
@@ -70,32 +70,32 @@ class OneTwoThreeLogic {
       if (timeLeft <= 0) {
         _timerRunning = false;
         timer.cancel();
-        // Tiempo acabado - el jugador debe beber
+        // Tiempo acabado
       }
     });
   }
   
-  // Detener temporizador (CORREGIDO)
+  // Detener temporizador 
   void stopTimer() {
     _timerRunning = false;
     _timer?.cancel();
     _timer = null;
   }
   
-  // Siguiente jugador (CORREGIDO)
+  // Siguiente jugador 
   void nextPlayer() {
-    stopTimer(); // Esto ahora cancela el timer correctamente
+    stopTimer(); 
     
     currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
     _getRandomChallenge();
     
     onPlayerChanged?.call(currentPlayer);
-    startTimer(); // Esto iniciará un timer nuevo y fresco
+    startTimer(); 
   }
   
-  // Reiniciar juego (CORREGIDO)
+  // Reiniciar juego 
   void reset() {
-    stopTimer(); // Cancelar timer actual
+    stopTimer();
     currentPlayerIndex = 0;
     _shufflePlayers();
     _getRandomChallenge();

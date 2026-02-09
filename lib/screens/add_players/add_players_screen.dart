@@ -406,7 +406,7 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
               Expanded(
                 child: _buildGameModeCard(
                   icon: '🔢',
-                  name: '1, 2, 3',
+                  name: '3, 2, 1...¡Bebe!',
                   enabled: playersProvider.players.length >= 2,
                   gameType: '123',
                   playersProvider: playersProvider,
