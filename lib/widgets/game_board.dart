@@ -1,116 +1,56 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-// Configuración del tablero basada en el CSV proporcionado
-const List<Map<String, dynamic>> boardConfig = [
-  // Fila 1 (izquierda a derecha) - Casillas 1-10
-  {'type': 'start', 'number': 1, 'content': '🏁'},
-  {'type': 'beber', 'number': 2, 'content': '🍺'},
-  {'type': 'yo-nunca', 'number': 3, 'content': '🙅‍♂️'},
-  {'type': '123', 'number': 4, 'content': 'podium'},
-  {'type': 'challenge', 'number': 5, 'content': '⚡'},
-  {'type': 'verdad', 'number': 6, 'content': '❓'},
-  {'type': 'rule', 'number': 7, 'content': '📜'},
-  {'type': 'preferencias', 'number': 8, 'content': '🤔'},
-  {'type': 'yo-nunca', 'number': 9, 'content': '🙅‍♂️'},
-  {'type': 'quien-mas', 'number': 10, 'content': '👥'},
-  
-  // Fila 2 (derecha a izquierda) - Casillas 11-20
-  {'type': 'quien-mas', 'number': 20, 'content': '👥'},
-  {'type': '123', 'number': 19, 'content': 'podium'},
-  {'type': 'challenge', 'number': 18, 'content': '⚡'},
-  {'type': 'yo-nunca', 'number': 17, 'content': '🙅‍♂️'},
-  {'type': 'preferencias', 'number': 16, 'content': '🤔'},
-  {'type': 'quien-mas', 'number': 15, 'content': '👥'},
-  {'type': 'verdad', 'number': 14, 'content': '❓'},
-  {'type': 'yo-nunca', 'number': 13, 'content': '🙅‍♂️'},
-  {'type': 'challenge', 'number': 12, 'content': '⚡'},
-  {'type': '123', 'number': 11, 'content': 'podium'},
-
-  // Fila 3 (izquierda a derecha) - Casillas 21-30
-  {'type': 'yo-nunca', 'number': 21, 'content': '🙅‍♂️'},
-  {'type': 'verdad', 'number': 22, 'content': '❓'},
-  {'type': 'quien-mas', 'number': 23, 'content': '👥'},
-  {'type': 'preferencias', 'number': 24, 'content': '🤔'},
-  {'type': 'yo-nunca', 'number': 25, 'content': '🙅‍♂️'},
-  {'type': 'challenge', 'number': 26, 'content': '⚡'},
-  {'type': '123', 'number': 27, 'content': 'podium'},
-  {'type': 'quien-mas', 'number': 28, 'content': '👥'},
-  {'type': 'yo-nunca', 'number': 29, 'content': '🙅‍♂️'},
-  {'type': 'verdad', 'number': 30, 'content': '❓'},
-  
-  // Fila 4 (derecha a izquierda) - Casillas 31-40
-  {'type': '123', 'number': 40, 'content': 'podium'},
-  {'type': 'preferencias', 'number': 39, 'content': '🤔'},
-  {'type': 'yo-nunca', 'number': 38, 'content': '🙅‍♂️'},
-  {'type': 'quien-mas', 'number': 37, 'content': '👥'},
-  {'type': '123', 'number': 36, 'content': 'podium'},
-  {'type': 'verdad', 'number': 35, 'content': '❓'},
-  {'type': 'yo-nunca', 'number': 34, 'content': '🙅‍♂️'},
-  {'type': 'drink', 'number': 33, 'content': '🥃'},
-  {'type': 'challenge', 'number': 32, 'content': '⚡'},
-  {'type': 'quien-mas', 'number': 31, 'content': '👥'},
-  
-  // Fila 5 (izquierda a derecha) - Casillas 41-50
-  {'type': 'preferencias', 'number': 41, 'content': '🤔'},
-  {'type': 'yo-nunca', 'number': 42, 'content': '🙅‍♂️'},
-  {'type': 'challenge', 'number': 43, 'content': '⚡'},
-  {'type': '123', 'number': 44, 'content': 'podium'},
-  {'type': 'beber', 'number': 45, 'content': '🍺'},
-  {'type': 'yo-nunca', 'number': 46, 'content': '🙅‍♂️'},
-  {'type': 'verdad', 'number': 47, 'content': '❓'},
-  {'type': '123', 'number': 48, 'content': 'podium'},
-  {'type': 'preferencias', 'number': 49, 'content': '🤔'},
-  {'type': 'yo-nunca', 'number': 50, 'content': '🙅‍♂️'},
-  
-  // Fila 6 (derecha a izquierda) - Casillas 51-60
-  {'type': 'verdad', 'number': 60, 'content': '❓'},
-  {'type': 'challenge', 'number': 59, 'content': '⚡'},
-  {'type': 'yo-nunca', 'number': 58, 'content': '🙅‍♂️'},
-  {'type': 'preferencias', 'number': 57, 'content': '🤔'},
-  {'type': 'quien-mas', 'number': 56, 'content': '👥'},
-  {'type': 'verdad', 'number': 55, 'content': '❓'},
-  {'type': 'yo-nunca', 'number': 54, 'content': '🙅‍♂️'},
-  {'type': 'quien-mas', 'number': 53, 'content': '👥'},
-  {'type': '123', 'number': 52, 'content': 'podium'},
-  {'type': 'challenge', 'number': 51, 'content': '⚡'},
-  
-  // Fila 7 (izquierda a derecha) - Casillas 61-70
-  {'type': 'yo-nunca', 'number': 61, 'content': '🙅‍♂️'},
-  {'type': 'verdad', 'number': 62, 'content': '❓'},
-  {'type': '123', 'number': 63, 'content': 'podium'},
-  {'type': 'quien-mas', 'number': 64, 'content': '👥'},
-  {'type': 'yo-nunca', 'number': 65, 'content': '🙅‍♂️'},
-  {'type': 'challenge', 'number': 66, 'content': '⚡'},
-  {'type': '123', 'number': 67, 'content': 'podium'},
-  {'type': 'preferencias', 'number': 68, 'content': '🤔'},
-  {'type': 'drink', 'number': 69, 'content': '🥃'},
-  {'type': 'yo-nunca', 'number': 70, 'content': '🙅‍♂️'},
-  
-  // Fila 8 (derecha a izquierda) - Casillas 71-80
-  {'type': 'end', 'number': 80, 'content': '🏆'},
-  {'type': 'beber', 'number': 79, 'content': '🍺'},
-  {'type': 'challenge', 'number': 78, 'content': '⚡'},
-  {'type': '123', 'number': 77, 'content': 'podium'},
-  {'type': 'verdad', 'number': 76, 'content': '❓'},
-  {'type': 'yo-nunca', 'number': 75, 'content': '🙅‍♂️'},
-  {'type': 'preferencias', 'number': 74, 'content': '🤔'},
-  {'type': 'friki', 'number': 73, 'content': '🤓'},
-  {'type': 'verdad', 'number': 72, 'content': '❓'},
-  {'type': 'challenge', 'number': 71, 'content': '⚡'}
+// Lista de iconos disponibles para los jugadores
+const List<String> playerIcons = [
+  'aguardiente.png',
+  'amaretto-sour.png',
+  'anis.png',
+  'cerveza-negra.png',
+  'champagne.png',
+  'conac.png',
+  'gin-tonic.png',
+  'glass.png',
+  'jagermeister.png',
+  'kahlua.png',
+  'limoncello.png',
+  'mojito.png',
+  'orujo.png',
+  'rum.png',
+  'sangria.png',
+  'sidra.png',
+  'vermut.png',
+  'vodka.png',
+  'whiskey.png',
+  'wine-bottle.png',
 ];
 
 class GameBoard extends StatelessWidget {
   final List<String> players;
   final List<int> playerPositions;
   final Color Function(int) getPlayerColor;
+  final List<Map<String, dynamic>> boardConfig;
 
-  const GameBoard({
+  // Constructor SIN la palabra 'const' porque tiene lógica en el cuerpo
+  GameBoard({
     Key? key,
     required this.players,
     required this.playerPositions,
     required this.getPlayerColor,
-  }) : super(key: key);
+    required this.boardConfig,
+  }) : super(key: key) {
+    // Este cuerpo NO está permitido en un constructor const
+    debugPrint('[GAME BOARD] ===== CONSTRUIDO =====');
+    debugPrint('[GAME BOARD] Players: $players');
+    debugPrint('[GAME BOARD] Posiciones: $playerPositions');
+    debugPrint('[GAME BOARD] Configuración del tablero: ${boardConfig.length} casillas');
+    if (boardConfig.isNotEmpty) {
+      debugPrint('[GAME BOARD] Primera casilla: ${boardConfig[0]}');
+    } else {
+      debugPrint('[GAME BOARD] ¡ADVERTENCIA! boardConfig está vacío');
+    }
+    debugPrint('[GAME BOARD] =====================');
+  }
 
   Color _getCellColor(String type) {
     switch (type) {
@@ -138,6 +78,8 @@ class GameBoard extends StatelessWidget {
         return const Color(0xFFF57C00);
       case 'preferencias':
         return const Color(0xFF9C27B0);
+      case 'comunista':
+        return const Color(0xFFFF0000);
       default:
         return const Color(0xFF666666);
     }
@@ -146,205 +88,319 @@ class GameBoard extends StatelessWidget {
   Widget _buildContent(Map<String, dynamic> cell, double cellSize) {
     final content = cell['content'] as String;
     
-    // Si el contenido es "podium", mostrar imagen PNG
     if (content == 'podium') {
       return Image.asset(
         'assets/images/podium.png',
-        width: cellSize * 0.6,  
+        width: cellSize * 0.6,
         height: cellSize * 0.6,
         fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) {
-          // Fallback a emoji si la imagen no carga
+          debugPrint('[GAME BOARD] Error cargando podium.png: $error');
           return Text(
             '🔢',
-            style: TextStyle(
-              fontSize: max(cellSize * 0.35, 12),
-              shadows: [
-                Shadow(
-                  blurRadius: 1,
-                  color: Colors.black.withOpacity(0.3),
-                ),
-              ],
-            ),
+            style: TextStyle(fontSize: max(cellSize * 0.35, 12)),
           );
         },
       );
     }
     
-    // Para otros contenidos (emojis), mostrar texto
     return Text(
       content,
-      style: TextStyle(
-        fontSize: max(cellSize * 0.35, 12),
-        shadows: [
-          Shadow(
-            blurRadius: 1,
-            color: Colors.black.withOpacity(0.3),
-          ),
-        ],
-      ),
+      style: TextStyle(fontSize: max(cellSize * 0.35, 12)),
     );
   }
 
-  Widget _buildBoardCell(Map<String, dynamic> cell, double cellSize) {
-    final cellPlayers = <Widget>[];
-    final markerSize = max(cellSize * 0.18, 4.0);
-    
-    // Agregar marcadores de jugadores en esta casilla
-    for (int i = 0; i < players.length; i++) {
-      if (playerPositions[i] == cell['number']) {
-        cellPlayers.add(
-          Positioned(
-            bottom: 4,
-            right: 4 + (i * markerSize * 0.6),
-            child: Container(
-              width: markerSize,
-              height: markerSize,
-              decoration: BoxDecoration(
-                color: getPlayerColor(i),
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.7),
-                    blurRadius: 5,
-                    offset: const Offset(0, 0),
-                  ),
-                ],
-              ),
-            ),
+  // Obtener el icono para un jugador específico
+  String _getPlayerIconPath(int playerIndex) {
+    final iconIndex = playerIndex % playerIcons.length;
+    return 'lib/screens/wombo_combo/iconos/${playerIcons[iconIndex]}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Verificar que hay datos para mostrar
+    if (boardConfig.isEmpty) {
+      debugPrint('[GAME BOARD] ERROR: boardConfig está vacío');
+      return Container(
+        height: 200,
+        color: Colors.red.withOpacity(0.3),
+        child: const Center(
+          child: Text(
+            'Error: Tablero no configurado',
+            style: TextStyle(color: Colors.white),
           ),
-        );
-      }
+        ),
+      );
     }
 
     return Container(
-      margin: const EdgeInsets.all(0.3),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            _getCellColor(cell['type']),
-            _getCellColor(cell['type']).withOpacity(0.8),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: _getCellColor(cell['type']),
-          width: 2.0,
+          color: Colors.black54,
+          width: 3.0,
         ),
+        borderRadius: BorderRadius.circular(4),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.3),
-            blurRadius: 2,
-            offset: const Offset(0, 1),
+            blurRadius: 8,
+            offset: const Offset(2, 2),
           ),
         ],
       ),
-      child: Stack(
-        children: [
-          // CONTENIDO PRINCIPAL 
-          Center(
-            child: _buildContent(cell, cellSize),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF2C3E50),
+          border: Border.all(
+            color: Colors.black87,
+            width: 1.5,
           ),
-          
-          // NÚMERO DE LA CASILLA 
-          Positioned(
-            top: 1,
-            left: 1,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.35), 
-                borderRadius: BorderRadius.circular(3),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.3),
-                  width: 0.5,
-                ),
+        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final cellWidth = constraints.maxWidth / 10;
+            final cellHeight = cellWidth * 1.25;
+            final totalHeight = cellHeight * 8;
+            
+            debugPrint('[GAME BOARD] Dimensiones: ancho=${constraints.maxWidth}, cellWidth=$cellWidth, cellHeight=$cellHeight, totalHeight=$totalHeight');
+            
+            return SizedBox(
+              height: totalHeight,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: _buildBoardRows(cellWidth, cellHeight),
               ),
-              child: Text(
-                cell['number'].toString(),
-                style: TextStyle(
-                  fontSize: max(cellSize * 0.15, 8),
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                      blurRadius: 2,
-                      color: Colors.black.withOpacity(0.8),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          
-          // Marcadores de jugadores
-          ...cellPlayers,
-        ],
+            );
+          },
+        ),
       ),
     );
   }
 
-  List<Widget> _buildBoardRows(double cellSize) {
+  List<Widget> _buildBoardRows(double cellWidth, double cellHeight) {
     List<Widget> rows = [];
     
-    // Dividir las 80 casillas en 8 filas de 10 casillas cada una
     for (int row = 0; row < 8; row++) {
       List<Widget> rowCells = [];
+      
       for (int col = 0; col < 10; col++) {
         int index = row * 10 + col;
         if (index < boardConfig.length) {
+          final cell = boardConfig[index];
+          final cellNumber = cell['number'] as int;
+          
+          // Determinar si esta casilla está en una unión
+          final bool isTransitionTop = cellNumber == 11 || cellNumber == 21 || 
+                                      cellNumber == 31 || cellNumber == 41 || 
+                                      cellNumber == 51 || cellNumber == 61 || cellNumber == 71;
+          
+          final bool isTransitionBottom = cellNumber == 10 || cellNumber == 20 || 
+                                         cellNumber == 30 || cellNumber == 40 || 
+                                         cellNumber == 50 || cellNumber == 60 || cellNumber == 70;
+          
+          final bool isFirstRow = row == 0;
+          final bool isLastRow = row == 7;
+          final bool isFirstCol = col == 0;
+          final bool isLastCol = col == 9;
+          
+          // CONSTRUCCIÓN DE BORDES SIN DUPLICACIÓN
+          BorderSide topBorder = BorderSide.none;
+          BorderSide bottomBorder = BorderSide.none;
+          BorderSide leftBorder = BorderSide.none;
+          BorderSide rightBorder = BorderSide.none;
+          
+          // BORDE SUPERIOR: solo lo pone la primera fila o las casillas de inicio de unión
+          if (isFirstRow) {
+            topBorder = const BorderSide(color: Colors.black45, width: 0.5);
+          } else if (isTransitionTop) {
+            topBorder = const BorderSide(color: Colors.black45, width: 0.5);
+          }
+          
+          // BORDE INFERIOR: solo lo pone la última fila o las casillas de fin de unión
+          if (isLastRow) {
+            bottomBorder = const BorderSide(color: Colors.black45, width: 0.5);
+          } else if (isTransitionBottom) {
+            bottomBorder = const BorderSide(color: Colors.black45, width: 0.5);
+          } else {
+            // Si no es última fila ni transición, ponemos borde inferior GRUESO
+            bottomBorder = const BorderSide(color: Colors.black87, width: 2.3);
+          }
+          
+          // BORDE IZQUIERDO: solo lo pone la primera columna
+          if (isFirstCol) {
+            leftBorder = const BorderSide(color: Colors.black45, width: 0.5);
+          }
+          
+          // BORDE DERECHO: solo lo pone la última columna
+          if (isLastCol) {
+            rightBorder = const BorderSide(color: Colors.black45, width: 0.5);
+          }
+          
           rowCells.add(
             SizedBox(
-              width: cellSize,
-              height: cellSize,
-              child: _buildBoardCell(boardConfig[index], cellSize),
+              width: cellWidth,
+              height: cellHeight,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: _getCellColor(cell['type']).withOpacity(0.9),
+                  border: Border(
+                    top: topBorder,
+                    bottom: bottomBorder,
+                    left: leftBorder,
+                    right: rightBorder,
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    // Contenido principal
+                    Center(child: _buildContent(cell, cellWidth)),
+                    
+                    // Número de casilla
+                    Positioned(
+                      top: 1,
+                      left: 1,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.35),
+                          borderRadius: BorderRadius.circular(3),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.3),
+                            width: 0.5,
+                          ),
+                        ),
+                        child: Text(
+                          cell['number'].toString(),
+                          style: TextStyle(
+                            fontSize: max(cellWidth * 0.15, 8),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 2,
+                                color: Colors.black.withOpacity(0.8),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    
+                    // Marcadores de jugadores con iconos
+                    ..._getPlayerMarkers(cellNumber, cellWidth),
+                  ],
+                ),
+              ),
             ),
           );
         }
       }
       
-      rows.add(
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: rowCells,
-        ),
-      );
-      
-      // Agregar espacio entre filas
-      if (row < 7) {
-        rows.add(const SizedBox(height: 8));
-      }
+      rows.add(Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: rowCells,
+      ));
     }
     
     return rows;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          // Calcular el tamaño de celda basado en el ancho disponible
-          final cellSize = (constraints.maxWidth - 9) / 10;
-          final totalHeight = (cellSize * 8) + 56;
-          
-          return SizedBox(
-            height: totalHeight,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: _buildBoardRows(cellSize),
+  List<Widget> _getPlayerMarkers(int cellNumber, double cellSize) {
+    List<Widget> markers = [];
+    final markerSize = max(cellSize * 0.54, 24.0);
+    final overlapFactor = 0.40;
+    final maxPlayersPerCell = 3;
+    
+    // Agrupamos los marcadores de esta casilla
+    List<int> playersInCell = [];
+    for (int i = 0; i < players.length; i++) {
+      if (playerPositions[i] == cellNumber) {
+        playersInCell.add(i);
+      }
+    }
+    
+    // Si hay jugadores en esta casilla, los posicionamos
+    final playersToShow = playersInCell.length > maxPlayersPerCell 
+        ? playersInCell.sublist(0, maxPlayersPerCell) 
+        : playersInCell;
+    
+    final bool hasMorePlayers = playersInCell.length > maxPlayersPerCell;
+    
+    for (int index = 0; index < playersToShow.length; index++) {
+      final playerIndex = playersToShow[index];
+      final rightMargin = (index * markerSize * overlapFactor);
+      
+      markers.add(
+        Positioned(
+          bottom: 1,
+          right: rightMargin,
+          child: Image.asset(
+            _getPlayerIconPath(playerIndex),
+            width: markerSize,
+            height: markerSize,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              debugPrint('[GAME BOARD] Error cargando icono para jugador $playerIndex: $error');
+              return Container(
+                width: markerSize,
+                height: markerSize,
+                decoration: BoxDecoration(
+                  color: getPlayerColor(playerIndex),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 2,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    '${playerIndex + 1}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+    }
+    
+    // Si hay más de 3 jugadores, mostramos un indicador
+    if (hasMorePlayers) {
+      markers.add(
+        Positioned(
+          bottom: 1,
+          right: (maxPlayersPerCell * markerSize * overlapFactor) - 4,
+          child: Container(
+            width: markerSize * 0.8,
+            height: markerSize * 0.8,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.7),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.white,
+                width: 2,
+              ),
             ),
-          );
-        },
-      ),
-    );
+            child: Center(
+              child: Text(
+                '${playersInCell.length - maxPlayersPerCell}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    
+    return markers;
   }
 }

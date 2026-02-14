@@ -7,6 +7,7 @@ class PlayersMenuOverlay extends StatefulWidget {
   final Function(int) onRemovePlayer;
   final VoidCallback onHideMenu;
   final Color Function(int) getPlayerColor;
+  final String Function(int) getPlayerIconPath; // Nueva función para obtener la ruta del icono
 
   const PlayersMenuOverlay({
     Key? key,
@@ -16,6 +17,7 @@ class PlayersMenuOverlay extends StatefulWidget {
     required this.onRemovePlayer,
     required this.onHideMenu,
     required this.getPlayerColor,
+    required this.getPlayerIconPath, // Nuevo parámetro
   }) : super(key: key);
 
   @override
@@ -135,19 +137,18 @@ class _PlayersMenuOverlayState extends State<PlayersMenuOverlay> {
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
-                                    height: 1.0, // Asegura que el texto no tenga espacio extra
+                                    height: 1.0,
                                   ),
                                   decoration: const InputDecoration(
                                     hintText: 'Nombre del jugador',
                                     hintStyle: TextStyle(color: Colors.white54),
                                     border: InputBorder.none,
                                     contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                                    isDense: true, // Reduce el padding interno
+                                    isDense: true,
                                   ),
-                                  textAlignVertical: TextAlignVertical.center, // Centra verticalmente
+                                  textAlignVertical: TextAlignVertical.center,
                                   maxLength: 15,
                                   onChanged: (value) {
-                                    // Sincronizar con el controlador externo
                                     widget.newPlayerNameController.text = value;
                                   },
                                   onSubmitted: (_) => _addPlayer(),
@@ -298,14 +299,23 @@ class _PlayersMenuOverlayState extends State<PlayersMenuOverlay> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Círculo de color del jugador
+          // Icono del jugador (sin forma circular)
           Container(
-            width: 14,
-            height: 14,
+            width: 24,
+            height: 24,
             margin: const EdgeInsets.only(right: 10),
-            decoration: BoxDecoration(
-              color: widget.getPlayerColor(index),
-              shape: BoxShape.circle,
+            child: Image.asset(
+              widget.getPlayerIconPath(index),
+              width: 24,
+              height: 24,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: 24,
+                  height: 24,
+                  color: widget.getPlayerColor(index),
+                );
+              },
             ),
           ),
           
@@ -358,12 +368,9 @@ class _PlayersMenuOverlayState extends State<PlayersMenuOverlay> {
     
     widget.onAddPlayer();
     
-    // Limpiar el campo de texto local
     _localTextController.clear();
-    // También limpiar el controlador externo
     widget.newPlayerNameController.clear();
     
-    // Mantener el foco en el campo de texto
     _textFieldFocusNode.requestFocus();
   }
 

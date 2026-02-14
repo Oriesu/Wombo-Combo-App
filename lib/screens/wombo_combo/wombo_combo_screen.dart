@@ -20,22 +20,53 @@ class WomboComboScreen extends StatefulWidget {
 class _WomboComboScreenState extends State<WomboComboScreen> {
   final TextEditingController _newPlayerNameController = TextEditingController();
   
+  // Lista de iconos disponibles para los jugadores
+  static const List<String> _playerIcons = [
+    'aguardiente.png',
+    'amaretto-sour.png',
+    'anis.png',
+    'cerveza-negra.png',
+    'champagne.png',
+    'conac.png',
+    'gin-tonic.png',
+    'glass.png',
+    'jagermeister.png',
+    'kahlua.png',
+    'limoncello.png',
+    'mojito.png',
+    'orujo.png',
+    'rum.png',
+    'sangria.png',
+    'sidra.png',
+    'vermut.png',
+    'vodka.png',
+    'whiskey.png',
+    'wine-bottle.png',
+  ];
+
+  // Función para obtener la ruta del icono de un jugador
+  String _getPlayerIconPath(int playerIndex) {
+    final iconIndex = playerIndex % _playerIcons.length;
+    return 'lib/screens/wombo_combo/iconos/${_playerIcons[iconIndex]}';
+  }
+  
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => WomboComboLogic(players: widget.players),
       child: Scaffold(
         backgroundColor: const Color(0xFF1a0033),
-        body: Consumer<WomboComboLogic>(
+        body:Consumer<WomboComboLogic>(
           builder: (context, gameLogic, child) {
             final playersProvider = Provider.of<PlayersProvider>(context, listen: false);
+            
+            // Solo actualizar si realmente cambió la lista de jugadores
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (playersProvider.players.isNotEmpty && 
                   !_areListsEqual(gameLogic.players, playersProvider.players)) {
                 gameLogic.updatePlayers(playersProvider.players);
               }
             });
-            
             return Stack(
               children: [
                 Container(
@@ -56,49 +87,33 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                         maxWidth: 500,
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(20.0),
+                        padding: const EdgeInsets.all(16.0),
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
                               // Header con botón Gestionar Jugadores
                               _buildHeader(gameLogic),
                               
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 16),
                               
                               // Información del juego
                               _buildGameInfo(gameLogic),
                               
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 16),
                               
-                              // Contenedor del tablero y contenido
-                              Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.05),
-                                  borderRadius: BorderRadius.circular(18),
-                                  border: Border.all(color: Colors.white.withOpacity(0.1)),
-                                ),
-                                padding: const EdgeInsets.all(20),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Tablero
-                                    GameBoard(
-                                      players: gameLogic.players,
-                                      playerPositions: gameLogic.playerPositions,
-                                      getPlayerColor: gameLogic.getPlayerColor,
-                                    ),
-                                    
-                                    const SizedBox(height: 10),
-
-                                  ],                                
-                                ),
+                              // Tablero
+                              GameBoard(
+                                players: gameLogic.players,
+                                playerPositions: gameLogic.playerPositions,
+                                getPlayerColor: gameLogic.getPlayerColor,
+                                boardConfig: gameLogic.boardConfig,
                               ),
-                              const SizedBox(height: 20),
+                              
+                              const SizedBox(height: 16),
                               
                               _buildBottomButtons(context, gameLogic),
                               
-                              const SizedBox(height: 40), 
+                              const SizedBox(height: 20), 
                             ],
                           ),
                         ),
@@ -107,7 +122,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                   ),
                 ),
                 
-                // OVERLAY DEL DADO (NUEVO)
+                // OVERLAY DEL DADO
                 if (gameLogic.showDiceOverlay)
                   _buildDiceOverlay(gameLogic),
 
@@ -145,25 +160,18 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
   Widget _buildHeader(WomboComboLogic gameLogic) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: Colors.white.withOpacity(0.1)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 6,
-            offset: const Offset(0, 6),
-          ),
-        ],
       ),
       child: Column(
         children: [
           const Text(
             'Wombo Combo',
             style: TextStyle(
-              fontSize: 2.1 * 14,
+              fontSize: 28,
               fontWeight: FontWeight.w800,
               color: Colors.white,
               letterSpacing: -0.5,
@@ -176,7 +184,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: 12),
           
           // BOTÓN GESTIONAR JUGADORES
           ElevatedButton(
@@ -188,13 +196,13 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white.withOpacity(0.1),
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
                 side: BorderSide(color: Colors.white.withOpacity(0.2)),
               ),
               elevation: 0,
-              minimumSize: const Size(200, 50),
+              minimumSize: const Size(200, 44),
             ),
             child: const Row(
               mainAxisSize: MainAxisSize.min,
@@ -230,23 +238,23 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  // Icono del jugador (sin forma circular)
                   Container(
-                    width: 20,
-                    height: 20,
+                    width: 24,
+                    height: 24,
                     margin: const EdgeInsets.only(right: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: const Color(0xFFFFCC00),
-                        width: 2,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFFFCC00).withOpacity(0.5),
-                          blurRadius: 5,
-                        ),
-                      ],
+                    child: Image.asset(
+                      _getPlayerIconPath(gameLogic.currentPlayerIndex),
+                      width: 24,
+                      height: 24,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 24,
+                          height: 24,
+                          color: gameLogic.getPlayerColor(gameLogic.currentPlayerIndex),
+                        );
+                      },
                     ),
                   ),
                   Expanded(
@@ -328,103 +336,95 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
     
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // FILA CON BOTÓN IZQUIERDA, DADO CENTRO, TEXTO DERECHA
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // BOTÓN VOLVER (IZQUIERDA)
-              ElevatedButton(
-                onPressed: () {
-                  debugPrint('[WOMBO COMBO] Botón Volver presionado');
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.1),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.white.withOpacity(0.2)),
-                  ),
-                  elevation: 0,
-                  minimumSize: const Size(100, 50),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.arrow_back, size: 20),
-                    SizedBox(width: 8),
-                    Text('Volver'),
-                  ],
-                ),
+          // BOTÓN VOLVER
+          ElevatedButton(
+            onPressed: () {
+              debugPrint('[WOMBO COMBO] Botón Volver presionado');
+              Navigator.of(context).pop();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white.withOpacity(0.1),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.white.withOpacity(0.2)),
               ),
-              
-              // DADO IMAGEN CLICKEABLE 
-              GestureDetector(
-                onTap: isDiceDisabled ? null : () {
-                  debugPrint('[WOMBO COMBO] Dado pulsado para tirar');
-                  gameLogic.rollDice();
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  width: 80, 
-                  height: 80,
-                  padding: const EdgeInsets.all(8), 
-                  
-                  child: Center(
-                    child: _buildDiceImage(gameLogic), 
-                  ),
-                ),
+              elevation: 0,
+              minimumSize: const Size(100, 50),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.arrow_back, size: 20),
+                SizedBox(width: 8),
+                Text('Volver'),
+              ],
+            ),
+          ),
+          
+          // DADO IMAGEN CLICKEABLE 
+          GestureDetector(
+            onTap: isDiceDisabled ? null : () {
+              debugPrint('[WOMBO COMBO] Dado pulsado para tirar');
+              gameLogic.rollDice();
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: 80, 
+              height: 80,
+              padding: const EdgeInsets.all(8), 
+              child: Center(
+                child: _buildDiceImage(gameLogic), 
               ),
-              
-              // TEXTO INDICADOR 
-              Container(
-                width: 100, 
-                child: Center(
-                  child: Text(
-                    isDiceDisabled ? 'Espera...' : 'Toca el dado\npara tirar',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isDiceDisabled ? Colors.white54 : Colors.white,
-                      fontWeight: FontWeight.w500,
-                      height: 1.2,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+            ),
+          ),
+          
+          // TEXTO INDICADOR 
+          Container(
+            width: 100, 
+            child: Center(
+              child: Text(
+                isDiceDisabled ? 'Espera...' : 'Toca el dado\npara tirar',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isDiceDisabled ? Colors.white54 : Colors.white,
+                  fontWeight: FontWeight.w500,
+                  height: 1.2,
                 ),
+                textAlign: TextAlign.center,
               ),
-            ],
+            ),
           ),
         ],
       ),
     );
   }
+
   Widget _buildDiceImage(WomboComboLogic gameLogic) {
     if (gameLogic.isRolling) {
-      // Durante la animación de tiro
       return AnimatedSwitcher(
         duration: const Duration(milliseconds: 150),
         child: _buildDiceImageWidget(gameLogic.diceValue, true),
       );
     } else {
-      // Estado normal
       return _buildDiceImageWidget(gameLogic.diceValue, false);
     }
   }
 
   Widget _buildDiceImageWidget(int value, bool isRolling) {
     final path = _getDiceImagePath(value);
-    debugPrint('[DICE] Loading image from path: $path');
     
     return Image.asset(
       path,
@@ -432,37 +432,22 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
       height: 80,
       errorBuilder: (context, error, stackTrace) {
         debugPrint('[DICE] ERROR loading image: $error');
-        debugPrint('[DICE] Stack trace: $stackTrace');
         return Container(
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.3), // Rojo para indicar error
+            color: const Color(0xFF2C3E50),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.red, width: 2),
+            border: Border.all(color: Colors.white.withOpacity(0.2)),
           ),
           child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error, color: Colors.red, size: 30),
-                const SizedBox(height: 5),
-                Text(
-                  value.toString(),
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                  'Error',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: Colors.white70,
-                  ),
-                ),
-              ],
+            child: Text(
+              value.toString(),
+              style: const TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ),
         );
@@ -541,14 +526,23 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Color del jugador
+                            // Icono del jugador (sin forma circular)
                             Container(
-                              width: 12,
-                              height: 12,
+                              width: 24,
+                              height: 24,
                               margin: const EdgeInsets.only(right: 8),
-                              decoration: BoxDecoration(
-                                color: gameLogic.getPlayerColor(gameLogic.currentPlayerIndex),
-                                shape: BoxShape.circle,
+                              child: Image.asset(
+                                _getPlayerIconPath(gameLogic.currentPlayerIndex),
+                                width: 24,
+                                height: 24,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: 24,
+                                    height: 24,
+                                    color: gameLogic.getPlayerColor(gameLogic.currentPlayerIndex),
+                                  );
+                                },
                               ),
                             ),
                             
@@ -604,7 +598,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                       Text(
                         gameLogic.diceOverlayTitle,
                         style: const TextStyle(
-                          fontSize: 2.0 * 16,
+                          fontSize: 32,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFFFFCC00),
                           shadows: [
@@ -635,7 +629,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                           child: Text(
                             gameLogic.diceOverlayContent,
                             style: const TextStyle(
-                              fontSize: 1.5 * 16,
+                              fontSize: 24,
                               color: Colors.white,
                               fontWeight: FontWeight.w500,
                               height: 1.4,
@@ -660,7 +654,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                         child: Text(
                           gameLogic.diceOverlayExplanation,
                           style: const TextStyle(
-                            fontSize: 1.2 * 16,
+                            fontSize: 19.2,
                             color: Color(0xFF00CC55),
                             fontWeight: FontWeight.w600,
                             fontStyle: FontStyle.italic,
@@ -702,6 +696,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
         gameLogic.notifyListeners();
       },
       getPlayerColor: gameLogic.getPlayerColor,
+      getPlayerIconPath: _getPlayerIconPath, // Pasamos la función al overlay
     );
   }
 
@@ -751,14 +746,23 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // Color del jugador
+                          // Icono del jugador (sin forma circular)
                           Container(
-                            width: 12,
-                            height: 12,
+                            width: 24,
+                            height: 24,
                             margin: const EdgeInsets.only(right: 8),
-                            decoration: BoxDecoration(
-                              color: gameLogic.getPlayerColor(gameLogic.currentPlayerIndex),
-                              shape: BoxShape.circle,
+                            child: Image.asset(
+                              _getPlayerIconPath(gameLogic.currentPlayerIndex),
+                              width: 24,
+                              height: 24,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  width: 24,
+                                  height: 24,
+                                  color: gameLogic.getPlayerColor(gameLogic.currentPlayerIndex),
+                                );
+                              },
                             ),
                           ),
                           
@@ -814,7 +818,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                     const Text(
                       '3, 2, 1...¡Bebe!',
                       style: TextStyle(
-                        fontSize: 2.0 * 16,
+                        fontSize: 32,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFFFFCC00),
                         shadows: [
@@ -829,7 +833,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                     
                     const SizedBox(height: 20),
                     
-                    // Contenido del desafío (primero se muestra el desafío completo)
+                    // Contenido del desafío
                     Container(
                       width: double.infinity,
                       constraints: const BoxConstraints(
@@ -845,7 +849,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                         child: Text(
                           gameLogic.currentContent,
                           style: const TextStyle(
-                            fontSize: 1.5 * 16,
+                            fontSize: 24,
                             color: Color(0xFFFFC107),
                             fontWeight: FontWeight.w500,
                             height: 1.4,
@@ -872,7 +876,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                           Text(
                             '¡Di 3 cosas rápidamente!',
                             style: TextStyle(
-                              fontSize: 1.2 * 16,
+                              fontSize: 19.2,
                               color: Color(0xFF00CC55),
                               fontWeight: FontWeight.w600,
                               fontStyle: FontStyle.italic,
@@ -891,7 +895,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                       ElevatedButton(
                         onPressed: () {
                           debugPrint('[WOMBO COMBO] Botón Empezar Timer presionado');
-                          gameLogic.start123Timer(); // Inicia la cuenta regresiva
+                          gameLogic.start123Timer();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF00CCFF),
@@ -910,7 +914,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                           ),
                         ),
                       )
-                    else // Estado de cuenta regresiva activa: mostrar el timer
+                    else
                       Column(
                         children: [
                           AnimatedContainer(
@@ -920,7 +924,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                                 Text(
                                   gameLogic.timeLeft123.toString(),
                                   style: TextStyle(
-                                    fontSize: 4.5 * 16,
+                                    fontSize: 72,
                                     fontWeight: FontWeight.w800,
                                     color: gameLogic.timeLeft123 <= 3 
                                         ? const Color(0xFFFF6B6B)
@@ -939,7 +943,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                                 Text(
                                   'segundos restantes',
                                   style: TextStyle(
-                                    fontSize: 1.2 * 16,
+                                    fontSize: 19.2,
                                     color: gameLogic.timeLeft123 <= 3 
                                         ? const Color(0xFFFF6B6B)
                                         : Colors.white70,
@@ -1089,7 +1093,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                 const Text(
                   '¡Felicidades!',
                   style: TextStyle(
-                    fontSize: 2.5 * 16,
+                    fontSize: 40,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFFFFCC00),
                     shadows: [
@@ -1107,7 +1111,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                 Text(
                   '${gameLogic.currentPlayerName} ha ganado la partida',
                   style: const TextStyle(
-                    fontSize: 1.8 * 16,
+                    fontSize: 28.8,
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),

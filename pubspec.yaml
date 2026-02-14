@@ -50,6 +50,7 @@ flutter:
     - lib/screens/caballos/barajaEsp/
     - lib/screens/ruleta/fichas/
     - lib/screens/wombo_combo/dados/
+    - lib/screens/wombo_combo/iconos/
     - assets/icons/app_icon.png  
     - assets/images/casino-roulette.png
     - assets/images/podium.png

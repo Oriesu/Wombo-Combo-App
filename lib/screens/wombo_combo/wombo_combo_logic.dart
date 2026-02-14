@@ -10,31 +10,11 @@ bool debugLogicEnabled = true;
 
 class WomboComboLogic extends ChangeNotifier {
   List<String> _players = [];
-  
+  List<Map<String, dynamic>> _boardConfig = [];
+  List<Map<String, dynamic>> _originalBoardConfig = [];
+
   List<String> get players => _players;
-  
-  set players(List<String> newPlayers) {
-    _players = List.from(newPlayers);
-    
-    if (debugLogicEnabled) {
-      debugPrint('[LOGIC] Setting players: ${newPlayers.length} players');
-    }
-    
-    if (playerPositions.length < _players.length) {
-      final newPositions = List<int>.from(playerPositions);
-      for (int i = playerPositions.length; i < _players.length; i++) {
-        newPositions.add(1);
-      }
-      playerPositions = newPositions;
-    } else if (playerPositions.length > _players.length) {
-      playerPositions = playerPositions.sublist(0, _players.length);
-    }
-    
-    if (currentPlayerIndex >= _players.length && _players.isNotEmpty) {
-      currentPlayerIndex = 0;
-    }
-    notifyListeners();
-  }
+  List<Map<String, dynamic>> get boardConfig => _boardConfig;
 
   int currentPlayerIndex = 0;
   List<int> playerPositions = []; 
@@ -49,7 +29,6 @@ class WomboComboLogic extends ChangeNotifier {
   bool showTimeoutMessageFlag = false;
   bool showVictoryScreen = false; 
   
-  // Variables para el overlay del dado
   bool showDiceOverlay = false;
   String diceOverlayTitle = '';
   String diceOverlayContent = '';
@@ -66,16 +45,172 @@ class WomboComboLogic extends ChangeNotifier {
   Set<int> usedVerdad = {};
   Set<int> usedBeber = {};
   Set<int> usedPreferencias = {};
+  Set<int> usedComunista = {};
 
   WomboComboLogic({required List<String> players}) {
-  this.players = players;
-  playerPositions = List<int>.filled(_players.length, 1);
-  diceValue = 6; 
-  
-  if (debugLogicEnabled) {
-    debugPrint('[LOGIC] Initialized with ${_players.length} players: $_players');
+    debugPrint('[LOGIC] Inicializando con configuración directa');
+    
+    // 1. Primero inicializar players
+    _players = List.from(players);
+    
+    // 2. Luego inicializar posiciones
+    playerPositions = List<int>.filled(_players.length, 1);
+    
+    // 3. Inicializar el tablero DIRECTAMENTE AQUÍ
+    _boardConfig = [
+      // Fila 1 (izquierda a derecha) - Casillas 1-10
+      {'type': 'start', 'number': 1, 'content': '🏁'},
+      {'type': 'comunista', 'number': 2, 'content': '☭'},
+      {'type': 'yo-nunca', 'number': 3, 'content': '🙅‍♂️'},
+      {'type': '123', 'number': 4, 'content': 'podium'},
+      {'type': 'challenge', 'number': 5, 'content': '⚡'},
+      {'type': 'verdad', 'number': 6, 'content': '❓'},
+      {'type': 'rule', 'number': 7, 'content': '📜'},
+      {'type': 'preferencias', 'number': 8, 'content': '🤔'},
+      {'type': 'yo-nunca', 'number': 9, 'content': '🙅‍♂️'},
+      {'type': 'quien-mas', 'number': 10, 'content': '👥'},
+      
+      // Fila 2 (derecha a izquierda) - Casillas 11-20
+      {'type': 'quien-mas', 'number': 20, 'content': '👥'},
+      {'type': 'beber', 'number': 19, 'content': '🍺'},
+      {'type': 'challenge', 'number': 18, 'content': '⚡'},
+      {'type': 'yo-nunca', 'number': 17, 'content': '🙅‍♂️'},
+      {'type': 'preferencias', 'number': 16, 'content': '🤔'},
+      {'type': 'quien-mas', 'number': 15, 'content': '👥'},
+      {'type': 'verdad', 'number': 14, 'content': '❓'},
+      {'type': 'yo-nunca', 'number': 13, 'content': '🙅‍♂️'},
+      {'type': 'challenge', 'number': 12, 'content': '⚡'},
+      {'type': '123', 'number': 11, 'content': 'podium'},
+
+      // Fila 3 (izquierda a derecha) - Casillas 21-30
+      {'type': 'yo-nunca', 'number': 21, 'content': '🙅‍♂️'},
+      {'type': 'verdad', 'number': 22, 'content': '❓'},
+      {'type': 'quien-mas', 'number': 23, 'content': '👥'},
+      {'type': 'preferencias', 'number': 24, 'content': '🤔'},
+      {'type': 'yo-nunca', 'number': 25, 'content': '🙅‍♂️'},
+      {'type': 'challenge', 'number': 26, 'content': '⚡'},
+      {'type': '123', 'number': 27, 'content': 'podium'},
+      {'type': 'quien-mas', 'number': 28, 'content': '👥'},
+      {'type': 'yo-nunca', 'number': 29, 'content': '🙅‍♂️'},
+      {'type': 'verdad', 'number': 30, 'content': '❓'},
+      
+      // Fila 4 (derecha a izquierda) - Casillas 31-40
+      {'type': '123', 'number': 40, 'content': 'podium'},
+      {'type': 'preferencias', 'number': 39, 'content': '🤔'},
+      {'type': 'yo-nunca', 'number': 38, 'content': '🙅‍♂️'},
+      {'type': 'quien-mas', 'number': 37, 'content': '👥'},
+      {'type': '123', 'number': 36, 'content': 'podium'},
+      {'type': 'verdad', 'number': 35, 'content': '❓'},
+      {'type': 'yo-nunca', 'number': 34, 'content': '🙅‍♂️'},
+      {'type': 'beber', 'number': 33, 'content': '🍺'},
+      {'type': 'challenge', 'number': 32, 'content': '⚡'},
+      {'type': 'quien-mas', 'number': 31, 'content': '👥'},
+      
+      // Fila 5 (izquierda a derecha) - Casillas 41-50
+      {'type': 'preferencias', 'number': 41, 'content': '🤔'},
+      {'type': 'yo-nunca', 'number': 42, 'content': '🙅‍♂️'},
+      {'type': 'challenge', 'number': 43, 'content': '⚡'},
+      {'type': '123', 'number': 44, 'content': 'podium'},
+      {'type': 'drink', 'number': 45, 'content': '🥃'},
+      {'type': 'yo-nunca', 'number': 46, 'content': '🙅‍♂️'},
+      {'type': 'verdad', 'number': 47, 'content': '❓'},
+      {'type': '123', 'number': 48, 'content': 'podium'},
+      {'type': 'preferencias', 'number': 49, 'content': '🤔'},
+      {'type': 'yo-nunca', 'number': 50, 'content': '🙅‍♂️'},
+      
+      // Fila 6 (derecha a izquierda) - Casillas 51-60
+      {'type': 'verdad', 'number': 60, 'content': '❓'},
+      {'type': 'challenge', 'number': 59, 'content': '⚡'},
+      {'type': 'yo-nunca', 'number': 58, 'content': '🙅‍♂️'},
+      {'type': 'preferencias', 'number': 57, 'content': '🤔'},
+      {'type': 'quien-mas', 'number': 56, 'content': '👥'},
+      {'type': 'verdad', 'number': 55, 'content': '❓'},
+      {'type': 'yo-nunca', 'number': 54, 'content': '🙅‍♂️'},
+      {'type': 'quien-mas', 'number': 53, 'content': '👥'},
+      {'type': '123', 'number': 52, 'content': 'podium'},
+      {'type': 'challenge', 'number': 51, 'content': '⚡'},
+      
+      // Fila 7 (izquierda a derecha) - Casillas 61-70
+      {'type': 'yo-nunca', 'number': 61, 'content': '🙅‍♂️'},
+      {'type': 'comunista', 'number': 62, 'content': '☭'},
+      {'type': '123', 'number': 63, 'content': 'podium'},
+      {'type': 'quien-mas', 'number': 64, 'content': '👥'},
+      {'type': 'yo-nunca', 'number': 65, 'content': '🙅‍♂️'},
+      {'type': 'challenge', 'number': 66, 'content': '⚡'},
+      {'type': '123', 'number': 67, 'content': 'podium'},
+      {'type': 'preferencias', 'number': 68, 'content': '🤔'},
+      {'type': 'beber', 'number': 69, 'content': '🍺'},
+      {'type': 'yo-nunca', 'number': 70, 'content': '🙅‍♂️'},
+      
+      // Fila 8 (derecha a izquierda) - Casillas 71-80
+      {'type': 'end', 'number': 80, 'content': '🏆'},
+      {'type': 'drink', 'number': 79, 'content': '🥃'},
+      {'type': 'challenge', 'number': 78, 'content': '⚡'},
+      {'type': '123', 'number': 77, 'content': 'podium'},
+      {'type': 'verdad', 'number': 76, 'content': '❓'},
+      {'type': 'yo-nunca', 'number': 75, 'content': '🙅‍♂️'},
+      {'type': 'preferencias', 'number': 74, 'content': '🤔'},
+      {'type': 'friki', 'number': 73, 'content': '🤓'},
+      {'type': 'verdad', 'number': 72, 'content': '❓'},
+      {'type': 'challenge', 'number': 71, 'content': '⚡'}
+    ];  
+
+     _originalBoardConfig = List.from(
+      _boardConfig.map((cell) => Map<String, dynamic>.from(cell))
+    );
+
+    diceValue = 6;
+    currentPlayerIndex = 0;
+    
+    if (debugLogicEnabled) {
+      debugPrint('[LOGIC] ===== INICIALIZACIÓN COMPLETA =====');
+      debugPrint('[LOGIC] Players (${_players.length}): $_players');
+      debugPrint('[LOGIC] Posiciones iniciales: $playerPositions');
+      debugPrint('[LOGIC] Tablero configurado con ${_boardConfig.length} casillas');
+      debugPrint('[LOGIC] Primera casilla: ${_boardConfig.isNotEmpty ? _boardConfig[0] : "vacía"}');
+      debugPrint('[LOGIC] Última casilla: ${_boardConfig.isNotEmpty ? _boardConfig[_boardConfig.length-1] : "vacía"}');
+      debugPrint('[LOGIC] ===================================');
+    }
+  }  
+
+  bool _listsAreEqual(List<String> a, List<String> b) {
+    if (a.length != b.length) return false;
+    for (int i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
   }
-}
+
+  set players(List<String> newPlayers) {
+    if (!_listsAreEqual(_players, newPlayers)) {
+      
+      if (debugLogicEnabled) {
+        debugPrint('[LOGIC] Actualizando players: ${_players.length} -> ${newPlayers.length}');
+      }
+      
+      _players = List.from(newPlayers);
+      
+      if (playerPositions.length < _players.length) {
+        final newPositions = List<int>.from(playerPositions);
+        for (int i = playerPositions.length; i < _players.length; i++) {
+          newPositions.add(1);
+        }
+        playerPositions = newPositions;
+      } else if (playerPositions.length > _players.length) {
+        playerPositions = playerPositions.sublist(0, _players.length);
+      }
+      
+      if (currentPlayerIndex >= _players.length && _players.isNotEmpty) {
+        currentPlayerIndex = 0;
+      }
+      
+      if (debugLogicEnabled) {
+        debugPrint('[LOGIC] Players actualizados. Nuevas posiciones: $playerPositions');
+      }
+      
+      notifyListeners();
+    }
+  }
 
   @override
   void dispose() {
@@ -88,7 +223,7 @@ class WomboComboLogic extends ChangeNotifier {
 
   void updatePlayers(List<String> newPlayers) {
     if (debugLogicEnabled) {
-      debugPrint('[LOGIC] Updating players from ${_players.length} to ${newPlayers.length}');
+      debugPrint('[LOGIC] updatePlayers llamado: ${_players.length} -> ${newPlayers.length}');
     }
     players = newPlayers;
   }
@@ -307,7 +442,7 @@ class WomboComboLogic extends ChangeNotifier {
       notifyListeners();
       counter++;
       
-      // Cambiar la imagen 3 veces en 1 segundo (200ms * 5 = 1000ms)
+      // Cambiar la imagen 5 veces en 1 segundo (200ms * 5 = 1000ms)
       if (counter >= 5) {
         timer.cancel();
         
@@ -381,7 +516,7 @@ class WomboComboLogic extends ChangeNotifier {
       debugPrint('[LOGIC] Activating cell at position $position for player ${_players[currentPlayerIndex]}');
     }
     
-    final cell = boardConfig.firstWhere(
+    final cell = _boardConfig.firstWhere(
       (c) => c['number'] == position,
       orElse: () => {'type': 'default', 'content': '🎲'},
     );
@@ -454,7 +589,11 @@ class WomboComboLogic extends ChangeNotifier {
         );
         break;
       case 'drink':
-        content = "¡Todos se acaban su copa!";
+        if (position == 79) {
+          content = "¡Todos beben 3 tragos!";
+        } else {
+          content = "¡Todos se acaban su copa!";
+        }
         showDiceOverlayContent(
           title: '¡Bebida!',
           content: content,
@@ -479,6 +618,25 @@ class WomboComboLogic extends ChangeNotifier {
           explanation: 'Todos responden, la minoría bebe',
           playerName: currentPlayer
         );
+        break;
+      case 'comunista':
+        content = "RONDA COMUNISTA ☭, todos beben lo que a todos le toca";
+        
+        if (debugLogicEnabled) {
+          debugPrint('[LOGIC] Activando casilla comunista en posición $position');
+        }
+        
+        // Mostrar el overlay normal
+        showDiceOverlayContent(
+          title: '¡RONDA COMUNISTA!',
+          content: content,
+          explanation: '¡Todos beben!',
+          playerName: currentPlayer
+        );
+        
+        // Después de mostrar, cambiar el tipo de la casilla en _boardConfig
+        _transformComunistaCell(position);
+        
         break;
       case 'start':
         content = "Casilla de inicio. ¡Suerte!";
@@ -506,6 +664,77 @@ class WomboComboLogic extends ChangeNotifier {
           explanation: 'Continúa tu turno',
           playerName: currentPlayer
         );
+    }
+  }
+
+  // Método para transformar la casilla comunista después de usarla
+  void _transformComunistaCell(int position) {
+    if (debugLogicEnabled) {
+      debugPrint('[LOGIC] ===== INICIANDO TRANSFORMACIÓN =====');
+      debugPrint('[LOGIC] Intentando transformar casilla en posición: $position');
+    }
+    
+    // Buscar el índice de la casilla en _boardConfig
+    final index = _boardConfig.indexWhere((cell) => cell['number'] == position);
+    
+    if (debugLogicEnabled) {
+      debugPrint('[LOGIC] Índice encontrado: $index');
+    }
+    
+    if (index != -1) {
+      if (debugLogicEnabled) {
+        debugPrint('[LOGIC] Transformando casilla comunista en posición $position');
+        debugPrint('[LOGIC] Tipo actual: ${_boardConfig[index]['type']}');
+      }
+      
+      // Determinar el nuevo tipo según la posición
+      if (position == 2) {
+        if (debugLogicEnabled) {
+          debugPrint('[LOGIC] Transformando casilla 2 a quien-mas');
+        }
+        
+        _boardConfig[index] = {
+          'type': 'quien-mas',
+          'number': 2,
+          'content': '👥'
+        };
+        
+        if (debugLogicEnabled) {
+          debugPrint('[LOGIC] Celda transformada. Nuevo tipo: ${_boardConfig[index]['type']}');
+        }
+      } else if (position == 62) {
+        if (debugLogicEnabled) {
+          debugPrint('[LOGIC] Transformando casilla 62 a verdad');
+        }
+        
+        _boardConfig[index] = {
+          'type': 'verdad',
+          'number': 62,
+          'content': '❓'
+        };
+        
+        if (debugLogicEnabled) {
+          debugPrint('[LOGIC] Celda transformada. Nuevo tipo: ${_boardConfig[index]['type']}');
+        }
+      } else {
+        if (debugLogicEnabled) {
+          debugPrint('[LOGIC] Posición $position no configurada para transformación');
+        }
+      }
+      
+      // Notificar a los listeners para que se actualice el tablero
+      if (debugLogicEnabled) {
+        debugPrint('[LOGIC] Notificando cambio a los listeners');
+      }
+      notifyListeners();
+    } else {
+      if (debugLogicEnabled) {
+        debugPrint('[LOGIC] ERROR: No se encontró la casilla en posición $position');
+      }
+    }
+    
+    if (debugLogicEnabled) {
+      debugPrint('[LOGIC] ===== FIN TRANSFORMACIÓN =====');
     }
   }
 
@@ -567,7 +796,6 @@ class WomboComboLogic extends ChangeNotifier {
       
       if (debugLogicEnabled) {
         debugPrint('[LOGIC] 123 Timer initialized: $timeLeft123 seconds');
-        debugPrint('[LOGIC] Timer NOT started yet - waiting for user to press button');
       }
       
       notifyListeners();
@@ -634,9 +862,7 @@ class WomboComboLogic extends ChangeNotifier {
     
     if (is123Active) {
       hide123Timer();
-      Future.delayed(const Duration(milliseconds: 50), () {
-        nextPlayer();
-      });
+      nextPlayer();
     }
   }
 
@@ -670,72 +896,83 @@ class WomboComboLogic extends ChangeNotifier {
     notifyListeners();
   }
 
- void restartGame() {
-  if (debugLogicEnabled) {
-    debugPrint('[LOGIC] Restarting game');
-  }
-  
-  playerPositions = List.filled(_players.length, 1);
-  currentPlayerIndex = 0;
-  diceValue = 6; // Reiniciar a dado 6
-  showDiceOverlay = false;
-  is123Active = false;
-  isDiceButtonDisabled = false;
-  showTimeoutMessageFlag = false;
-  showVictoryScreen = false; 
-  
-  usedRules.clear();
-  usedChallenges123.clear();
-  usedYoNunca.clear();
-  usedFriki.clear();
-  usedQuienMas.clear();
-  used123.clear();
-  usedVerdad.clear();
-  usedBeber.clear();
-  usedPreferencias.clear();
-  
-  timer123Interval?.cancel();
-  
-  if (debugLogicEnabled) {
-    debugPrint('[LOGIC] Game restarted, first player: ${_players.isNotEmpty ? _players[0] : "none"}');
-  }
-  
-  notifyListeners();
-}
+  void restartGame() {
+    if (debugLogicEnabled) {
+      debugPrint('[LOGIC] Restarting game');
+    }
+    
+    // Reiniciar el tablero a su estado original USANDO LA COPIA GUARDADA
+    _boardConfig = List.from(
+      _originalBoardConfig.map((cell) => Map<String, dynamic>.from(cell))
+    );
+    
+    playerPositions = List.filled(_players.length, 1);
+    currentPlayerIndex = 0;
+    diceValue = 6;
+    showDiceOverlay = false;
+    is123Active = false;
+    isDiceButtonDisabled = false;
+    showTimeoutMessageFlag = false;
+    showVictoryScreen = false; 
+    
+    usedRules.clear();
+    usedChallenges123.clear();
+    usedYoNunca.clear();
+    usedFriki.clear();
+    usedQuienMas.clear();
+    used123.clear();
+    usedVerdad.clear();
+    usedBeber.clear();
+    usedPreferencias.clear();
+    usedComunista.clear();
 
-void restartGameFromVictory() {
-  if (debugLogicEnabled) {
-    debugPrint('[LOGIC] Restarting game from victory screen');
+    timer123Interval?.cancel();
+    
+    if (debugLogicEnabled) {
+      debugPrint('[LOGIC] Game restarted, first player: ${_players.isNotEmpty ? _players[0] : "none"}');
+    }
+    
+    notifyListeners();
   }
-  
-  playerPositions = List.filled(_players.length, 1);
-  currentPlayerIndex = 0;
-  diceValue = 6; // Reiniciar a dado 6
-  showVictoryScreen = false;
-  showDiceOverlay = false;
-  is123Active = false;
-  isDiceButtonDisabled = false;
-  showTimeoutMessageFlag = false;
-  
-  usedRules.clear();
-  usedChallenges123.clear();
-  usedYoNunca.clear();
-  usedFriki.clear();
-  usedQuienMas.clear();
-  used123.clear();
-  usedVerdad.clear();
-  usedBeber.clear();
-  usedPreferencias.clear();
-  
-  timer123Interval?.cancel();
-  
-  if (debugLogicEnabled) {
-    debugPrint('[LOGIC] Game restarted from victory');
-  }
-  
-  notifyListeners();
-}
 
+  void restartGameFromVictory() {
+    if (debugLogicEnabled) {
+      debugPrint('[LOGIC] Restarting game from victory screen');
+    }
+    
+    // Reiniciar el tablero a su estado original USANDO LA COPIA GUARDADA
+    _boardConfig = List.from(
+      _originalBoardConfig.map((cell) => Map<String, dynamic>.from(cell))
+    );
+    
+    playerPositions = List.filled(_players.length, 1);
+    currentPlayerIndex = 0;
+    diceValue = 6;
+    showVictoryScreen = false;
+    showDiceOverlay = false;
+    is123Active = false;
+    isDiceButtonDisabled = false;
+    showTimeoutMessageFlag = false;
+    
+    usedRules.clear();
+    usedChallenges123.clear();
+    usedYoNunca.clear();
+    usedFriki.clear();
+    usedQuienMas.clear();
+    used123.clear();
+    usedVerdad.clear();
+    usedBeber.clear();
+    usedPreferencias.clear();
+    usedComunista.clear();
+    
+    timer123Interval?.cancel();
+    
+    if (debugLogicEnabled) {
+      debugPrint('[LOGIC] Game restarted from victory');
+    }
+    
+    notifyListeners();
+  }
 
   Color getPlayerColor(int index) {
     if (index < 0 || index >= _players.length) {
