@@ -471,7 +471,7 @@ class GameData {
   // ========== ¿QUIÉN ES MÁS PROBABLE? ==========
   static const List<String> quienMasProbableFrases = [
     "¿A quién es más probable que le falte un hervor?",
-    "¿A quién es más probable que lesecuestren?"
+    "¿A quién es más probable que le secuestren?",
     "¿A quién es más probable que llames para deshacerte de un cadáver?",
     "¿A quién es más probable que no le dejes a tu hijo para que lo cuidase?",
     "¿A quién es más probable que no incluyas en un hipotético atraco",
