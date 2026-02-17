@@ -328,7 +328,7 @@ class GameBoard extends StatelessWidget {
     
     for (int index = 0; index < playersToShow.length; index++) {
       final playerIndex = playersToShow[index];
-      final rightMargin = (index * markerSize * overlapFactor);
+      final rightMargin = (index * markerSize * overlapFactor) - 6;
       
       markers.add(
         Positioned(

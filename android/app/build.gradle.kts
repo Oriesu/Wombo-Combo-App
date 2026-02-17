@@ -21,8 +21,8 @@ android {
         applicationId = "com.javiersanchez.wombo_combo"
         minSdk = flutter.minSdkVersion
         targetSdk = 36
-        versionCode = 18
-        versionName = "1.4.0"
+        versionCode = 19
+        versionName = "1.4.1"
         multiDexEnabled = true
     }
 
