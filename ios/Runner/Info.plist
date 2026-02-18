@@ -45,5 +45,17 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<!-- PERMISOS DE RED LOCAL AÑADIDOS (SOLUCIONAN EL ERROR) -->
+	<key>NSBonjourServices</key>
+	<array>
+		<!-- Vacío por ahora - si algún plugin necesita servicios específicos, añádelos aquí -->
+	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Wombo Combo necesita acceso a la red local para descubrir dispositivos y servicios en tu red.</string>
+	
+	<!-- PERMISO DE SEGUIMIENTO (App Tracking Transparency) -->
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Esta app utiliza identificadores para mejorar tu experiencia y mostrar contenido personalizado.</string>
 </dict>
 </plist>

@@ -34,6 +34,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^2.0.0
 
+# CONFIGURACIÓN DE ICONOS DE LA APP
 flutter_launcher_icons:
   android: true
   ios: true
@@ -46,11 +47,15 @@ flutter_launcher_icons:
 flutter:
   uses-material-design: true
   
+  # TODOS LOS ASSETS DE LA APP
   assets:
+    # Assets para juegos de cartas
     - lib/screens/caballos/barajaEsp/
     - lib/screens/ruleta/fichas/
     - lib/screens/wombo_combo/dados/
     - lib/screens/wombo_combo/iconos/
+    
+    # Assets generales
     - assets/icons/app_icon.png  
     - assets/images/casino-roulette.png
     - assets/images/podium.png

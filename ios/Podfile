@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '13.0'  # Cambiado de 12.0 a 13.0
+platform :ios, '13.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -36,10 +36,21 @@ end
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
-#     flutter_additional_ios_build_settings(target)
+    flutter_additional_ios_build_settings(target)
+    
+    # Forzar iOS 13.0 para todos los targets
     target.build_configurations.each do |config|
-      # Forzar iOS 13.0 para todos los targets
+      # Asegurar que el deployment target es 13.0
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+      
+      # Añadir explícitamente Flutter a los search paths
+      config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= ['$(inherited)', '${PODS_ROOT}/../Flutter']
+      config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)', '${PODS_ROOT}/../Flutter']
+      
+      # Para pods que usan Swift, asegurar que encuentran Flutter
+      if target.respond_to?(:product_type) && target.product_type == 'com.apple.product-type.framework'
+        config.build_settings['SWIFT_INCLUDE_PATHS'] ||= ['$(inherited)', '${PODS_ROOT}/../Flutter']
+      end
     end
   end
 end
