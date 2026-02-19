@@ -1,7 +1,6 @@
-# Uncomment this line to define a global platform for your project
-platform :ios, '13.0'
+# No definir platform aquí porque estamos en Linux
+# platform :ios, '13.0'
 
-# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 project 'Runner', {
@@ -34,23 +33,5 @@ target 'Runner' do
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    flutter_additional_ios_build_settings(target)
-    
-    # Forzar iOS 13.0 para todos los targets
-    target.build_configurations.each do |config|
-      # Asegurar que el deployment target es 13.0
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
-      
-      # Añadir explícitamente Flutter a los search paths
-      config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= ['$(inherited)', '${PODS_ROOT}/../Flutter']
-      config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)', '${PODS_ROOT}/../Flutter']
-      
-      # Para pods que usan Swift, asegurar que encuentran Flutter
-      if target.respond_to?(:product_type) && target.product_type == 'com.apple.product-type.framework'
-        config.build_settings['SWIFT_INCLUDE_PATHS'] ||= ['$(inherited)', '${PODS_ROOT}/../Flutter']
-      end
-    end
-  end
-end
+# POST_INSTALL COMPLETAMENTE ELIMINADO - Esto causa el error en Linux
+# No necesitamos post_install hooks para compilar

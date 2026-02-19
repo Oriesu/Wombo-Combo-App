@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../add_players/add_players_screen.dart';
 import 'verdad_reto_logic.dart';
 
 class VerdadRetoScreen extends StatefulWidget {
@@ -8,10 +7,10 @@ class VerdadRetoScreen extends StatefulWidget {
   const VerdadRetoScreen({Key? key, required this.players}) : super(key: key);
 
   @override
-  _VerdadRetoScreenState createState() => _VerdadRetoScreenState();
+  VerdadRetoScreenState createState() => VerdadRetoScreenState();
 }
 
-class _VerdadRetoScreenState extends State<VerdadRetoScreen> {
+class VerdadRetoScreenState extends State<VerdadRetoScreen> {
   late VerdadRetoLogic logic;
 
   @override
@@ -36,12 +35,12 @@ class _VerdadRetoScreenState extends State<VerdadRetoScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 8),
           ),
@@ -99,14 +98,14 @@ class _VerdadRetoScreenState extends State<VerdadRetoScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              color.withOpacity(0.8),
-              color.withOpacity(0.6),
+              color.withValues(alpha: 0.8),
+              color.withValues(alpha: 0.6),
             ],
           ),
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.4),
+              color: color.withValues(alpha: 0.4),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -142,23 +141,23 @@ class _VerdadRetoScreenState extends State<VerdadRetoScreen> {
         width: double.infinity,
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
+          color: Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         ),
         child: Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: logic.isVerdad 
-                  ? const Color(0xFF00CCFF).withOpacity(0.3)
-                  : const Color(0xFFFF00CC).withOpacity(0.3),
+                  ? const Color(0xFF00CCFF).withValues(alpha: 0.3)
+                  : const Color(0xFFFF00CC).withValues(alpha: 0.3),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.4),
+                color: Colors.black.withValues(alpha: 0.4),
                 blurRadius: 10,
                 offset: const Offset(0, 8),
               ),
@@ -184,9 +183,9 @@ class _VerdadRetoScreenState extends State<VerdadRetoScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -213,8 +212,8 @@ class _VerdadRetoScreenState extends State<VerdadRetoScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
                   color: isCurrent 
-                      ? const Color(0xFFFF00CC).withOpacity(0.3)
-                      : Colors.white.withOpacity(0.1),
+                      ? const Color(0xFFFF00CC).withValues(alpha: 0.3)
+                      : Colors.white.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                   border: isCurrent
                       ? Border.all(color: const Color(0xFFFF00CC))
@@ -222,7 +221,7 @@ class _VerdadRetoScreenState extends State<VerdadRetoScreen> {
                   boxShadow: isCurrent
                       ? [
                           BoxShadow(
-                            color: const Color(0xFFFF00CC).withOpacity(0.3),
+                            color: const Color(0xFFFF00CC).withValues(alpha: 0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -276,12 +275,12 @@ class _VerdadRetoScreenState extends State<VerdadRetoScreen> {
                           padding: const EdgeInsets.all(25),
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.05),
+                            color: Colors.white.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.white.withOpacity(0.1)),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
+                                color: Colors.black.withValues(alpha: 0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 8),
                               ),
@@ -308,7 +307,7 @@ class _VerdadRetoScreenState extends State<VerdadRetoScreen> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFFF00CC).withOpacity(0.15),
+                                  color: const Color(0xFFFF00CC).withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
                                 child: RichText(
@@ -384,11 +383,11 @@ class _VerdadRetoScreenState extends State<VerdadRetoScreen> {
                             Navigator.pop(context);
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white.withOpacity(0.1),
+                            backgroundColor: Colors.white.withValues(alpha: 0.1),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
-                              side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                              side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                             ),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 20,

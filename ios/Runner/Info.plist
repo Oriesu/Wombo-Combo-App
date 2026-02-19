@@ -28,16 +28,17 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<!-- CORREGIDO: Solo Portrait para coincidir con main.dart -->
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
+		<!-- Eliminadas landscape para evitar conflictos -->
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<!-- Si quieres mantener landscape en iPad, déjalas -->
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
@@ -46,16 +47,22 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	
-	<!-- PERMISOS DE RED LOCAL AÑADIDOS (SOLUCIONAN EL ERROR) -->
+	<!-- PERMISOS DE RED LOCAL -->
 	<key>NSBonjourServices</key>
 	<array>
-		<!-- Vacío por ahora - si algún plugin necesita servicios específicos, añádelos aquí -->
+		<string>_dartobservatory._tcp</string> <!-- Para debug en iOS -->
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Wombo Combo necesita acceso a la red local para descubrir dispositivos y servicios en tu red.</string>
 	
-	<!-- PERMISO DE SEGUIMIENTO (App Tracking Transparency) -->
+	<!-- PERMISO DE SEGUIMIENTO -->
 	<key>NSUserTrackingUsageDescription</key>
 	<string>Esta app utiliza identificadores para mejorar tu experiencia y mostrar contenido personalizado.</string>
+	
+	<!-- IMPORTANTE: Para vibration en iOS -->
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
 </dict>
 </plist>

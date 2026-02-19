@@ -13,17 +13,16 @@ import '../verdad_reto/verdad_reto_screen.dart';
 import '../versus/versus_screen.dart';
 import '../caballos/caballos_screen.dart';
 import '../ruleta/ruleta_screen.dart';
-import '../123/123_screen.dart';
-import 'add_players_logic.dart';
+import '../one_two_three/one_two_three_screen.dart';
 
 class AddPlayersScreen extends StatefulWidget {
   const AddPlayersScreen({Key? key}) : super(key: key);
 
   @override
-  _AddPlayersScreenState createState() => _AddPlayersScreenState();
+  AddPlayersScreenState createState() => AddPlayersScreenState();
 }
 
-class _AddPlayersScreenState extends State<AddPlayersScreen> {
+class AddPlayersScreenState extends State<AddPlayersScreen> {
   final TextEditingController playerNameController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
@@ -55,7 +54,7 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
     case 'quien-mas-probable':
     case 'caballos':
     case 'terribles-decisiones':
-      return players.length >= 0;
+      return true;
     case 'wombo-combo':
     case 'verdad-reto':
     case '123':
@@ -267,14 +266,14 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
           width: fullWidth ? double.infinity : null,
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: Colors.white.withValues(alpha:0.05),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: Colors.white.withOpacity(enabled ? 0.2 : 0.1),
+              color: Colors.white.withValues(alpha:enabled ? 0.2 : 0.1),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha: 0.2),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -289,12 +288,12 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
               if (gameType == '123')
                 _build123Icon()  
               else
-                Text( 
+                  Text( 
                   icon,
                   style: const TextStyle(fontSize: 24),
                 ),
               const SizedBox(height: 8),
-              Text(
+                Text(
                 name,
                 style: TextStyle(
                   color: Colors.white,
@@ -316,9 +315,9 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha:0.05),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha:0.1)),
       ),
       child: Column(
         children: [
@@ -445,9 +444,9 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha:0.05),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha:0.1)),
       ),
       child: const Text(
         "Esta app contiene temas para adultos y referencias al alcohol. Está destinada solo a mayores de edad (+18)",
@@ -502,9 +501,9 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
                               Container(
                                 padding: const EdgeInsets.all(15),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.05),
+                                  color: Colors.white.withValues(alpha:0.05),
                                   borderRadius: BorderRadius.circular(18),
-                                  border: Border.all(color: Colors.white.withOpacity(0.1)),
+                                  border: Border.all(color: Colors.white.withValues(alpha:0.1)),
                                 ),
                                 child: Column(
                                   children: [
@@ -518,7 +517,7 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
                                               hintText: 'Añadir nombres',
                                               hintStyle: const TextStyle(color: Colors.white54),
                                               filled: true,
-                                              fillColor: Colors.white.withOpacity(0.1),
+                                              fillColor: Colors.white.withValues(alpha:0.1),
                                               border: OutlineInputBorder(
                                                 borderRadius: BorderRadius.circular(10),
                                                 borderSide: BorderSide.none,
@@ -550,7 +549,7 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
                                       ],
                                     ),
 
-                                    if (!players.isEmpty) ...[
+                                    if (players.isNotEmpty) ...[
                                       const SizedBox(height: 20),    
                                    ],
 
@@ -595,7 +594,7 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
                               // Divider
                               Container(
                                 height: 1,
-                                color: Colors.white.withOpacity(0.2),
+                                color: Colors.white.withValues(alpha:0.2),
                                 margin: const EdgeInsets.symmetric(vertical: 10),
                               ),
                 

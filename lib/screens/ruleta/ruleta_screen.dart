@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'ruleta_logic.dart';
-import '../add_players/add_players_screen.dart';
-
 
 class RuletaScreen extends StatefulWidget {
   final List<String> players;
@@ -9,10 +7,10 @@ class RuletaScreen extends StatefulWidget {
   const RuletaScreen({Key? key, required this.players}) : super(key: key);
 
   @override
-  _RuletaScreenState createState() => _RuletaScreenState();
+  RuletaScreenState createState() => RuletaScreenState();
 }
 
-class _RuletaScreenState extends State<RuletaScreen> {
+class RuletaScreenState extends State<RuletaScreen> {
   late RuletaLogic logic;
 
   @override
@@ -75,9 +73,9 @@ class _RuletaScreenState extends State<RuletaScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: Column(
         children: [
@@ -120,9 +118,9 @@ class _RuletaScreenState extends State<RuletaScreen> {
   Widget _buildMesaApuestas() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -228,7 +226,7 @@ class _RuletaScreenState extends State<RuletaScreen> {
             end: Alignment.bottomCenter,
             colors: _getGradientColors(color),
           ),
-          border: Border.all(color: Colors.white.withOpacity(0.2)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
         ),
         child: Center(
           child: Text(
@@ -324,7 +322,7 @@ class _RuletaScreenState extends State<RuletaScreen> {
                   ? [const Color(0xFF212121), const Color(0xFF000000)]
                   : [const Color(0xFF4CAF50), const Color(0xFF2E7D32)],
           ),
-          border: Border.all(color: Colors.white.withOpacity(0.3)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
         ),
         child: Center(
           child: Text(
@@ -430,7 +428,7 @@ class _RuletaScreenState extends State<RuletaScreen> {
             end: Alignment.bottomCenter,
             colors: [Color(0xFF2E7D32), Color(0xFF1B5E20)],
           ),
-          border: Border.all(color: Colors.white.withOpacity(0.3)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
         ),
         child: const Center(
           child: Text(
@@ -450,9 +448,9 @@ class _RuletaScreenState extends State<RuletaScreen> {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: Column(
         children: [
@@ -473,7 +471,7 @@ class _RuletaScreenState extends State<RuletaScreen> {
                 decoration: BoxDecoration(
                   color: isCurrent 
                       ? const Color(0x4DFF00CC)
-                      : Colors.white.withOpacity(0.1),
+                      : Colors.white.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
                   border: isCurrent
                       ? Border.all(color: const Color(0xFFFF00CC))
@@ -515,12 +513,12 @@ class _RuletaScreenState extends State<RuletaScreen> {
             // ***** MODIFICACIÓN CRÍTICA: Se usa pop para activar el intersticial *****
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white.withOpacity(0.1),
+              backgroundColor: Colors.white.withValues(alpha: 0.1),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
               ),
             ),
             child: const Text('← Volver'),
@@ -539,8 +537,8 @@ class _RuletaScreenState extends State<RuletaScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF0066FF),
               foregroundColor: Colors.white,
-              disabledBackgroundColor: const Color(0xFF0066FF).withOpacity(0.3),
-              disabledForegroundColor: Colors.white.withOpacity(0.5),
+              disabledBackgroundColor: const Color(0xFF0066FF).withValues(alpha: 0.3),
+              disabledForegroundColor: Colors.white.withValues(alpha: 0.5),
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
@@ -559,8 +557,8 @@ class _RuletaScreenState extends State<RuletaScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFFF00CC),
               foregroundColor: Colors.white,
-              disabledBackgroundColor: const Color(0xFFFF00CC).withOpacity(0.3),
-              disabledForegroundColor: Colors.white.withOpacity(0.5),
+              disabledBackgroundColor: const Color(0xFFFF00CC).withValues(alpha: 0.3),
+              disabledForegroundColor: Colors.white.withValues(alpha: 0.5),
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
@@ -603,7 +601,7 @@ class _RuletaScreenState extends State<RuletaScreen> {
         backgroundColor: const Color(0xFF1a0033),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: Colors.white.withOpacity(0.2)),
+          side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
         ),
         content: SingleChildScrollView(
           child: Column(
@@ -644,7 +642,7 @@ class _RuletaScreenState extends State<RuletaScreen> {
                 padding: const EdgeInsets.all(6),
                 margin: const EdgeInsets.only(bottom: 4),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: Colors.white.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Column(
@@ -658,7 +656,7 @@ class _RuletaScreenState extends State<RuletaScreen> {
                         fontSize: 12,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                   const SizedBox(height: 2),
                     Text(
                       resultado['detalle'],
                       style: const TextStyle(color: Colors.white70, fontSize: 10),

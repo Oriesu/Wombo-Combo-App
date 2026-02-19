@@ -142,7 +142,7 @@ class Carta {
   
   Carta({required this.suit, required this.value});
   
-  String get imagePath => 'lib/screens/caballos/barajaEsp/${value}${suit}.png';
+  String get imagePath => 'lib/screens/caballos/barajaEsp/$value$suit.png';
 }
 
 class Horse {

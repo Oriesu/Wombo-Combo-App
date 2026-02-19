@@ -26,7 +26,7 @@ class PlayersMenuOverlay extends StatefulWidget {
 
 class _PlayersMenuOverlayState extends State<PlayersMenuOverlay> {
   final FocusNode _textFieldFocusNode = FocusNode();
-  TextEditingController _localTextController = TextEditingController();
+  final TextEditingController _localTextController = TextEditingController();
 
   @override
   void initState() {
@@ -56,7 +56,7 @@ class _PlayersMenuOverlayState extends State<PlayersMenuOverlay> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.black.withOpacity(0.85),
+      color: Colors.black.withValues(alpha: 0.85),
       child: GestureDetector(
         onTap: widget.onHideMenu,
         child: Container(
@@ -75,12 +75,12 @@ class _PlayersMenuOverlayState extends State<PlayersMenuOverlay> {
                   border: Border.all(color: const Color(0xFF29B6F6), width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF29B6F6).withOpacity(0.3),
+                      color: const Color(0xFF29B6F6).withValues(alpha: 0.3),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
+                      color: Colors.black.withValues(alpha: 0.5),
                       blurRadius: 30,
                       offset: const Offset(0, 20),
                     ),
@@ -105,7 +105,7 @@ class _PlayersMenuOverlayState extends State<PlayersMenuOverlay> {
                         ElevatedButton(
                           onPressed: widget.onHideMenu,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white.withOpacity(0.1),
+                            backgroundColor: Colors.white.withValues(alpha: 0.1),
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.all(8),
                             minimumSize: const Size(40, 40),
@@ -127,7 +127,7 @@ class _PlayersMenuOverlayState extends State<PlayersMenuOverlay> {
                             child: Container(
                               height: 50,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
+                                color: Colors.white.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
@@ -202,7 +202,7 @@ class _PlayersMenuOverlayState extends State<PlayersMenuOverlay> {
                               width: double.infinity,
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.05),
+                                color: Colors.white.withValues(alpha: 0.05),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: const Center(
@@ -221,7 +221,7 @@ class _PlayersMenuOverlayState extends State<PlayersMenuOverlay> {
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.05),
+                                  color: Colors.white.withValues(alpha: 0.05),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: SingleChildScrollView(
@@ -248,7 +248,7 @@ class _PlayersMenuOverlayState extends State<PlayersMenuOverlay> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
+                        color: Colors.white.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Column(
@@ -292,7 +292,7 @@ class _PlayersMenuOverlayState extends State<PlayersMenuOverlay> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(

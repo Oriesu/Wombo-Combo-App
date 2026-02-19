@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 class PlayersProvider with ChangeNotifier {
-  List<String> _players = [];
+  final List<String> _players = [];
 
   List<String> get players => List.from(_players); // Devuelve copia para evitar modificaciones externas
 

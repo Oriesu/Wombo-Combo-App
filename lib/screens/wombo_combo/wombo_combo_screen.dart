@@ -162,9 +162,9 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: Column(
         children: [
@@ -194,12 +194,12 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
               gameLogic.notifyListeners();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white.withOpacity(0.1),
+              backgroundColor: Colors.white.withValues(alpha:0.1),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
               ),
               elevation: 0,
               minimumSize: const Size(200, 44),
@@ -265,7 +265,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                           'Turno de:',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha:0.9),
                           ),
                         ),
                         Text(
@@ -308,7 +308,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                   'Casilla:',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha:0.9),
                   ),
                 ),
                 Text(
@@ -338,9 +338,9 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha:0.05),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha:0.1)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -353,12 +353,12 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
               Navigator.of(context).pop();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white.withOpacity(0.1),
+              backgroundColor: Colors.white.withValues(alpha:0.1),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
               ),
               elevation: 0,
               minimumSize: const Size(100, 50),
@@ -392,7 +392,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
           ),
           
           // TEXTO INDICADOR 
-          Container(
+            Container(
             width: 100, 
             child: Center(
               child: Text(
@@ -438,7 +438,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFF2C3E50),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withOpacity(0.2)),
+            border: Border.all(color: Colors.white.withValues(alpha:0.2)),
           ),
           child: Center(
             child: Text(
@@ -461,7 +461,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
 
   Widget _buildDiceOverlay(WomboComboLogic gameLogic) {
     return Material(
-      color: Colors.black.withOpacity(0.9),
+      color: Colors.black.withValues(alpha:0.9),
       child: GestureDetector(
         onTap: () {
           debugPrint('[WOMBO COMBO] Overlay tocado, cerrándolo');
@@ -484,12 +484,12 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                     border: Border.all(color: const Color(0xFF29B6F6), width: 2),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF29B6F6).withOpacity(0.3),
+                        color: const Color(0xFF29B6F6).withValues(alpha:0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.5),
+                        color: Colors.black.withValues(alpha:0.5),
                         blurRadius: 30,
                         offset: const Offset(0, 20),
                       ),
@@ -503,7 +503,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                         margin: const EdgeInsets.only(bottom: 20),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha:0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Text(
@@ -519,7 +519,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha:0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
@@ -572,10 +572,10 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF00CCFF).withOpacity(0.2),
+                                color: const Color(0xFF00CCFF).withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                  color: const Color(0xFF00CCFF).withOpacity(0.4),
+                                  color: const Color(0xFF00CCFF).withValues(alpha: 0.4),
                                   width: 1,
                                 ),
                               ),
@@ -621,9 +621,9 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                         ),
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha:0.1),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.white.withOpacity(0.2)),
+                          border: Border.all(color: Colors.white.withValues(alpha:0.2)),
                         ),
                         child: SingleChildScrollView( 
                           child: Text(
@@ -647,9 +647,9 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF00CC55).withOpacity(0.2),
+                          color: const Color(0xFF00CC55).withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFF00CC55).withOpacity(0.3)),
+                          border: Border.all(color: const Color(0xFF00CC55).withValues(alpha: 0.3)),
                         ),
                         child: Text(
                           gameLogic.diceOverlayExplanation,
@@ -702,7 +702,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
 
   Widget _build123TimerOverlay(WomboComboLogic gameLogic) {
     return Material(
-      color: Colors.black.withOpacity(0.9),
+      color: Colors.black.withValues(alpha: 0.9),
       child: GestureDetector(
         child: Container(
           color: Colors.transparent,
@@ -721,12 +721,12 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                     border: Border.all(color: const Color(0xFF29B6F6), width: 2),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF29B6F6).withOpacity(0.3),
+                        color: const Color(0xFF29B6F6).withValues(alpha: 0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.5),
+                        color: Colors.black.withValues(alpha: 0.5),
                         blurRadius: 30,
                         offset: const Offset(0, 20),
                       ),
@@ -739,7 +739,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -792,10 +792,10 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF00CCFF).withOpacity(0.2),
+                              color: const Color(0xFF00CCFF).withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: const Color(0xFF00CCFF).withOpacity(0.4),
+                                color: const Color(0xFF00CCFF).withValues(alpha: 0.4),
                                 width: 1,
                               ),
                             ),
@@ -841,9 +841,9 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                       ),
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white.withOpacity(0.2)),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
                       ),
                       child: SingleChildScrollView( 
                         child: Text(
@@ -867,9 +867,9 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF00CC55).withOpacity(0.2),
+                        color: const Color(0xFF00CC55).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF00CC55).withOpacity(0.3)),
+                        border: Border.all(color: const Color(0xFF00CC55).withValues(alpha: 0.3)),
                       ),
                       child: const Column(
                         children: [
@@ -934,7 +934,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                                         blurRadius: 20,
                                         color: (gameLogic.timeLeft123 <= 3 
                                             ? const Color(0xFFFF6B6B)
-                                            : const Color(0xFF29B6F6)).withOpacity(0.7),
+                                            : const Color(0xFF29B6F6)).withValues(alpha: 0.7),
                                       ),
                                     ],
                                   ),
@@ -963,12 +963,12 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                               gameLogic.skipTimer();
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white.withOpacity(0.2),
+                              backgroundColor: Colors.white.withValues(alpha: 0.2),
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(color: Colors.white.withOpacity(0.3)),
+                                side: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
                               ),
                               minimumSize: const Size(48, 48),
                             ),
@@ -995,7 +995,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
 
   Widget _buildTimeoutMessage(BuildContext context, WomboComboLogic gameLogic) {
     return Material(
-      color: Colors.black.withOpacity(0.8),
+      color: Colors.black.withValues(alpha: 0.8),
       child: Center(
         child: SingleChildScrollView(
           child: Container(
@@ -1006,7 +1006,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   blurRadius: 10,
                   offset: const Offset(0, 5),
                 ),
@@ -1059,7 +1059,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
 
   Widget _buildVictoryOverlay(BuildContext context, WomboComboLogic gameLogic) {
     return Material(
-      color: Colors.black.withOpacity(0.9),
+      color: Colors.black.withValues(alpha: 0.9),
       child: Center(
         child: SingleChildScrollView(
           child: Container(
@@ -1070,10 +1070,10 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
             decoration: BoxDecoration(
               color: const Color(0xFF2a0044),
               borderRadius: BorderRadius.circular(25),
-              border: Border.all(color: Colors.white.withOpacity(0.2)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.5),
                   blurRadius: 30,
                   offset: const Offset(0, 15),
                 ),
@@ -1137,7 +1137,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 6,
-                        shadowColor: const Color(0xFF00CC55).withOpacity(0.4),
+                        shadowColor: const Color(0xFF00CC55).withValues(alpha: 0.4),
                         minimumSize: const Size(48, 48),
                       ),
                       child: const Text(
@@ -1165,7 +1165,7 @@ class _WomboComboScreenState extends State<WomboComboScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 6,
-                        shadowColor: const Color(0xFFFF6B6B).withOpacity(0.4),
+                        shadowColor: const Color(0xFFFF6B6B).withValues(alpha: 0.4),
                         minimumSize: const Size(48, 48),
                       ),
                       child: const Text(

@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/player_provider.dart';
 import '../../data/game_data.dart';
-import '../../widgets/game_board.dart'; 
 import 'dart:async';    
 import 'dart:math';     
 
@@ -430,7 +427,7 @@ class WomboComboLogic extends ChangeNotifier {
       debugPrint('[LOGIC] Starting dice animation');
     }
     
-    final timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+    Timer.periodic(const Duration(milliseconds: 200), (timer) {
       // Generar nuevo valor que no sea igual al anterior
       int newValue;
       do {
@@ -748,7 +745,7 @@ class WomboComboLogic extends ChangeNotifier {
     final position = playerPositions[currentPlayerIndex];
     
     if (debugLogicEnabled) {
-      final shortContent = content.length > 50 ? content.substring(0, 50) + '...' : content;
+      final shortContent = content.length > 50 ? '${content.substring(0, 50)}...' : content;
       debugPrint('[LOGIC] Showing dice overlay: "$title" - "$shortContent" - "$explanation" for $playerName at position $position');
     }
     
@@ -781,7 +778,7 @@ class WomboComboLogic extends ChangeNotifier {
 
   void show123Timer(String challengeText) {
     if (debugLogicEnabled) {
-      final shortChallenge = challengeText.length > 50 ? challengeText.substring(0, 50) + '...' : challengeText;
+      final shortChallenge = challengeText.length > 50 ? '${challengeText.substring(0, 50)}...' : challengeText;
       debugPrint('[LOGIC] Starting 123 timer with challenge: "$shortChallenge"');
     }
     
@@ -1009,7 +1006,7 @@ class WomboComboLogic extends ChangeNotifier {
       debugPrint('[LOGIC] === STATUS ===');
       debugPrint('[LOGIC] Players: $_players');
       debugPrint('[LOGIC] Positions: $playerPositions');
-      debugPrint('[LOGIC] Current player: $currentPlayerIndex (${currentPlayerName})');
+      debugPrint('[LOGIC] Current player: $currentPlayerIndex ($currentPlayerName)');
       debugPrint('[LOGIC] Dice: $diceValue, Rolling: $isRolling');
       debugPrint('[LOGIC] 123 Active: $is123Active, Time left: $timeLeft123');
       debugPrint('[LOGIC] Dice button disabled: $isDiceButtonDisabled');
@@ -1021,7 +1018,7 @@ class WomboComboLogic extends ChangeNotifier {
   
   void togglePlayersMenu() {
     if (debugLogicEnabled) {
-      debugPrint('[LOGIC] Toggling players menu from ${showPlayersMenu} to ${!showPlayersMenu}');
+      debugPrint('[LOGIC] Toggling players menu from $showPlayersMenu to ${!showPlayersMenu}');
     }
     
     showPlayersMenu = !showPlayersMenu;

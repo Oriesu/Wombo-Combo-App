@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../add_players/add_players_screen.dart';
 import 'yo_nunca_logic.dart';
 
 class YoNuncaScreen extends StatefulWidget {
@@ -8,10 +7,10 @@ class YoNuncaScreen extends StatefulWidget {
   const YoNuncaScreen({Key? key, required this.players}) : super(key: key);
 
   @override
-  _YoNuncaScreenState createState() => _YoNuncaScreenState();
+   YoNuncaScreenState createState() => YoNuncaScreenState();
 }
 
-class _YoNuncaScreenState extends State<YoNuncaScreen> {
+class YoNuncaScreenState extends State<YoNuncaScreen> {
   late YoNuncaLogic logic;
 
   @override
@@ -35,19 +34,19 @@ class _YoNuncaScreenState extends State<YoNuncaScreen> {
         padding: const EdgeInsets.all(15),
         margin: const EdgeInsets.only(top: 30, bottom: 20),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
+          color: Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         ),
         child: Container(
           padding: const EdgeInsets.all(25),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: Colors.white.withOpacity(0.2)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.4),
+                color: Colors.black.withValues(alpha: 0.4),
                 blurRadius: 8,
                 offset: const Offset(0, 8),
               ),
@@ -69,10 +68,10 @@ class _YoNuncaScreenState extends State<YoNuncaScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFF6B6B).withOpacity(0.1),
+                  color: const Color(0xFFFF6B6B).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: const Color(0xFFFF6B6B).withOpacity(0.3),
+                    color: const Color(0xFFFF6B6B).withValues(alpha: 0.3),
                   ),
                 ),
                 child: const Text(
@@ -118,12 +117,12 @@ class _YoNuncaScreenState extends State<YoNuncaScreen> {
                       padding: const EdgeInsets.all(20),
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
+                        color: Colors.white.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: Colors.white.withOpacity(0.1)),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
+                            color: Colors.black.withValues(alpha: 0.3),
                             blurRadius: 6,
                             offset: const Offset(0, 6),
                           ),
@@ -136,7 +135,7 @@ class _YoNuncaScreenState extends State<YoNuncaScreen> {
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
                           shadows: [
-                            Shadow(
+                              Shadow(
                               blurRadius: 8,
                               color: Colors.black,
                             ),
@@ -168,7 +167,7 @@ class _YoNuncaScreenState extends State<YoNuncaScreen> {
                             borderRadius: BorderRadius.circular(18),
                           ),
                           elevation: 6,
-                          shadowColor: Colors.black.withOpacity(0.4),
+                          shadowColor: Colors.black.withValues(alpha: 0.4),
                         ),
                         child: const Column(
                           mainAxisSize: MainAxisSize.min,
@@ -206,11 +205,11 @@ class _YoNuncaScreenState extends State<YoNuncaScreen> {
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.1),
+                          backgroundColor: Colors.white.withValues(alpha: 0.1),
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                            side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                           ),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 20,

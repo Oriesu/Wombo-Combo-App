@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import '../add_players/add_players_screen.dart';
-import '123_logic.dart';
-
+import 'one_two_three_logic.dart';
+ 
 class OneTwoThreeScreen extends StatefulWidget {
   final List<String> players;
 
   const OneTwoThreeScreen({Key? key, required this.players}) : super(key: key);
 
   @override
-  _OneTwoThreeScreenState createState() => _OneTwoThreeScreenState();
+  OneTwoThreeScreenState createState() => OneTwoThreeScreenState();
 }
 
-class _OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
+class OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
   late OneTwoThreeLogic logic;
   bool _showWarning = false;
 
@@ -56,12 +55,12 @@ class _OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
       padding: const EdgeInsets.all(25),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 6,
             offset: const Offset(0, 6),
           ),
@@ -88,7 +87,7 @@ class _OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             decoration: BoxDecoration(
-              color: const Color(0xFFFFC107).withOpacity(0.15),
+              color: const Color(0xFFFFC107).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(15),
             ),
             child: RichText(
@@ -100,7 +99,7 @@ class _OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
                 children: [
                   TextSpan(
                     text: 'Turno de: ',
-                    style: TextStyle(color: Colors.white.withOpacity(0.9)),
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.9)),
                   ),
                   TextSpan(
                     text: logic.currentPlayer,
@@ -128,12 +127,12 @@ class _OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
     return Container(
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 6,
             offset: const Offset(0, 6),
           ),
@@ -163,12 +162,12 @@ class _OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(35),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withOpacity(0.2)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.4),
+                  color: Colors.black.withValues(alpha: 0.4),
                   blurRadius: 8,
                   offset: const Offset(0, 8),
                 ),
@@ -203,12 +202,12 @@ class _OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
     return Container(
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 6,
             offset: const Offset(0, 6),
           ),
@@ -225,7 +224,7 @@ class _OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
               shadows: [
                 Shadow(
                   blurRadius: 8,
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.5),
                 ),
               ],
             ),
@@ -238,7 +237,7 @@ class _OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
             'segundos',
             style: TextStyle(
               fontSize: 18,
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
             ),
           ),
         ],
@@ -317,7 +316,7 @@ class _OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
                               borderRadius: BorderRadius.circular(15),
                             ),
                             elevation: 8,
-                            shadowColor: Colors.black.withOpacity(0.3),
+                            shadowColor: Colors.black.withValues(alpha: 0.3),
                           ),
                           child: const Text(
                             'Siguiente Jugador',
@@ -336,18 +335,18 @@ class _OneTwoThreeScreenState extends State<OneTwoThreeScreen> {
                             Navigator.pop(context);
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white.withOpacity(0.1),
+                            backgroundColor: Colors.white.withValues(alpha: 0.1),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
-                              side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                              side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                             ),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 20,
                               vertical: 12,
                             ),
                           ),
-                          child: const Row(
+                          child: const  Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(Icons.arrow_back, size: 18),
