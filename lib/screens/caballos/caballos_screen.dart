@@ -37,12 +37,12 @@ class CaballosScreenState extends State<CaballosScreen> {
       padding: const EdgeInsets.all(20),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
+            color: Colors.black.withOpacity(0.3),
             blurRadius: 8,
             offset: const Offset(0, 8),
           ),
@@ -64,9 +64,9 @@ class CaballosScreenState extends State<CaballosScreen> {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: Column(
         children: [
@@ -87,9 +87,9 @@ class CaballosScreenState extends State<CaballosScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.1),
+        color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+        border: Border.all(color: Colors.white.withOpacity(0.3)),
       ),
       child: Row(
         children: [
@@ -121,9 +121,9 @@ class CaballosScreenState extends State<CaballosScreen> {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.08),
+        color: Colors.white.withOpacity(0.08),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: Row(
         children: [
@@ -154,7 +154,7 @@ class CaballosScreenState extends State<CaballosScreen> {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.4),
+            color: Colors.black.withOpacity(0.4),
             blurRadius: 6,
             offset: const Offset(0, 3),
           ),
@@ -174,7 +174,7 @@ class CaballosScreenState extends State<CaballosScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFC107).withValues(alpha: 0.15),
+        color: const Color(0xFFFFC107).withOpacity(0.15),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(color: const Color(0xFFFFC107)),
       ),
@@ -220,7 +220,7 @@ class CaballosScreenState extends State<CaballosScreen> {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.4),
+            color: Colors.black.withOpacity(0.4),
             blurRadius: 6,
             offset: const Offset(0, 3),
           ),
@@ -238,9 +238,9 @@ class CaballosScreenState extends State<CaballosScreen> {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -265,7 +265,7 @@ class CaballosScreenState extends State<CaballosScreen> {
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.4),
+                color: Colors.black.withOpacity(0.4),
                 blurRadius: 6,
                 offset: const Offset(0, 3),
               ),
@@ -275,9 +275,9 @@ class CaballosScreenState extends State<CaballosScreen> {
               ? Image.asset(logic.discardPile.last.imagePath, fit: BoxFit.cover)
               : Container(
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.05),
+                    color: Colors.white.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                    border: Border.all(color: Colors.white.withOpacity(0.3)),
                   ),
                   child: const Center(child: Text('Vacío', style: TextStyle(color: Colors.white54, fontSize: 11))),
                 ),
@@ -291,7 +291,7 @@ class CaballosScreenState extends State<CaballosScreen> {
       width: 120,
       height: 85,
       decoration: BoxDecoration(
-        color: const Color(0xFFFFC107).withValues(alpha: 0.1),
+        color: const Color(0xFFFFC107).withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: const Color(0xFFFFC107)),
       ),
@@ -324,7 +324,7 @@ class CaballosScreenState extends State<CaballosScreen> {
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.4),
+                color: Colors.black.withOpacity(0.4),
                 blurRadius: 6,
                 offset: const Offset(0, 3),
               ),
@@ -334,9 +334,9 @@ class CaballosScreenState extends State<CaballosScreen> {
               ? Image.asset('lib/screens/caballos/barajaEsp/Reverso.png', fit: BoxFit.cover)
               : Container(
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.05),
+                    color: Colors.white.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                    border: Border.all(color: Colors.white.withOpacity(0.3)),
                   ),
                   child: const Center(child: Text('Vacío', style: TextStyle(color: Colors.white54, fontSize: 11))),
                 ),
@@ -364,7 +364,7 @@ class CaballosScreenState extends State<CaballosScreen> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFFF00CC).withValues(alpha: 0.4),
+              color: const Color(0xFFFF00CC).withOpacity(0.4),
               blurRadius: 12,
               offset: const Offset(0, 6),
             ),
@@ -420,9 +420,9 @@ class CaballosScreenState extends State<CaballosScreen> {
                       child: ElevatedButton(
                         onPressed: () => Navigator.pop(context),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withValues(alpha: 0.1),
+                          backgroundColor: Colors.white.withOpacity(0.1),
                           foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: BorderSide(color: Colors.white.withOpacity(0.2))),
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                         ),
                         child: const Row(mainAxisSize: MainAxisSize.min, children: [Icon(Icons.arrow_back, size: 16), SizedBox(width: 6), Text('Volver', style: TextStyle(fontWeight: FontWeight.w500))]),

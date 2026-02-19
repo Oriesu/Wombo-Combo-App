@@ -123,7 +123,7 @@ class GameBoard extends StatelessWidget {
       debugPrint('[GAME BOARD] ERROR: boardConfig está vacío');
       return Container(
         height: 200,
-        color: Colors.red.withValues(alpha: 0.3),
+        color: Colors.red.withOpacity(0.3),
         child: const Center(
           child: Text(
             'Error: Tablero no configurado',
@@ -142,7 +142,7 @@ class GameBoard extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
+            color: Colors.black.withOpacity(0.3),
             blurRadius: 8,
             offset: const Offset(2, 2),
           ),
@@ -242,7 +242,7 @@ class GameBoard extends StatelessWidget {
               height: cellHeight,
               child: Container(
                 decoration: BoxDecoration(
-                  color: _getCellColor(cell['type']).withValues(alpha: 0.9),
+                  color: _getCellColor(cell['type']).withOpacity(0.9),
                   border: Border(
                     top: topBorder,
                     bottom: bottomBorder,
@@ -262,10 +262,10 @@ class GameBoard extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
                         decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.35),
+                          color: Colors.black.withOpacity(0.35),
                           borderRadius: BorderRadius.circular(3),
                           border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.3),
+                            color: Colors.white.withOpacity(0.3),
                             width: 0.5,
                           ),
                         ),
@@ -278,7 +278,7 @@ class GameBoard extends StatelessWidget {
                             shadows: [
                               Shadow(
                                 blurRadius: 2,
-                                color: Colors.black.withValues(alpha: 0.8),
+                                color: Colors.black.withOpacity(0.8),
                               ),
                             ],
                           ),
@@ -379,7 +379,7 @@ class GameBoard extends StatelessWidget {
             width: markerSize * 0.8,
             height: markerSize * 0.8,
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.7),
+              color: Colors.black.withOpacity(0.7),
               shape: BoxShape.circle,
               border: Border.all(
                 color: Colors.white,
