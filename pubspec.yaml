@@ -22,7 +22,7 @@ dependencies:
   device_info_plus: ^9.1.2
   flutter_screenutil: ^5.9.0
   
-  # Dependencias condicionales (se manejarán con imports condicionales en el código)
+  # Dependencias condicionales (se manejarán con verificación de plataforma)
   window_manager: ^0.3.3  # Solo se usará en desktop
   app_tracking_transparency: ^2.0.6+1  # Solo se usará en iOS
 
@@ -32,7 +32,6 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^2.0.0
 
-# CONFIGURACIÓN DE ICONOS DE LA APP
 flutter_launcher_icons:
   android: true
   ios: true
@@ -45,12 +44,8 @@ flutter_launcher_icons:
 flutter:
   uses-material-design: true
   
-  # TODOS LOS ASSETS DE LA APP - RUTAS ORIGINALES CORREGIDAS
   assets:
-    # IMPORTANTE: Las rutas deben ser relativas a la raíz del proyecto
-    # y NO deben comenzar con "lib/"
-    
-    # Assets para juegos de cartas
+    # Assets para juegos de cartas - VERIFICAR QUE ESTAS CARPETAS EXISTEN
     - lib/screens/caballos/barajaEsp/
     - lib/screens/ruleta/fichas/
     - lib/screens/wombo_combo/dados/
@@ -60,6 +55,3 @@ flutter:
     - assets/icons/app_icon.png  
     - assets/images/casino-roulette.png
     - assets/images/podium.png
-    
-    # Nota: Asegúrate que las carpetas existen en las rutas especificadas
-    # Si alguna carpeta está vacía, Flutter puede dar error

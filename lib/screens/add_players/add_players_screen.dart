@@ -16,13 +16,13 @@ import '../ruleta/ruleta_screen.dart';
 import '../one_two_three/one_two_three_screen.dart';
 
 class AddPlayersScreen extends StatefulWidget {
-  const AddPlayersScreen({Key? key}) : super(key: key);
+  const AddPlayersScreen({super.key});
 
   @override
-  AddPlayersScreenState createState() => AddPlayersScreenState();
+  State<AddPlayersScreen> createState() => _AddPlayersScreenState();
 }
 
-class AddPlayersScreenState extends State<AddPlayersScreen> {
+class _AddPlayersScreenState extends State<AddPlayersScreen> {
   final TextEditingController playerNameController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 

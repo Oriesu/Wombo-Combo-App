@@ -1,5 +1,5 @@
-# No definir platform aquí porque estamos en Linux
-# platform :ios, '13.0'
+# Uncomment this line to define a global platform for your project
+platform :ios, '13.0'
 
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
@@ -33,5 +33,18 @@ target 'Runner' do
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 
-# POST_INSTALL COMPLETAMENTE ELIMINADO - Esto causa el error en Linux
-# No necesitamos post_install hooks para compilar
+# Post-install hook necesario para iOS
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    
+    # Asegurar que todos los targets usen iOS 13.0 como mínimo
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+      
+      # Añadir search paths para Flutter
+      config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= ['$(inherited)', '${PODS_ROOT}/../Flutter']
+      config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)', '${PODS_ROOT}/../Flutter']
+    end
+  end
+end

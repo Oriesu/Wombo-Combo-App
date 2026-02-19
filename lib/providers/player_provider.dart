@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 
-class PlayersProvider with ChangeNotifier {
+class PlayersProvider extends ChangeNotifier {
   final List<String> _players = [];
 
-  List<String> get players => List.from(_players); // Devuelve copia para evitar modificaciones externas
+  List<String> get players => List.from(_players);
 
   void addPlayer(String name) {
     if (!_players.contains(name)) {
