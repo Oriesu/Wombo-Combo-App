@@ -2,7 +2,7 @@ name: wombo_combo
 description: Una app de juegos para beber divertida
 publish_to: 'none'
 
-version: 1.0.1+4
+version: 1.0.1+5
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -14,23 +14,23 @@ dependencies:
   # Dependencias principales
   shared_preferences: ^2.2.2
   provider: ^6.1.1
-  confetti: ^0.7.0
+  confetti: ^0.8.0
   animations: ^2.0.7
   flutter_animate: ^4.1.1
   flutter_svg: ^2.0.9
   vibration: ^3.1.5
-  device_info_plus: ^9.1.2
+  device_info_plus: ^12.3.0
   flutter_screenutil: ^5.9.0
   
   # Dependencias condicionales (se manejarán con verificación de plataforma)
-  window_manager: ^0.3.3  # Solo se usará en desktop
+  window_manager: ^0.5.1  # Solo se usará en desktop
   app_tracking_transparency: ^2.0.6+1  # Solo se usará en iOS
 
 dev_dependencies:
-  flutter_launcher_icons: ^0.13.1
+  flutter_launcher_icons: ^0.14.4
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^6.0.0
 
 flutter_launcher_icons:
   android: true

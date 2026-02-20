@@ -105,8 +105,8 @@ workflows:
           echo "=========================================="
           echo "🔨 CONSTRUYENDO IPA"
           echo "=========================================="
-          # Este comando generará un IPA listo para subir
-          flutter build ipa --release
+          # CORREGIDO: Cambiado de --debug a --release
+          flutter build ipa --release --export-options-plist /Users/builder/export_options.plist
           
           # Verificar que el IPA se generó correctamente
           if [ -f "build/ios/ipa/Runner.ipa" ]; then
