@@ -99,25 +99,26 @@ workflows:
           xcode-project use-profiles
           echo "✅ Perfiles de firma aplicados"
 
-      # ---------- FASE 4: CONSTRUIR IPA FIRMADO ----------
-      - name: "6. Construir IPA (Firmado)"
+      # ---------- FASE 4: CONSTRUIR IPA ----------
+      - name: "6. Construir IPA (Release)"
         script: |
           echo "=========================================="
-          echo "🔨 CONSTRUYENDO IPA"
+          echo "🔨 CONSTRUYENDO IPA (RELEASE)"
           echo "=========================================="
-          # CORREGIDO: Cambiado de --debug a --release
-          flutter build ipa --release --export-options-plist /Users/builder/export_options.plist
           
-          # Verificar que el IPA se generó correctamente
-          if [ -f "build/ios/ipa/Runner.ipa" ]; then
-            echo "✅ IPA generado exitosamente"
-            ls -lh build/ios/ipa/Runner.ipa
-          elif [ -f "build/ios/ipa/WomboCombo.ipa" ]; then
-            echo "✅ IPA generado exitosamente"
-            ls -lh build/ios/ipa/WomboCombo.ipa
+          # Forzar modo Release y configuración correcta
+          flutter build ipa --release \
+            --export-options-plist=/Users/builder/export_options.plist \
+            --build-name=1.0.1 \
+            --build-number=4
+          
+          # Verificar IPA
+          IPA_PATH=$(find build/ios -name "*.ipa" -type f | head -1)
+          if [ -f "$IPA_PATH" ]; then
+            echo "✅ IPA generado: $IPA_PATH"
+            ls -la "$IPA_PATH"
           else
-            echo "❌ ERROR: No se pudo generar el IPA"
-            find build -name "*.ipa" -ls
+            echo "❌ ERROR: No se generó IPA"
             exit 1
           fi
 
