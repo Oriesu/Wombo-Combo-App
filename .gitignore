@@ -1,0 +1,29 @@
+# Archivos y carpetas del sistema que NO deben subirse
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+
+# Carpetas de Flutter/Dart
+.dart_tool/
+.pub-cache/
+.pub/
+build/
+*.lock
+*.aab
+*.apk
+*.ipa
+
+# Carpetas de IDE
+.vscode/
+.idea/
+*.iml
+
+# Carpetas específicas para EXCLUIR (para que no se trackeen)
+node_modules/
+__pycache__/
+
+# Para evitar que se trackeen carpetas superiores (¡CRÍTICO!)
+./
+../

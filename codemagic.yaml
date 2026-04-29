@@ -1,0 +1,167 @@
+# ==========================================
+# WOMBO COMBO - Flutter iOS Build para App Store Connect
+# VERSIÓN FINAL - CORREGIDA Y OPTIMIZADA
+# ==========================================
+
+workflows:
+  ios-build-and-upload:
+    name: "Wombo Combo - Build & Upload to TestFlight"
+    description: "Flujo optimizado para build, firma automática y subida a TestFlight"
+    instance_type: mac_mini_m2
+
+    # --- INTEGRACIÓN CON APP STORE CONNECT (OBLIGATORIO) ---
+    integrations:
+      app_store_connect: "Codemagic CI"
+
+    environment:
+      flutter: "stable"
+      xcode: "latest"
+      cocoapods: "default"
+
+      # --- CONFIGURACIÓN DE FIRMA AUTOMÁTICA ---
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.javiersanchez.womboCombo
+
+      vars:
+        APP_IDENTIFIER: "com.javiersanchez.womboCombo"
+        BUNDLE_ID: "com.javiersanchez.womboCombo"
+        XCODE_SCHEME: "Runner"
+        APP_NAME: "Wombo Combo"
+        APPLE_ID: "javiersanchezmartinez2006@gmail.com"
+
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+        - ~/Library/Caches/CocoaPods
+        - ios/Pods
+        - $HOME/Library/Developer/Xcode/DerivedData
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+
+    scripts:
+      # ---------- FASE 1: PREPARACIÓN ----------
+      - name: "1. Información del sistema"
+        script: |
+          echo "=========================================="
+          echo "🚀 INICIANDO BUILD - WOMBO COMBO"
+          echo "=========================================="
+          echo "Fecha: $(date)"
+          echo "Bundle ID: $APP_IDENTIFIER"
+          echo ""
+          flutter --version
+          echo ""
+          xcodebuild -version
+
+      - name: "2. Limpieza profunda"
+        script: |
+          echo "=========================================="
+          echo "🧹 LIMPIEZA PROFUNDA"
+          echo "=========================================="
+          flutter clean
+          rm -rf ios/Pods ios/Podfile.lock ios/Runner.xcworkspace
+          rm -rf ~/Library/Developer/Xcode/DerivedData/*
+          echo "✅ Proyecto limpiado"
+
+      - name: "3. Instalación de dependencias"
+        script: |
+          echo "=========================================="
+          echo "📦 INSTALANDO DEPENDENCIAS"
+          echo "=========================================="
+          flutter pub get
+          echo "✅ Dependencias instaladas"
+
+      # ---------- FASE 2: CONFIGURACIÓN DE iOS ----------
+      - name: "4. Configuración de CocoaPods"
+        script: |
+          echo "=========================================="
+          echo "🍏 CONFIGURANDO COCOAPODS"
+          echo "=========================================="
+          cd ios
+          pod repo update
+          pod install --verbose
+          cd ..
+          echo "✅ CocoaPods configurado"
+
+      # ---------- FASE 3: APLICAR FIRMA (USANDO LA API KEY) ----------
+      - name: "5. Aplicar perfiles de firma"
+        script: |
+          echo "=========================================="
+          echo "🔑 APLICANDO PERFILES DE FIRMA"
+          echo "=========================================="
+          # Este comando descarga y configura los perfiles automáticamente
+          xcode-project use-profiles
+          echo "✅ Perfiles de firma aplicados"
+
+      # ---------- FASE 4: CONSTRUIR IPA ----------
+      - name: "6. Construir IPA (Release)"
+        script: |
+          echo "=========================================="
+          echo "🔨 CONSTRUYENDO IPA (RELEASE)"
+          echo "=========================================="
+          
+          # Forzar modo Release y configuración correcta
+          flutter build ipa --release \
+            --export-options-plist=/Users/builder/export_options.plist \
+            --build-name=1.0.1 \
+            --build-number=4
+          
+          # Verificar IPA
+          IPA_PATH=$(find build/ios -name "*.ipa" -type f | head -1)
+          if [ -f "$IPA_PATH" ]; then
+            echo "✅ IPA generado: $IPA_PATH"
+            ls -la "$IPA_PATH"
+          else
+            echo "❌ ERROR: No se generó IPA"
+            exit 1
+          fi
+
+      # ---------- FASE 5: VERIFICACIÓN ----------
+      - name: "7. Verificación del IPA"
+        script: |
+          echo "=========================================="
+          echo "🔍 VERIFICANDO IPA"
+          echo "=========================================="
+          # Buscar y listar el IPA generado
+          IPA_PATH=$(find build/ios -name "*.ipa" -type f | head -1)
+          if [ -n "$IPA_PATH" ]; then
+            echo "✅ IPA encontrado en: $IPA_PATH"
+            ls -la "$IPA_PATH"
+            
+            # Verificar que el IPA no está vacío
+            IPA_SIZE=$(stat -f%z "$IPA_PATH" 2>/dev/null || stat -c%s "$IPA_PATH" 2>/dev/null)
+            if [ "$IPA_SIZE" -gt 1000000 ]; then
+              echo "✅ Tamaño del IPA: $((IPA_SIZE/1048576)) MB (correcto)"
+            else
+              echo "⚠️  El IPA parece demasiado pequeño: $((IPA_SIZE/1024)) KB"
+            fi
+          else
+            echo "❌ ERROR: No se encontró ningún archivo .ipa"
+            exit 1
+          fi
+
+    # ---------- ARTEFACTOS ----------
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    # ---------- PUBLICACIÓN AUTOMÁTICA ----------
+    publishing:
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: true
+
+      email:
+        recipients:
+          - javiersanchezmartinez2006@gmail.com
+        notify:
+          success: true
+          failure: true
