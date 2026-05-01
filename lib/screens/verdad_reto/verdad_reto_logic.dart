@@ -111,14 +111,21 @@ class VerdadRetoLogic {
     List<String> availablePlayers = _getAvailablePlayers(players);
     
     // Verificar si hay suficientes jugadores disponibles
-    return availablePlayers.length > placeholderCount;
+    return availablePlayers.length >= placeholderCount;
   }
 
   String _processText(String text, List<String> players) {
-    // Contar cuántos "----" hay en el texto
-    final placeholderCount = '----'.allMatches(text).length;
+    // Reemplazar placeholders de números (####) primero
+    String result = text;
+    while (result.contains('####')) {
+      final randomNumber = _getRandomNumberBetween2And10();
+      result = result.replaceFirst('####', randomNumber.toString());
+    }
     
-    if (placeholderCount == 0) return text;
+    // Contar cuántos "----" hay en el texto
+    final placeholderCount = '----'.allMatches(result).length;
+    
+    if (placeholderCount == 0) return result;
     
     // Obtener jugadores disponibles (excluyendo al jugador actual)
     List<String> availablePlayers = _getAvailablePlayers(players);
@@ -127,19 +134,20 @@ class VerdadRetoLogic {
     availablePlayers.shuffle();
     
     // Reemplazar cada "----" con un jugador diferente
-    String result = text;
-    
     for (int i = 0; i < placeholderCount; i++) {
       if (i < availablePlayers.length) {
-        // Usar un jugador diferente para cada placeholder si es posible
         result = result.replaceFirst('----', availablePlayers[i]);
       } else {
-        // Esto no debería pasar porque _canProcessText ya verificó que hay suficientes
         result = result.replaceFirst('----', 'Otro jugador');
       }
     }
     
     return result;
+  }
+
+  // Método auxiliar para generar número aleatorio entre 2 y 10
+  int _getRandomNumberBetween2And10() {
+    return DateTime.now().microsecondsSinceEpoch % 9 + 2; // 2-10 inclusive
   }
 
   /// Obtiene la lista de jugadores disponibles para sustitución (excluyendo al actual)

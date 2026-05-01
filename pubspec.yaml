@@ -2,7 +2,7 @@ name: wombo_combo_nuevo_definitivo
 description: Una app de juegos para beber divertida
 publish_to: 'none'
 
-version: 1.4.3+22
+version: 1.4.4+23
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

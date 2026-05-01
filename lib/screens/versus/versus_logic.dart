@@ -83,10 +83,17 @@ class VersusLogic {
   }
 
   String _processText(String text) {
-    // Contar cuántos "----" hay en el texto
-    final placeholderCount = '----'.allMatches(text).length;
+    // Reemplazar placeholders de números (####) primero
+    String result = text;
+    while (result.contains('####')) {
+      final randomNumber = _getRandomNumberBetween2And10();
+      result = result.replaceFirst('####', randomNumber.toString());
+    }
     
-    if (placeholderCount == 0) return text;
+    // Contar cuántos "----" hay en el texto
+    final placeholderCount = '----'.allMatches(result).length;
+    
+    if (placeholderCount == 0) return result;
     
     // Combinar todos los jugadores para la selección
     final allPlayers = [..._teamBlue, ..._teamRed];
@@ -96,12 +103,16 @@ class VersusLogic {
     final selectedPlayers = shuffledPlayers.take(placeholderCount).toList();
     
     // Reemplazar cada "----" con un jugador
-    String result = text;
     for (final player in selectedPlayers) {
       result = result.replaceFirst('----', player);
     }
     
     return result;
+  }
+
+  // Método auxiliar para generar número aleatorio entre 2 y 10
+  int _getRandomNumberBetween2And10() {
+    return DateTime.now().microsecond % 9 + 2; // 2-10 inclusive
   }
 
   int _getRandomIndex(int max) {

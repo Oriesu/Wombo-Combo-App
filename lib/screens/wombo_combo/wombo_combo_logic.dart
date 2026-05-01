@@ -339,36 +339,43 @@ class WomboComboLogic extends ChangeNotifier {
   }
 
   String processText(String text, {bool excludeCurrent = true}) {
-    if (!text.contains('----')) {
+    if (!text.contains('----') && !text.contains('####')) {
       return text;
     }
     
-    List<String> availablePlayers = excludeCurrent ? _getAvailablePlayers() : List.from(_players);
-    
-    final placeholderCount = (text.split('----').length - 1);
-    
-    if (debugLogicEnabled) {
-      debugPrint('[LOGIC] Processing text with $placeholderCount placeholders, ${availablePlayers.length} available players');
-    }
-    
-    // Si no hay suficientes jugadores disponibles (y estamos excluyendo al actual)
-    if (excludeCurrent && availablePlayers.length < placeholderCount) {
-      if (debugLogicEnabled) {
-        debugPrint('[LOGIC] Not enough players excluding current, using all players');
-      }
-      availablePlayers = List.from(_players);
-    }
-    
-    availablePlayers.shuffle();
-    
+    // Primero reemplazar los placeholders de números (####)
     String result = text;
-    for (int i = 0; i < placeholderCount; i++) {
-      if (i < availablePlayers.length) {
-        // Usar un jugador diferente para cada placeholder si es posible
-        result = result.replaceFirst('----', availablePlayers[i]);
-      } else {
-        // Si no hay suficientes jugadores únicos, usar marcador genérico
-        result = result.replaceFirst('----', 'Otro jugador');
+    while (result.contains('####')) {
+      final randomNumber = _getRandomNumberBetween2And10();
+      result = result.replaceFirst('####', randomNumber.toString());
+    }
+    
+    // Luego reemplazar los placeholders de jugadores (----)
+    if (result.contains('----')) {
+      List<String> availablePlayers = excludeCurrent ? _getAvailablePlayers() : List.from(_players);
+      
+      final placeholderCount = (result.split('----').length - 1);
+      
+      if (debugLogicEnabled) {
+        debugPrint('[LOGIC] Processing text with $placeholderCount player placeholders, ${availablePlayers.length} available players');
+      }
+      
+      // Si no hay suficientes jugadores disponibles (y estamos excluyendo al actual)
+      if (excludeCurrent && availablePlayers.length < placeholderCount) {
+        if (debugLogicEnabled) {
+          debugPrint('[LOGIC] Not enough players excluding current, using all players');
+        }
+        availablePlayers = List.from(_players);
+      }
+      
+      availablePlayers.shuffle();
+      
+      for (int i = 0; i < placeholderCount; i++) {
+        if (i < availablePlayers.length) {
+          result = result.replaceFirst('----', availablePlayers[i]);
+        } else {
+          result = result.replaceFirst('----', 'Otro jugador');
+        }
       }
     }
     
@@ -377,6 +384,11 @@ class WomboComboLogic extends ChangeNotifier {
     }
     
     return result;
+  }
+
+  // Método auxiliar para generar número aleatorio entre 2 y 10
+  int _getRandomNumberBetween2And10() {
+    return Random().nextInt(9) + 2; // 2-10 inclusive
   }
 
   /// Obtiene la lista de jugadores disponibles para sustitución (excluyendo al actual)

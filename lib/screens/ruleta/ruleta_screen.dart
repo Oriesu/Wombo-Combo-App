@@ -126,31 +126,9 @@ class RuletaScreenState extends State<RuletaScreen> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            _buildApuestaMensaje(),
-            const SizedBox(height: 8),
             _buildContenedorPrincipal(),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildApuestaMensaje() {
-    final apuesta = logic.getApuestaActual();
-    
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: const Color(0x1AFF00CC),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0x4DFF00CC)),
-      ),
-      child: Text(
-        apuesta != null 
-            ? '${logic.currentPlayer} ha apostado a ${apuesta['tipo']} con ${_getTextoFicha(apuesta['ficha'])}'
-            : '${logic.currentPlayer} aún no ha apostado',
-        style: const TextStyle(color: Colors.white, fontSize: 12),
-        textAlign: TextAlign.center,
       ),
     );
   }
@@ -174,7 +152,9 @@ class RuletaScreenState extends State<RuletaScreen> {
             children: [
               _buildNumerosRuleta(),
               const SizedBox(height: 1), 
-              _buildFilaCero(), 
+              _buildFilaCero(),
+              const SizedBox(height: 6),
+              _buildApuestasJugador(),
             ],
           ),
         ),
@@ -185,6 +165,142 @@ class RuletaScreenState extends State<RuletaScreen> {
           child: _buildContenedorDerecho(),
         ),
       ],
+    );
+  }
+
+  Widget _buildApuestasJugador() {
+    final apuestasActuales = logic.getApuestasActuales();
+
+    if (apuestasActuales.isEmpty) {
+      return Container(
+        height: 120, 
+        margin: const EdgeInsets.only(top: 8),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
+        ),
+        child: const Center(
+          child: Text(
+            'Sin apuestas aún',
+            style: TextStyle(
+              color: Colors.white54,
+              fontSize: 11,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      height: 120, 
+      margin: const EdgeInsets.only(top: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Center(
+            child: Text(
+              'Mis Apuestas:',
+              style: TextStyle(
+                color: Color(0xFFFF00CC),
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                alignment: WrapAlignment.center,
+                children: apuestasActuales.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final apuesta = entry.value;
+                  final textoApuesta = logic.getTextoApuesta(apuesta.tipo);
+
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Imagen de la ficha
+                        GestureDetector(
+                          onTap: logic.ruletaGirando
+                              ? null
+                              : () {
+                                  setState(() {
+                                    logic.eliminarApuesta(index);
+                                  });
+                                },
+                          child: Container(
+                            width: 21,
+                            height: 21,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white.withOpacity(0.3)),
+                            ),
+                            child: ClipOval(
+                              child: Image.asset(
+                                _getFichaImagePath(apuesta.ficha),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        // Texto de la apuesta
+                        Text(
+                          textoApuesta,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        // Botón para cancelar apuesta
+                        GestureDetector(
+                          onTap: logic.ruletaGirando
+                              ? null
+                              : () {
+                                  setState(() {
+                                    logic.eliminarApuesta(index);
+                                  });
+                                },
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withOpacity(0.3),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              color: Colors.red,
+                              size: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -370,7 +486,7 @@ class RuletaScreenState extends State<RuletaScreen> {
           },
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(100),
               border: isSelected 
                   ? Border.all(color: const Color(0xFFFF00CC), width: 2)
                   : null,
@@ -393,10 +509,6 @@ class RuletaScreenState extends State<RuletaScreen> {
       child: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25),
-          border: Border.all(color: const Color(0xFFFF00CC), width: 2),
-        ),
         child: ClipOval(
           child: Image.asset(
             _getFichaImagePath(logic.fichaSeleccionada),
@@ -444,6 +556,8 @@ class RuletaScreenState extends State<RuletaScreen> {
     );
   }
 
+  
+
   Widget _buildJugadoresSection() {
     return Container(
       padding: const EdgeInsets.all(8),
@@ -462,8 +576,10 @@ class RuletaScreenState extends State<RuletaScreen> {
           Wrap(
             spacing: 6,
             runSpacing: 6,
+            alignment: WrapAlignment.center,
             children: widget.players.map((player) {
-              final apuesta = logic.apuestas[player];
+              final apuestasPlayer = logic.apuestas[player];
+              final tieneApuestas = apuestasPlayer != null && apuestasPlayer.isNotEmpty;
               final isCurrent = logic.currentPlayer == player;
               
               return Container(
@@ -471,7 +587,9 @@ class RuletaScreenState extends State<RuletaScreen> {
                 decoration: BoxDecoration(
                   color: isCurrent 
                       ? const Color(0x4DFF00CC)
-                      : Colors.white.withOpacity(0.1),
+                      : tieneApuestas
+                        ? const Color(0x4D00FF00)
+                        : Colors.white.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(16),
                   border: isCurrent
                       ? Border.all(color: const Color(0xFFFF00CC))
@@ -488,13 +606,14 @@ class RuletaScreenState extends State<RuletaScreen> {
                         fontWeight: isCurrent ? FontWeight.w600 : FontWeight.w500,
                       ),
                     ),
-                    if (apuesta != null) ...[
-                      const SizedBox(height: 2),
+                    if (tieneApuestas)
                       Text(
-                        'Apuesta: ${apuesta['tipo']}',
-                        style: const TextStyle(color: Colors.white70, fontSize: 7),
+                        '${apuestasPlayer!.length} apuesta${apuestasPlayer.length > 1 ? 's' : ''}',
+                        style: const TextStyle(
+                          color: Colors.greenAccent,
+                          fontSize: 8,
+                        ),
                       ),
-                    ],
                   ],
                 ),
               );
@@ -508,9 +627,9 @@ class RuletaScreenState extends State<RuletaScreen> {
   Widget _buildControles() {
     return Row(
       children: [
+        // Botón Volver (existente)
         Expanded(
           child: ElevatedButton(
-            // ***** MODIFICACIÓN CRÍTICA: Se usa pop para activar el intersticial *****
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white.withOpacity(0.1),
@@ -525,6 +644,34 @@ class RuletaScreenState extends State<RuletaScreen> {
           ),
         ),
         const SizedBox(width: 6),
+        
+        // NUEVO: Botón Anterior Jugador
+        Expanded(
+          child: ElevatedButton(
+            onPressed: !logic.esPrimerJugador() && !logic.ruletaGirando
+                ? () {
+                    setState(() {
+                      logic.anteriorJugador();
+                    });
+                  }
+                : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFF6600), // Color naranja para diferenciar
+              foregroundColor: Colors.white,
+              disabledBackgroundColor: const Color(0xFFFF6600).withOpacity(0.3),
+              disabledForegroundColor: Colors.white.withOpacity(0.5),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: Text(
+              logic.esPrimerJugador() ? 'Primer Jugador' : 'Anterior',
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ),
+        const SizedBox(width: 6),
+        
+        // Botón Siguiente Jugador (existente, con texto actualizado)
         Expanded(
           child: ElevatedButton(
             onPressed: logic.puedePasarSiguiente() && !logic.ruletaGirando
@@ -549,6 +696,8 @@ class RuletaScreenState extends State<RuletaScreen> {
           ),
         ),
         const SizedBox(width: 6),
+        
+        // Botón Girar Ruleta (existente)
         Expanded(
           child: ElevatedButton(
             onPressed: logic.todosHanApostado() && !logic.ruletaGirando
@@ -656,7 +805,7 @@ class RuletaScreenState extends State<RuletaScreen> {
                         fontSize: 12,
                       ),
                     ),
-                   const SizedBox(height: 2),
+                    const SizedBox(height: 2),
                     Text(
                       resultado['detalle'],
                       style: const TextStyle(color: Colors.white70, fontSize: 10),

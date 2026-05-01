@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 
+class Apuesta {
+  String tipo;
+  String ficha;
+  
+  Apuesta({required this.tipo, required this.ficha});
+}
+
 class RuletaLogic {
   List<String> players;
   int currentPlayerIndex = 0;
-  Map<String, Map<String, dynamic>?> apuestas = {};
+  Map<String, List<Apuesta>> apuestas = {}; // Cambiado para múltiples apuestas
   String fichaSeleccionada = '1';
   bool ruletaGirando = false;
 
@@ -35,7 +42,7 @@ class RuletaLogic {
   RuletaLogic(this.players) {
     // Inicializar apuestas
     for (var player in players) {
-      apuestas[player] = null;
+      apuestas[player] = [];
     }
   }
 
@@ -51,16 +58,16 @@ class RuletaLogic {
     }
   }
 
-  Map<String, dynamic>? getApuestaActual() {
-    return apuestas[currentPlayer];
+  List<Apuesta> getApuestasActuales() {
+    return apuestas[currentPlayer] ?? [];
   }
 
   bool jugadorActualHaApostado() {
-    return apuestas[currentPlayer] != null;
+    return (apuestas[currentPlayer]?.isNotEmpty ?? false);
   }
 
   bool todosHanApostado() {
-    return players.every((player) => apuestas[player] != null);
+    return players.every((player) => (apuestas[player]?.isNotEmpty ?? false));
   }
 
   bool esUltimoJugador() {
@@ -78,10 +85,16 @@ class RuletaLogic {
   void agregarApuesta(String tipoApuesta) {
     if (ruletaGirando) return;
     
-    apuestas[currentPlayer] = {
-      'tipo': tipoApuesta,
-      'ficha': fichaSeleccionada
-    };
+    apuestas[currentPlayer]?.add(Apuesta(
+      tipo: tipoApuesta,
+      ficha: fichaSeleccionada,
+    ));
+  }
+
+  void eliminarApuesta(int index) {
+    if (ruletaGirando) return;
+    
+    apuestas[currentPlayer]?.removeAt(index);
   }
 
   void siguienteJugador() {
@@ -90,6 +103,18 @@ class RuletaLogic {
     if (!esUltimoJugador()) {
       currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
     }
+  }
+
+  void anteriorJugador() {
+    if (ruletaGirando || !jugadorActualHaApostado()) return;
+    
+    if (!esPrimerJugador()) {
+      currentPlayerIndex = (currentPlayerIndex - 1) % players.length;
+    }
+  }
+
+  bool esPrimerJugador() {
+    return currentPlayerIndex == 0;
   }
 
   Map<String, dynamic> girarRuleta() {
@@ -125,44 +150,64 @@ class RuletaLogic {
     }
   }
 
+  String getTextoApuesta(String tipo) {
+    switch(tipo) {
+      case 'rojo': return 'Rojo';
+      case 'negro': return 'Negro';
+      case 'par': return 'Par';
+      case 'impar': return 'Impar';
+      case 'falta': return '1-18';
+      case 'pasa': return '19-36';
+      case '1a12': return '1ª 12';
+      case '2a12': return '2ª 12';
+      case '3a12': return '3ª 12';
+      case 'col1': return 'Columna 1';
+      case 'col2': return 'Columna 2';
+      case 'col3': return 'Columna 3';
+      default: return tipo;
+    }
+  }
+
   List<Map<String, dynamic>> calcularResultados(int numeroGanador, String colorGanador) {
     List<Map<String, dynamic>> resultados = [];
 
     for (var player in players) {
-      final apuestaPlayer = apuestas[player];
+      final apuestasPlayer = apuestas[player] ?? [];
       int tragosTotales = 0;
-      String detalle = '';
-      String resultadoTexto = '';
+      List<String> detalles = [];
 
-      if (apuestaPlayer != null) {
-        final tipo = apuestaPlayer['tipo'];
-        final fichaTipo = apuestaPlayer['ficha'];
-        
-        final gano = apuestaGana(tipo, numeroGanador, colorGanador);
-        final valorFicha = valoresFichas[fichaTipo]!;
-        final esHidalgo = fichaTipo == 'hidalgo';
-        final unidadTexto = esHidalgo ? 'hidalgo' : 'trago';
-        final unidadTextoPlural = esHidalgo ? 'hidalgos' : 'tragos';
-        
-        if (gano) {
-          final multiplicador = multiplicadoresApuestas[tipo] ?? 1;
-          final tragosGanados = valorFicha * multiplicador;
-          tragosTotales += tragosGanados;
-          detalle = 'Apuesta: $tipo\n+$tragosGanados ${tragosGanados > 1 ? unidadTextoPlural : unidadTexto} ($valorFicha × $multiplicador)';
-        } else {
-          tragosTotales -= valorFicha;
-          detalle = 'Apuesta: $tipo\n-$valorFicha ${valorFicha > 1 ? unidadTextoPlural : unidadTexto}';
+      if (apuestasPlayer.isNotEmpty) {
+        for (var apuesta in apuestasPlayer) {
+          final tipo = apuesta.tipo;
+          final fichaTipo = apuesta.ficha;
+          
+          final gano = apuestaGana(tipo, numeroGanador, colorGanador);
+          final valorFicha = valoresFichas[fichaTipo]!;
+          final esHidalgo = fichaTipo == 'hidalgo';
+          final unidadTexto = esHidalgo ? 'hidalgo' : 'trago';
+          final unidadTextoPlural = esHidalgo ? 'hidalgos' : 'tragos';
+          
+          if (gano) {
+            final multiplicador = multiplicadoresApuestas[tipo] ?? 1;
+            final tragosGanados = valorFicha * multiplicador;
+            tragosTotales += tragosGanados;
+            detalles.add('${getTextoApuesta(tipo)}: +$tragosGanados ${tragosGanados > 1 ? unidadTextoPlural : unidadTexto} ($valorFicha × $multiplicador)');
+          } else {
+            tragosTotales -= valorFicha;
+            detalles.add('${getTextoApuesta(tipo)}: -$valorFicha ${valorFicha > 1 ? unidadTextoPlural : unidadTexto}');
+          }
         }
       } else {
-        detalle = 'Sin apuesta';
+        detalles.add('Sin apuestas');
       }
       
+      String resultadoTexto = '';
       if (tragosTotales > 0) {
-        final esHidalgo = apuestaPlayer != null && apuestaPlayer['ficha'] == 'hidalgo';
+        final esHidalgo = apuestasPlayer.isNotEmpty && apuestasPlayer.any((a) => a.ficha == 'hidalgo');
         final unidadTexto = esHidalgo ? 'HIDALGO(S)' : 'TRAGO(S)';
         resultadoTexto = 'GANA $tragosTotales $unidadTexto PARA REPARTIR';
       } else if (tragosTotales < 0) {
-        final esHidalgo = apuestaPlayer != null && apuestaPlayer['ficha'] == 'hidalgo';
+        final esHidalgo = apuestasPlayer.isNotEmpty && apuestasPlayer.any((a) => a.ficha == 'hidalgo');
         final unidadTexto = esHidalgo ? 'HIDALGO(S)' : 'TRAGO(S)';
         resultadoTexto = 'BEBE ${tragosTotales.abs()} $unidadTexto';
       } else {
@@ -171,7 +216,7 @@ class RuletaLogic {
       
       resultados.add({
         'jugador': player,
-        'detalle': detalle,
+        'detalle': detalles.join('\n'),
         'resultado': resultadoTexto,
         'tragos': tragosTotales,
       });
@@ -185,7 +230,7 @@ class RuletaLogic {
     
     // Reiniciar apuestas
     for (var player in players) {
-      apuestas[player] = null;
+      apuestas[player] = [];
     }
     
     // Reiniciar turno
