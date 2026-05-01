@@ -64,3 +64,5 @@ ios/.symlinks/
 key.properties
 android/
 .android/
+android/
+.android/
