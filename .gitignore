@@ -49,7 +49,7 @@ build/
 **/*.iml
 .DS_Store
 
-# Android (ya no se usa)
+# Android 
 android/
 android
 
