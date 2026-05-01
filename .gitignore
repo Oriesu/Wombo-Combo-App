@@ -15,11 +15,6 @@ build/
 *.apk
 *.ipa
 
-# Carpetas de IDE
-.vscode/
-.idea/
-*.iml
-
 # Carpetas específicas para EXCLUIR (para que no se trackeen)
 node_modules/
 __pycache__/
@@ -27,3 +22,43 @@ __pycache__/
 # Para evitar que se trackeen carpetas superiores (¡CRÍTICO!)
 ./
 ../
+
+# Flutter
+.dart_tool/
+.pub/
+build/
+**/build/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.lock
+*.lock-ws
+**/Generated.xcconfig
+**/flutter_export_environment.sh
+.flutter-plugins
+.flutter-plugins-dependencies
+**/Flutter/ephemeral/
+**/Pods/
+**/.symlinks/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+**/*.iml
+.DS_Store
+
+# Android (ya no se usa)
+android/
+android
+
+# iOS
+ios/Pods/
+ios/Podfile.lock
+ios/.symlinks/
+
+# Keys
+*.key
+*.keystore
+key.properties
