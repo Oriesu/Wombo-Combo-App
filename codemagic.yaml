@@ -6,7 +6,6 @@
 workflows:
   ios-build-and-upload:
     name: "Wombo Combo - Build & Upload to TestFlight"
-    description: "Flujo optimizado para build, firma automática y subida a TestFlight"
     instance_type: mac_mini_m2
 
     # --- INTEGRACIÓN CON APP STORE CONNECT (OBLIGATORIO) ---
