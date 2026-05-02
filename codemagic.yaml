@@ -1,6 +1,5 @@
 # ==========================================
-# WOMBO COMBO - iOS BUILD DIAGNÓSTICO
-# VERSIÓN MINIMALISTA PARA DETECTAR ERRORES
+# WOMBO COMBO - iOS BUILD CORREGIDO
 # ==========================================
 
 workflows:
@@ -36,150 +35,28 @@ workflows:
           source: true
 
     scripts:
-      # ========== DIAGNÓSTICO INICIAL ==========
-      - name: "0. Verificar que los scripts se ejecutan"
+      - name: "0. Diagnóstico inicial"
+        script: echo "🎯 SCRIPTS EJECUTÁNDOSE - $(date)"
+      - name: "1. Limpieza"
+        script: flutter clean
+      - name: "2. Dependencias"
+        script: flutter pub get
+      - name: "3. CocoaPods"
         script: |
-          echo "=========================================="
-          echo "🎯 LOS SCRIPTS ESTÁN EJECUTÁNDOSE"
-          echo "=========================================="
-          echo "Build ID: ${CM_BUILD_ID:-No disponible}"
-          echo "Branch: ${CM_BRANCH:-No disponible}"
-          echo "Fecha: $(date)"
-          echo ""
-          echo "Archivos en el directorio:"
-          ls -la
-          echo "=========================================="
-
-      # ========== INFORMACIÓN DEL SISTEMA ==========
-      - name: "1. Información del sistema"
-        script: |
-          echo "=== VERSIONES ==="
-          flutter --version
-          echo ""
-          xcodebuild -version
-          echo ""
-          echo "=== VARIABLES DE ENTORNO (diagnóstico) ==="
-          echo "KEY_ID: ${APP_STORE_CONNECT_KEY_IDENTIFIER:-NO CONFIGURADA}"
-          echo "ISSUER_ID: ${APP_STORE_CONNECT_ISSUER_ID:-NO CONFIGURADA}"
-          if [ -n "$APP_STORE_CONNECT_PRIVATE_KEY" ]; then
-            echo "PRIVATE_KEY: ✅ CONFIGURADA (${#APP_STORE_CONNECT_PRIVATE_KEY} caracteres)"
-          else
-            echo "PRIVATE_KEY: ❌ NO CONFIGURADA"
-          fi
-
-      # ========== LIMPIEZA ==========
-      - name: "2. Limpieza"
-        script: |
-          echo "=== LIMPIANDO ==="
-          flutter clean
-          rm -rf ios/Pods ios/Podfile.lock
-          rm -rf build/
-          echo "✅ Limpieza completada"
-
-      # ========== DEPENDENCIAS ==========
-      - name: "3. Instalar dependencias"
-        script: |
-          echo "=== INSTALANDO DEPENDENCIAS ==="
-          flutter pub get
-          echo "✅ Dependencias instaladas"
-
-      # ========== COCOAPODS ==========
-      - name: "4. Instalar CocoaPods"
-        script: |
-          echo "=== INSTALANDO COCOAPODS ==="
           cd ios
           pod install --repo-update
           cd ..
-          echo "✅ CocoaPods instalados"
-
-      # ========== VERIFICAR FIRMA ==========
-      - name: "5. Verificar firma"
+      - name: "4. Construir IPA"
+        script: flutter build ipa --release --build-name=1.4.4 --build-number=23
+      - name: "5. Verificar IPA"
         script: |
-          echo "=== VERIFICANDO FIRMA ==="
-          security find-identity -v -p codesigning
-          echo ""
-          echo "Bundle ID en proyecto:"
-          grep "PRODUCT_BUNDLE_IDENTIFIER" ios/Runner.xcodeproj/project.pbxproj | head -3
+          echo "=== BUSCANDO IPA ==="
+          find . -name "*.ipa"
+          echo "==================="
 
-      # ========== APLICAR PERFILES ==========
-      - name: "6. Aplicar perfiles"
-        script: |
-          echo "=== APLICANDO PERFILES ==="
-          xcode-project use-profiles
-          echo "✅ Perfiles aplicados"
-
-      # ========== CONSTRUIR IPA (CON VERBOSE) ==========
-      - name: "7. Construir IPA"
-        script: |
-          echo "=========================================="
-          echo "🔨 CONSTRUYENDO IPA"
-          echo "=========================================="
-          
-          # Ejecutar build con verbose para ver todo
-          flutter build ipa --release \
-            --build-name=$BUILD_NAME \
-            --build-number=$BUILD_NUMBER \
-            --verbose
-          
-          # Guardar el código de salida
-          BUILD_RESULT=$?
-          
-          echo ""
-          echo "Código de resultado: $BUILD_RESULT"
-          echo "=========================================="
-
-      # ========== BUSCAR IPA GENERADO ==========
-      - name: "8. Buscar IPA generado"
-        script: |
-          echo "=========================================="
-          echo "🔍 BUSCANDO IPA GENERADO"
-          echo "=========================================="
-          
-          # Buscar en toda la estructura
-          echo "Buscando archivos .ipa..."
-          find . -name "*.ipa" 2>/dev/null
-          
-          echo ""
-          echo "Buscando archivos .xcarchive..."
-          find . -name "*.xcarchive" 2>/dev/null
-          
-          echo ""
-          echo "Estructura de build/ios/:"
-          ls -la build/ios/ 2>/dev/null || echo "No existe build/ios/"
-          
-          echo ""
-          echo "Estructura de build/ios/ipa/:"
-          ls -la build/ios/ipa/ 2>/dev/null || echo "No existe build/ios/ipa/"
-          
-          echo ""
-          echo "Estructura completa de build/:"
-          find build -type d 2>/dev/null | head -20
-
-      # ========== VERIFICAR FINAL ==========
-      - name: "9. Verificación final"
-        script: |
-          echo "=========================================="
-          echo "✅ BUILD FINALIZADO"
-          echo "=========================================="
-          
-          # Contar IPAs encontrados
-          IPA_COUNT=$(find . -name "*.ipa" 2>/dev/null | wc -l)
-          echo "IPAs encontrados: $IPA_COUNT"
-          
-          if [ $IPA_COUNT -gt 0 ]; then
-            echo "🎉 SUCCESS: IPA generado correctamente"
-          else
-            echo "⚠️ WARNING: No se encontraron archivos IPA"
-            echo "Revisa los logs anteriores para ver el error"
-          fi
-
-    # ========== ARTEFACTOS ==========
     artifacts:
       - build/ios/ipa/*.ipa
-      - build/ios/xcarchive/*.xcarchive
-      - ./*.log
 
-    # ========== PUBLICACIÓN ==========
     publishing:
       app_store_connect:
         api_key: $APP_STORE_CONNECT_PRIVATE_KEY
