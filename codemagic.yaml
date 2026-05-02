@@ -1,1 +1,258 @@
 [pega el contenido completo de arriba]
+# ==========================================
+# WOMBO COMBO - iOS BUILD COMPLETO
+# ==========================================
+
+workflows:
+  ios-build:
+    name: "Wombo Combo - Build & Upload to TestFlight"
+    instance_type: mac_mini_m2
+
+    # --- INTEGRACIÓN CON APP STORE CONNECT ---
+    integrations:
+      app_store_connect: "Codemagic CI"
+
+    # --- CONFIGURACIÓN DE ENTORNO ---
+    environment:
+      flutter: 3.27.4
+      xcode: 15.4
+      cocoapods: default
+
+      # --- FIRMA AUTOMÁTICA ---
+      ios_signing:
+        bundle_identifier: com.javiersanchez.womboCombo
+        distribution_type: app_store
+        team_id: K29552DY49
+        create_profile: true
+
+      # --- VARIABLES ---
+      vars:
+        BUILD_NAME: "1.4.4"
+        BUILD_NUMBER: "23"
+
+    # --- CACHÉ ---
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+        - ios/Pods
+
+    # --- TRIGGERS ---
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+
+    # --- SCRIPTS ---
+    scripts:
+      # ========== DIAGNÓSTICO COMPLETO ==========
+      - name: "0. Diagnóstico completo"
+        script: |
+          echo "=========================================="
+          echo "🔍 DIAGNÓSTICO COMPLETO"
+          echo "=========================================="
+          echo "Fecha: $(date)"
+          echo "Build Name: $BUILD_NAME"
+          echo "Build Number: $BUILD_NUMBER"
+          echo ""
+          
+          echo "--- Variables de entorno ---"
+          echo "KEY_ID: ${APP_STORE_CONNECT_KEY_IDENTIFIER:-NO CONFIGURADA}"
+          echo "ISSUER_ID: ${APP_STORE_CONNECT_ISSUER_ID:-NO CONFIGURADA}"
+          if [ -n "$APP_STORE_CONNECT_PRIVATE_KEY" ]; then
+            echo "PRIVATE_KEY: ✅ CONFIGURADA (${#APP_STORE_CONNECT_PRIVATE_KEY} caracteres)"
+          else
+            echo "PRIVATE_KEY: ❌ NO CONFIGURADA"
+          fi
+          echo ""
+          
+          echo "--- Versiones ---"
+          flutter --version
+          echo ""
+          xcodebuild -version
+          echo ""
+          
+          echo "--- Certificados disponibles ---"
+          security find-identity -v -p codesigning
+          echo ""
+          
+          echo "--- Perfiles de aprovisionamiento ---"
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ 2>/dev/null || echo "No hay perfiles locales"
+          echo ""
+          
+          echo "--- Bundle ID en proyecto ---"
+          grep "PRODUCT_BUNDLE_IDENTIFIER" ios/Runner.xcodeproj/project.pbxproj | head -3
+          echo "=========================================="
+
+      # ========== LIMPIEZA ==========
+      - name: "1. Limpieza profunda"
+        script: |
+          echo "=========================================="
+          echo "🧹 LIMPIEZA PROFUNDA"
+          echo "=========================================="
+          flutter clean
+          rm -rf ios/Pods
+          rm -rf ios/Podfile.lock
+          rm -rf ios/Runner.xcworkspace
+          rm -rf ~/Library/Developer/Xcode/DerivedData/*
+          rm -rf build/
+          echo "✅ Limpieza completada"
+
+      # ========== DEPENDENCIAS ==========
+      - name: "2. Instalar dependencias"
+        script: |
+          echo "=========================================="
+          echo "📦 INSTALANDO DEPENDENCIAS"
+          echo "=========================================="
+          flutter pub get
+          echo "✅ Dependencias instaladas"
+
+      # ========== COCOAPODS ==========
+      - name: "3. Instalar CocoaPods"
+        script: |
+          echo "=========================================="
+          echo "🍏 INSTALANDO COCOAPODS"
+          echo "=========================================="
+          cd ios
+          pod repo update
+          pod install --verbose
+          cd ..
+          echo "✅ CocoaPods instalados"
+
+      # ========== APLICAR PERFILES ==========
+      - name: "4. Aplicar perfiles de firma"
+        script: |
+          echo "=========================================="
+          echo "🔐 APLICANDO PERFILES DE FIRMA"
+          echo "=========================================="
+          xcode-project use-profiles
+          echo "✅ Perfiles aplicados"
+
+      # ========== VERIFICAR FIRMA ==========
+      - name: "5. Verificar firma"
+        script: |
+          echo "=========================================="
+          echo "🔑 VERIFICANDO CONFIGURACIÓN DE FIRMA"
+          echo "=========================================="
+          
+          echo "--- Perfiles después de xcode-project use-profiles ---"
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ 2>/dev/null || echo "Seguimos sin perfiles"
+          
+          echo ""
+          echo "--- Información del proyecto ---"
+          xcodebuild -project ios/Runner.xcodeproj -list
+          
+          echo ""
+          echo "--- Configuración de firma del proyecto ---"
+          xcodebuild -project ios/Runner.xcodeproj -showBuildSettings | grep -E "CODE_SIGN|PROVISIONING" | head -10
+          echo "=========================================="
+
+      # ========== CONSTRUIR IPA ==========
+      - name: "6. Construir IPA"
+        script: |
+          echo "=========================================="
+          echo "🔨 CONSTRUYENDO IPA"
+          echo "=========================================="
+          
+          flutter build ipa --release \
+            --build-name=$BUILD_NAME \
+            --build-number=$BUILD_NUMBER \
+            --verbose
+          
+          BUILD_RESULT=$?
+          
+          if [ $BUILD_RESULT -eq 0 ]; then
+            echo "✅ Build completado exitosamente"
+          else
+            echo "❌ Error en el build. Código: $BUILD_RESULT"
+            exit 1
+          fi
+
+      # ========== BUSCAR IPA ==========
+      - name: "7. Buscar IPA generado"
+        script: |
+          echo "=========================================="
+          echo "🔍 BUSCANDO IPA GENERADO"
+          echo "=========================================="
+          
+          echo "Buscando archivos .ipa..."
+          find . -name "*.ipa" -type f 2>/dev/null
+          
+          echo ""
+          echo "Buscando archivos .xcarchive..."
+          find . -name "*.xcarchive" -type d 2>/dev/null
+          
+          echo ""
+          echo "Estructura de build/:"
+          ls -la build/ 2>/dev/null || echo "No existe build/"
+          
+          echo ""
+          echo "Estructura de build/ios/:"
+          ls -la build/ios/ 2>/dev/null || echo "No existe build/ios/"
+          
+          echo ""
+          echo "Estructura de build/ios/ipa/:"
+          ls -la build/ios/ipa/ 2>/dev/null || echo "No existe build/ios/ipa/"
+          
+          echo ""
+          echo "Estructura completa de build/ios (primeros 20):"
+          find build/ios -type d 2>/dev/null | head -20
+
+      # ========== VERIFICACIÓN FINAL ==========
+      - name: "8. Verificación final"
+        script: |
+          echo "=========================================="
+          echo "✅ VERIFICACIÓN FINAL"
+          echo "=========================================="
+          
+          IPA_COUNT=$(find . -name "*.ipa" -type f 2>/dev/null | wc -l)
+          
+          if [ $IPA_COUNT -gt 0 ]; then
+            IPA_PATH=$(find . -name "*.ipa" -type f | head -1)
+            IPA_SIZE=$(stat -f%z "$IPA_PATH" 2>/dev/null || stat -c%s "$IPA_PATH" 2>/dev/null)
+            IPA_SIZE_MB=$((IPA_SIZE/1048576))
+            
+            echo "🎉 ÉXITO: Se generó el IPA"
+            echo "📁 Ruta: $IPA_PATH"
+            echo "📦 Tamaño: $IPA_SIZE_MB MB"
+            
+            # Mostrar información del IPA
+            echo ""
+            echo "--- Información del IPA ---"
+            file "$IPA_PATH"
+          else
+            echo "⚠️ ERROR: No se encontraron archivos IPA"
+            echo ""
+            echo "Posibles causas:"
+            echo "1. Error durante la compilación"
+            echo "2. Problemas de firma"
+            echo "3. Bundle ID incorrecto"
+            echo "4. Perfil de aprovisionamiento no válido"
+            echo ""
+            echo "Revisa los logs anteriores para más detalles"
+            exit 1
+          fi
+          echo "=========================================="
+
+    # --- ARTEFACTOS ---
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - build/ios/xcarchive/*.xcarchive
+      - ~/Library/Logs/DiagnosticReports/*.log
+
+    # --- PUBLICACIÓN ---
+    publishing:
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: true
+      
+      email:
+        recipients:
+          - javiersanchezmartinez2006@gmail.com
+        notify:
+          success: true
+          failure: true
