@@ -11,8 +11,6 @@ workflows:
       ios_signing:
         bundle_identifier: com.javiersanchez.womboCombo
         distribution_type: app_store
-        team_id: K29552DY49
-        create_profile: true
       vars:
         BUILD_NAME: 1.4.4
         BUILD_NUMBER: 23
