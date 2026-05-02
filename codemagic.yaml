@@ -1,71 +1,30 @@
-# ==========================================
-# WOMBO COMBO - iOS BUILD CORREGIDO
-# ==========================================
-
 workflows:
-  build:
-    name: "Wombo Combo - Build iOS"
+  ios-build:
+    name: iOS Build
     instance_type: mac_mini_m2
-
-    integrations:
-      app_store_connect: "Codemagic CI"
-
     environment:
-      flutter: 3.27.4
-      xcode: 15.4
-      cocoapods: default
+      flutter: stable
+      xcode: latest
       ios_signing:
-        distribution_type: app_store
         bundle_identifier: com.javiersanchez.womboCombo
-      vars:
-        BUILD_NAME: "1.4.4"
-        BUILD_NUMBER: "23"
-
-    cache:
-      cache_paths:
-        - ~/.pub-cache
-        - ios/Pods
-
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: main
-          include: true
-          source: true
-
+        distribution_type: app_store
     scripts:
-      - name: "0. Diagnóstico inicial"
-        script: echo "🎯 SCRIPTS EJECUTÁNDOSE - $(date)"
-      - name: "1. Limpieza"
+      - name: Clean
         script: flutter clean
-      - name: "2. Dependencias"
+      - name: Install dependencies
         script: flutter pub get
-      - name: "3. CocoaPods"
+      - name: Install pods
         script: |
           cd ios
-          pod install --repo-update
+          pod install
           cd ..
-      - name: "4. Construir IPA"
-        script: flutter build ipa --release --build-name=1.4.4 --build-number=23
-      - name: "5. Verificar IPA"
-        script: |
-          echo "=== BUSCANDO IPA ==="
-          find . -name "*.ipa"
-          echo "==================="
-
+      - name: Build IPA
+        script: flutter build ipa --release
     artifacts:
       - build/ios/ipa/*.ipa
-
     publishing:
       app_store_connect:
         api_key: $APP_STORE_CONNECT_PRIVATE_KEY
         key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID
         submit_to_testflight: true
-      email:
-        recipients:
-          - javiersanchezmartinez2006@gmail.com
-        notify:
-          success: true
-          failure: true
