@@ -10,9 +10,23 @@ workflows:
       flutter: 3.27.4
       xcode: 15.4
       cocoapods: default
+      
+      # Variables de entorno incluidas DIRECTAMENTE en el archivo
+      APP_STORE_CONNECT_PRIVATE_KEY: |
+        -----BEGIN PRIVATE KEY-----
+        MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgvb+RCUP44l5BvJtt
+        uUgxCu5Dzwlh8wc8i68g2NGe7oOgCgYIKoZIzj0DAQehRANCAAT0rV6c11yb0XGk
+        cAtrXbT76RexNTa0skS6Suhh9nLBvgo8jChP6JxnNRzWcqAAwUAEBaonfEIq8ZlQ
+        w0j4j05j
+        -----END PRIVATE KEY-----
+      APP_STORE_CONNECT_KEY_IDENTIFIER: 499AH62NY3
+      APP_STORE_CONNECT_ISSUER_ID: 65eeb72c-b971-49df-b0c4-20e809c00746
+      APP_STORE_CONNECT_TEAM_ID: K29552DY49
+
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.javiersanchez.womboCombo
+        team_id: K29552DY49
 
     cache:
       cache_paths:
@@ -25,22 +39,39 @@ workflows:
       branch_patterns:
         - pattern: main
           include: true
-          source: true
 
     scripts:
+      - name: Debug - Check variables
+        script: |
+          echo "=== VERIFICANDO VARIABLES ==="
+          echo "KEY_ID: $APP_STORE_CONNECT_KEY_IDENTIFIER"
+          echo "ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID"
+          echo "TEAM_ID: $APP_STORE_CONNECT_TEAM_ID"
+          echo "PRIVATE_KEY: $(echo $APP_STORE_CONNECT_PRIVATE_KEY | head -c 50)..."
+          
       - name: Clean
         script: flutter clean
-      - name: Install dependencies
+        
+      - name: Get dependencies
         script: flutter pub get
-      - name: Install pods
+        
+      - name: Pod install
         script: |
           cd ios
           pod install --repo-update
           cd ..
-      - name: Fetch signing files
+          
+      - name: Fetch signing profiles
         script: xcode-project use-profiles
+        
       - name: Build IPA
-        script: flutter build ipa --release --export-options-plist /Users/builder/export_options.plist
+        script: flutter build ipa --release
+        
+      - name: Verify IPA
+        script: |
+          echo "=== BUSCANDO IPA ==="
+          find . -name "*.ipa"
+          ls -la build/ios/ipa/ 2>/dev/null || echo "No IPA found"
 
     artifacts:
       - build/ios/ipa/*.ipa
