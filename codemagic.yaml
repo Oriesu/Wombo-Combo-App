@@ -10,11 +10,6 @@ workflows:
       flutter: 3.27.4
       xcode: 15.4
       cocoapods: default
-      
-      # Usar el grupo secreto
-      groups:
-        - wombo_secrets
-
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.javiersanchez.womboCombo
@@ -32,12 +27,17 @@ workflows:
           include: true
 
     scripts:
-      - name: Build
+      - name: Clean
+        script: flutter clean
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Pod install
         script: |
-          flutter clean
-          flutter pub get
-          cd ios && pod install --repo-update && cd ..
-          flutter build ipa --release
+          cd ios
+          pod install --repo-update
+          cd ..
+      - name: Build IPA
+        script: flutter build ipa --release
 
     artifacts:
       - build/ios/ipa/*.ipa
@@ -45,6 +45,7 @@ workflows:
     publishing:
       app_store_connect:
         submit_to_testflight: true
+        # No necesitas api_key, key_id, issuer_id aquí porque se heredan de integrations
       email:
         recipients:
           - javiersanchezmartinez2006@gmail.com
